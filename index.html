@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 不冰的工作台 · Bunny Workbench</title>
+<style>
+  :root{
+    --pink-50:#fff5f8; --pink-100:#ffe4ee; --pink-200:#ffc9dd; --pink-300:#ffa6c9;
+    --pink-400:#ff7eb3; --pink-500:#ff5c9c; --pink-600:#f04080; --pink-700:#cc2f66;
+    --cream:#fffaf6; --ink:#5a3d4a; --ink-soft:#8a6b78; --line:#ffd6e6;
+    --green:#7ed957; --yellow:#ffd84d; --blue:#7ec8ff; --purple:#c89bff;
+    --shadow:0 8px 24px rgba(255,92,156,.12); --shadow-lg:0 14px 40px rgba(255,92,156,.18);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,"Segoe UI",sans-serif;
+    background:linear-gradient(135deg,#fff0f6 0%,#ffe1ec 50%,#ffd1e4 100%);
+    color:var(--ink);min-height:100vh;display:flex;overflow:hidden;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:var(--pink-200);border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ===== 左侧导航 ===== */
+  .sidebar{
+    width:230px;flex-shrink:0;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);
+    border-right:2px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;
+    height:100vh;overflow-y:auto;box-shadow:4px 0 24px rgba(255,92,156,.06);
+  }
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;border-bottom:2px dashed var(--pink-100);margin-bottom:14px}
+  .brand-logo{font-size:30px;animation:bounce 2.4s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-6px) rotate(6deg)}}
+  .brand-name{font-size:17px;font-weight:800;color:var(--pink-600);line-height:1.2}
+  .brand-sub{font-size:11px;color:var(--ink-soft);letter-spacing:.5px}
+
+  .nav-group-label{font-size:11px;color:var(--ink-soft);font-weight:700;padding:10px 12px 6px;letter-spacing:1px}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;cursor:pointer;
+    font-size:14.5px;font-weight:600;color:var(--ink);transition:all .22s;margin-bottom:4px;
+    border:2px solid transparent;user-select:none;
+  }
+  .nav-item:hover{background:var(--pink-50);transform:translateX(3px)}
+  .nav-item.active{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;box-shadow:var(--shadow)}
+  .nav-icon{font-size:20px;width:26px;text-align:center;flex-shrink:0;pointer-events:auto;cursor:pointer;user-select:none}
+  .nav-item *{pointer-events:auto}
+  .nav-item.active .nav-icon{animation:wiggle .6s ease}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+
+  .sidebar-footer{margin-top:auto;padding-top:14px;border-top:2px dashed var(--pink-100);font-size:11px;color:var(--ink-soft);text-align:center;line-height:1.6}
+
+  /* ===== 主区域 ===== */
+  .main{flex:1;height:100vh;overflow-y:auto;padding:28px 36px}
+  .panel{display:none;animation:fadein .4s ease}
+  .panel.active{display:block}
+  @keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .page-head{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+  .page-head .ico{font-size:34px}
+  .page-head h1{font-size:24px;color:var(--pink-600);font-weight:800}
+  .page-head p{font-size:13px;color:var(--ink-soft);margin-top:2px}
+
+  /* ===== 卡片 ===== */
+  .card{background:rgba(255,255,255,.85);border:2px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+  .card-title{font-size:16px;font-weight:800;color:var(--pink-600);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+  /* ===== 桌面主页 ===== */
+  .hero{
+    background:linear-gradient(135deg,var(--hero-bg1,#ffd1e4),var(--hero-bg2,#ffafce));border-radius:26px;padding:34px;color:var(--hero-text,#fff);
+    box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:22px;
+  }
+  .hero::before{content:"🌸";position:absolute;font-size:120px;opacity:.18;right:-10px;top:-30px;transform:rotate(15deg)}
+  .hero::after{content:"✨";position:absolute;font-size:40px;right:30px;bottom:20px;opacity:.5}
+  .hero-greet{font-size:15px;opacity:.95;margin-bottom:6px}
+  .hero-time{font-size:54px;font-weight:800;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.1);font-variant-numeric:tabular-nums}
+  .hero-date{font-size:15px;opacity:.95;margin-top:4px}
+  .hero-points{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.28);padding:7px 16px;border-radius:30px;margin-top:16px;font-weight:700;font-size:15px;backdrop-filter:blur(6px)}
+
+  .desktop-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+  .quote-box{background:linear-gradient(135deg,#fff,#fff5f8);border:2px dashed var(--pink-200);border-radius:20px;padding:26px;text-align:center;position:relative}
+  .quote-mark{font-size:48px;color:var(--pink-200);line-height:0.5;font-family:Georgia,serif}
+  .quote-zh{font-size:19px;font-weight:700;color:var(--pink-600);margin:14px 0 8px;line-height:1.5}
+  .quote-en{font-size:14px;color:var(--ink-soft);font-style:italic;line-height:1.5}
+  .quote-foot{font-size:12px;color:var(--pink-300);margin-top:14px}
+
+  .quick-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  .stat-mini{background:rgba(255,255,255,.85);border:2px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+  .stat-mini .num{font-size:26px;font-weight:800;color:var(--pink-500)}
+  .stat-mini .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+  .today-checkin{background:linear-gradient(135deg,#fff,#fff5f8);border:2px solid var(--line);border-radius:20px;padding:22px}
+  .checkin-goal-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px dashed var(--pink-100)}
+  .checkin-goal-row:last-child{border-bottom:none}
+  .checkin-goal-row .gname{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
+  .btn{border:none;cursor:pointer;font-family:inherit;font-weight:700;border-radius:12px;transition:all .2s;font-size:13px;padding:9px 18px}
+  .btn-pink{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;box-shadow:var(--shadow)}
+  .btn-pink:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .btn-pink:disabled{background:#ddd;color:#aaa;cursor:not-allowed;box-shadow:none;transform:none}
+  .btn-ghost{background:var(--pink-50);color:var(--pink-600);border:2px solid var(--pink-100)}
+  .btn-ghost:hover{background:var(--pink-100)}
+  .btn-done{background:linear-gradient(135deg,#a8e6a3,#7ed957);color:#fff}
+  .btn-sm{padding:6px 12px;font-size:12px}
+  .btn-danger{background:#fff0f0;color:#e85d5d;border:2px solid #ffcaca}
+  .btn-danger:hover{background:#ffe0e0}
+
+  /* ===== 输入控件 ===== */
+  .input,.select,.textarea{width:100%;padding:11px 14px;border:2px solid var(--pink-100);border-radius:12px;font-family:inherit;font-size:14px;background:#fff;color:var(--ink);transition:all .2s}
+  .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--pink-300);box-shadow:0 0 0 4px var(--pink-50)}
+  .label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;display:block}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+
+  /* ===== 目标卡片 ===== */
+  .goal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .goal-card{background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:18px;padding:18px;position:relative;transition:all .25s}
+  .goal-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--pink-300)}
+  .goal-card .emoji{font-size:26px}
+  .goal-card h3{font-size:16px;color:var(--pink-600);margin:8px 0 4px}
+  .goal-card .desc{font-size:12px;color:var(--ink-soft);min-height:18px}
+  .progress-wrap{margin:12px 0 6px}
+  .progress-bar{height:10px;background:var(--pink-50);border-radius:10px;overflow:hidden;border:1px solid var(--pink-100)}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));border-radius:10px;transition:width .5s}
+  .progress-text{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:4px}
+  .goal-actions{display:flex;gap:8px;margin-top:12px}
+  .goal-deadline{font-size:11px;color:var(--pink-400);margin-top:4px}
+
+  /* ===== 打卡 ===== */
+  .checkin-list{display:flex;flex-direction:column;gap:12px}
+  .checkin-card{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:16px;padding:16px 20px;transition:all .2s}
+  .checkin-card.done{background:linear-gradient(135deg,#f0fff0,#e8f8e8);border-color:#c6ecc6}
+  .checkin-card .big-emoji{font-size:32px}
+  .checkin-card .info{flex:1}
+  .checkin-card .info h4{font-size:15px;color:var(--ink)}
+  .checkin-card .info p{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .streak-badge{display:inline-flex;align-items:center;gap:4px;background:var(--pink-100);color:var(--pink-600);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+
+  /* ===== 存钱 ===== */
+  .savings-hero{background:linear-gradient(135deg,#ffb3d1,#ff85b3);border-radius:22px;padding:28px;color:#fff;text-align:center;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+  .savings-hero::before{content:"🐷";position:absolute;font-size:130px;opacity:.15;right:0;bottom:-20px}
+  .savings-amount{font-size:46px;font-weight:800;margin:10px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .savings-label{font-size:14px;opacity:.95}
+  .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
+
+  /* ===== 兑换 ===== */
+  .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#ffd1e4,#ffa6c9);border-radius:20px;padding:20px 26px;color:#fff;box-shadow:var(--shadow);margin-bottom:20px}
+  .points-banner .big{font-size:34px;font-weight:800}
+  .reward-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .reward-card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px;text-align:center;transition:all .25s;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end}
+  .reward-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--pink-300)}
+  .reward-card.has-bg{color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.55)}
+  .reward-card.has-bg::before{content:"";position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+  .reward-card.has-bg>*{position:relative;z-index:1}
+  .reward-card .r-icon{font-size:30px}
+  .reward-card h4{font-size:13px;color:var(--pink-600);margin:5px 0}
+  .reward-card.has-bg h4{color:#fff}
+  .reward-card .cost{font-size:12px;color:var(--pink-400);font-weight:700;margin-bottom:8px}
+  .reward-card.has-bg .cost{color:#fff}
+  .reward-card .cost .coin{color:var(--yellow)}
+
+  /* ===== 日历 ===== */
+  .calendar{background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:20px;padding:22px}
+  .cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  .cal-head h3{font-size:18px;color:var(--pink-600)}
+  .cal-nav{display:flex;gap:8px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .cal-dow{text-align:center;font-size:12px;font-weight:700;color:var(--ink-soft);padding:6px 0}
+  .cal-day{aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;background:var(--pink-50);border:2px solid transparent;position:relative;cursor:default}
+  .cal-day.empty{background:transparent}
+  .cal-day.today{border-color:var(--pink-400);font-weight:800;color:var(--pink-600)}
+  .cal-day.checked{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;font-weight:700}
+  .cal-day .dots{position:absolute;bottom:4px;font-size:9px}
+
+  /* ===== 进度图表 ===== */
+  .chart-bar-wrap{display:flex;align-items:flex-end;gap:14px;height:220px;padding:14px 0;border-bottom:2px solid var(--line)}
+  .chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+  .chart-bar{width:70%;background:linear-gradient(180deg,var(--pink-300),var(--pink-500));border-radius:10px 10px 0 0;min-height:6px;transition:height .6s;position:relative}
+  .chart-bar-label{font-size:11px;color:var(--ink-soft);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+
+  .ring-wrap{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+  .ring-item{text-align:center}
+  .ring{width:120px;height:120px}
+
+  /* ===== 流水列表 ===== */
+  .flow-list{display:flex;flex-direction:column;gap:8px}
+  .flow-item{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 18px}
+  .flow-item .f-icon{font-size:24px;width:36px;text-align:center}
+  .flow-item .f-info{flex:1}
+  .flow-item .f-info h5{font-size:14px;color:var(--ink)}
+  .flow-item .f-info p{font-size:12px;color:var(--ink-soft)}
+  .flow-item .f-amount{font-weight:800;font-size:16px}
+  .flow-item .f-amount.in{color:var(--green)}
+  .flow-item .f-amount.out{color:var(--pink-500)}
+  .flow-item .f-amount.earn{color:var(--yellow)}
+
+  /* ===== 成就 ===== */
+  .ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .ach-card{background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:18px;padding:18px;text-align:center;transition:all .25s;position:relative}
+  .ach-card.unlocked{background:linear-gradient(135deg,#fffbe6,#fff5cc);border-color:var(--yellow)}
+  .ach-card.locked{opacity:.5;filter:grayscale(.7)}
+  .ach-card .ach-icon{font-size:40px}
+  .ach-card h4{font-size:13px;color:var(--ink);margin:8px 0 4px}
+  .ach-card p{font-size:11px;color:var(--ink-soft)}
+  .ach-card .badge{position:absolute;top:8px;right:8px;font-size:16px}
+
+  /* ===== 设置 ===== */
+  .setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px dashed var(--pink-100)}
+  .setting-row:last-child{border-bottom:none}
+  .setting-row .s-label{font-weight:600;font-size:14px}
+  .setting-row .s-desc{font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+  .empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft)}
+  .empty-state .emoji{font-size:50px;display:block;margin-bottom:10px}
+
+  .toast{position:fixed;top:24px;right:24px;background:#fff;border:2px solid var(--pink-300);border-radius:14px;padding:14px 20px;box-shadow:var(--shadow-lg);z-index:9999;font-size:14px;font-weight:600;color:var(--pink-600);transform:translateX(420px);transition:transform .4s;display:flex;align-items:center;gap:10px}
+  .toast.show{transform:translateX(0)}
+
+  .modal-mask{position:fixed;inset:0;background:rgba(90,61,74,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9998}
+  .modal-mask.show{display:flex}
+  .modal{background:#fff;border-radius:22px;padding:28px;width:90%;max-width:440px;box-shadow:var(--shadow-lg);animation:fadein .3s}
+  .modal h3{font-size:18px;color:var(--pink-600);margin-bottom:10px}
+  .modal p{font-size:14px;color:var(--ink-soft);margin-bottom:18px;line-height:1.6}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end}
+
+  .tag{display:inline-block;background:var(--pink-100);color:var(--pink-600);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+  .section-tip{font-size:12px;color:var(--ink-soft);background:var(--pink-50);border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;gap:8px;align-items:center}
+
+  @media(max-width:880px){
+    .desktop-grid,.form-row,.form-row-3{grid-template-columns:1fr}
+    .sidebar{width:64px}.brand-name,.brand-sub,.nav-item span:not(.nav-icon),.nav-group-label,.sidebar-footer{display:none}
+    .nav-item{justify-content:center}
+    .main{padding:18px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 左侧导航 ============ -->
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-logo">🌸</span>
+    <div>
+      <div class="brand-name">不冰的工作台</div>
+      <div class="brand-sub">bunny workbench</div>
+    </div>
+  </div>
+
+  <div class="nav-group-label">✨ 核心</div>
+  <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面主页</span></div>
+  <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标界面</span></div>
+  <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡界面</span></div>
+  <div class="nav-item" data-panel="savings"><span class="nav-icon">🐷</span><span>目前存钱数额</span></div>
+  <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>点数兑换奖励</span></div>
+
+  <div class="nav-group-label">💕 辅助</div>
+  <div class="nav-item" data-panel="calendar"><span class="nav-icon">📅</span><span>打卡日历</span></div>
+  <div class="nav-item" data-panel="progress"><span class="nav-icon">📈</span><span>目标进度</span></div>
+  <div class="nav-item" data-panel="history"><span class="nav-icon">📜</span><span>兑换记录</span></div>
+  <div class="nav-item" data-panel="ach"><span class="nav-icon">🏆</span><span>成就墙</span></div>
+  <div class="nav-item" data-panel="settings"><span class="nav-icon">⚙️</span><span>设置中心</span></div>
+
+  <div class="sidebar-footer">Made with 💖<br>数据本地留存 · 2026</div>
+</aside>
+
+<!-- ============ 主区域 ============ -->
+<main class="main">
+
+  <!-- ===== 1. 桌面主页 ===== -->
+  <section class="panel active" id="panel-home">
+    <div class="hero">
+      <div class="hero-greet" id="greetText">下午好，今天也要加油呀～</div>
+      <div class="hero-time" id="clockTime">00:00:00</div>
+      <div class="hero-date" id="clockDate">2026年7月29日 星期三</div>
+      <div class="hero-points">🌟 当前点数：<span id="heroPoints">0</span></div>
+    </div>
+
+    <div class="desktop-grid">
+      <div>
+        <div class="quote-box">
+          <div class="quote-mark">"</div>
+          <div class="quote-zh" id="quoteZh">加载中…</div>
+          <div class="quote-en" id="quoteEn">loading…</div>
+          <div class="quote-foot">🌷 每次打开都是新的鼓励 · 第 <span id="dayIndex">1</span> 条</div>
+        </div>
+        <div class="quick-stats">
+          <div class="stat-mini"><div class="num" id="qsGoals">0</div><div class="lbl">🎯 待办任务</div></div>
+          <div class="stat-mini"><div class="num" id="qsStreak">0</div><div class="lbl">🔥 连续打卡</div></div>
+          <div class="stat-mini"><div class="num" id="qsSavings">¥0</div><div class="lbl">🐷 已存金额</div></div>
+          <div class="stat-mini"><div class="num" id="qsRedeemed">0</div><div class="lbl">🎁 已兑换</div></div>
+        </div>
+      </div>
+      <div class="today-checkin">
+        <div class="card-title">✅ 今日打卡任务</div>
+        <div id="homeCheckinList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2. 目标界面（一次性任务） ===== -->
+  <section class="panel" id="panel-goals">
+    <div class="page-head"><span class="ico">🎯</span><div><h1>目标界面</h1><p>创建一次性任务，完成后领取你设定的奖励点数</p></div></div>
+    <div class="section-tip">💡 这里是<b>一次性任务</b>：完成即领取奖励点数，任务结束。需要每天重复打卡请去「打卡界面」</div>
+    <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openGoalModal()">➕ 新建一次性任务</button></div>
+    <div id="goalGrid" class="goal-grid"></div>
+  </section>
+
+  <!-- ===== 3. 打卡界面（多次打卡任务） ===== -->
+  <section class="panel" id="panel-checkin">
+    <div class="page-head"><span class="ico">✅</span><div><h1>打卡界面</h1><p>创建多次打卡任务，每打卡一次累计进度，达成目标次数领取奖励</p></div></div>
+    <div class="section-tip">💡 这里是<b>多次打卡任务</b>：每天可打卡一次，累计达到目标次数后领取奖励点数</div>
+    <div class="card">
+      <div class="card-title">📊 打卡概览</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciToday">0/0</div><div class="lbl">今日完成</div></div>
+        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciStreak">0</div><div class="lbl">🔥 连续天数</div></div>
+        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciTotal">0</div><div class="lbl">累计打卡</div></div>
+        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciPoints">0</div><div class="lbl">🌟 我的点数</div></div>
+      </div>
+    </div>
+    <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openTaskModal()">➕ 新建打卡任务</button></div>
+    <div class="card">
+      <div class="card-title">📋 我的打卡任务</div>
+      <div class="checkin-list" id="checkinList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 4. 目前存钱数额 ===== -->
+  <section class="panel" id="panel-savings">
+    <div class="page-head"><span class="ico">🐷</span><div><h1>目前存钱数额</h1><p>把零花钱存进小猪罐，看着它慢慢变胖</p></div></div>
+    <div class="savings-hero">
+      <div class="savings-label">🐷 我的存钱罐余额</div>
+      <div class="savings-amount" id="savingsAmount">¥0.00</div>
+      <div class="savings-actions">
+        <button class="btn btn-ghost" onclick="openSavingModal('in')">💰 存入</button>
+        <button class="btn btn-ghost" onclick="openSavingModal('out')">💸 取出</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧾 存钱流水记录</div>
+      <div class="flow-list" id="flowFull"></div>
+    </div>
+  </section>
+
+  <!-- ===== 5. 点数兑换奖励 ===== -->
+  <section class="panel" id="panel-redeem">
+    <div class="page-head"><span class="ico">🎁</span><div><h1>点数兑换奖励</h1><p>用打卡攒的点数，换一份小确幸</p></div></div>
+    <div class="points-banner">
+      <div>
+        <div style="font-size:14px;opacity:.9">我的点数余额</div>
+        <div class="big" id="redeemPoints">0 🌟</div>
+      </div>
+      <button class="btn btn-ghost" onclick="openRewardModal()">➕ 添加自定义奖励</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🎁 奖励商店</div>
+      <div class="reward-grid" id="rewardGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== 6. 打卡日历 ===== -->
+  <section class="panel" id="panel-calendar">
+    <div class="page-head"><span class="ico">📅</span><div><h1>打卡日历</h1><p>看看你坚持的每一天</p></div></div>
+    <div class="calendar">
+      <div class="cal-head">
+        <h3 id="calTitle">2026年7月</h3>
+        <div class="cal-nav">
+          <button class="btn btn-ghost btn-sm" onclick="changeMonth(-1)">◀ 上月</button>
+          <button class="btn btn-ghost btn-sm" onclick="changeMonth(0)">今月</button>
+          <button class="btn btn-ghost btn-sm" onclick="changeMonth(1)">下月 ▶</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calDow"></div>
+      <div class="cal-grid" id="calGrid" style="margin-top:6px"></div>
+      <div style="display:flex;gap:16px;margin-top:16px;font-size:12px;color:var(--ink-soft)">
+        <span>🟪 已打卡</span><span>⬜ 未打卡</span><span>🔲 今天</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. 目标进度 ===== -->
+  <section class="panel" id="panel-progress">
+    <div class="page-head"><span class="ico">📈</span><div><h1>目标进度</h1><p>可视化你的每一份努力</p></div></div>
+    <div class="card">
+      <div class="card-title">📊 各目标完成度</div>
+      <div id="progressBars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🥧 整体完成率</div>
+      <div class="ring-wrap" id="ringWrap"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📉 近 7 天打卡次数</div>
+      <div class="chart-bar-wrap" id="weekChart"></div>
+    </div>
+  </section>
+
+  <!-- ===== 8. 兑换记录（原存钱流水已合并到存钱数额界面） ===== -->
+
+  <!-- ===== 9. 兑换记录 ===== -->
+  <section class="panel" id="panel-history">
+    <div class="page-head"><span class="ico">📜</span><div><h1>兑换记录</h1><p>回顾你换过的每一份小奖励</p></div></div>
+    <div class="card">
+      <div class="card-title">📜 历史兑换</div>
+      <div class="flow-list" id="historyList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 10. 成就墙 ===== -->
+  <section class="panel" id="panel-ach">
+    <div class="page-head"><span class="ico">🏆</span><div><h1>成就墙</h1><p>收集属于你的可爱勋章</p></div></div>
+    <div class="section-tip">🎉 已解锁 <span id="achCount">0</span> / <span id="achTotal">0</span> 个成就，继续加油鸭！</div>
+    <div class="ach-grid" id="achGrid"></div>
+  </section>
+
+  <!-- ===== 11. 设置中心 ===== -->
+  <section class="panel" id="panel-settings">
+    <div class="page-head"><span class="ico">⚙️</span><div><h1>设置中心</h1><p>个性化你的工作台</p></div></div>
+    <div class="card">
+      <div class="card-title">🎨 主题颜色自定义</div>
+      <div class="section-tip" style="margin-bottom:14px">💡 选择一个预设主题，或自定义你的专属颜色。主色用于按钮和高亮，背景色用于页面底色</div>
+      <div class="setting-row">
+        <div><div class="s-label">预设主题</div><div class="s-desc">一键切换风格</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="themePresets"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">主色调</div><div class="s-desc">按钮、高亮、强调色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themePrimary" value="#ff5c9c" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themePrimaryText" value="#ff5c9c" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">背景起始色</div><div class="s-desc">页面渐变的顶部色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeBg1" value="#fff0f6" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeBg1Text" value="#fff0f6" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">背景结束色</div><div class="s-desc">页面渐变的底部色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeBg2" value="#ffd1e4" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeBg2Text" value="#ffd1e4" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row" style="border-top:2px dashed var(--pink-100);margin-top:6px;padding-top:14px">
+        <div><div class="s-label">🕐 时间框起始色</div><div class="s-desc">桌面主页时间横幅的渐变起始色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeHeroBg1" value="#ffd1e4" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeHeroBg1Text" value="#ffd1e4" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">🕐 时间框结束色</div><div class="s-desc">桌面主页时间横幅的渐变结束色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeHeroBg2" value="#ffafce" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeHeroBg2Text" value="#ffafce" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">🕐 时间框文字色</div><div class="s-desc">时间横幅里的文字颜色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeHeroText" value="#ffffff" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeHeroTextText" value="#ffffff" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="resetTheme()">↩️ 恢复默认粉色</button>
+          <button class="btn btn-pink" onclick="applyTheme()">💾 应用主题</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚙️ 点数规则</div>
+      <div class="setting-row">
+        <div><div class="s-label">每次打卡获得点数</div><div class="s-desc">完成一次打卡奖励的点数</div></div>
+        <input class="input" type="number" min="0.1" step="0.1" style="width:100px" id="setCheckinPoints">
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">连续 7 天额外奖励</div><div class="s-desc">每连续打卡 7 天的额外点数</div></div>
+        <input class="input" type="number" min="0" step="0.1" style="width:100px" id="setStreakBonus">
+      </div>
+      <div class="setting-row">
+        <div></div>
+        <button class="btn btn-pink" onclick="saveSettings()">💾 保存设置</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">💾 数据管理</div>
+      <div class="setting-row">
+        <div><div class="s-label">导出全部数据</div><div class="s-desc">下载 JSON 备份文件</div></div>
+        <button class="btn btn-ghost" onclick="exportData()">📤 导出</button>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">导入数据</div><div class="s-desc">从备份文件恢复</div></div>
+        <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">📥 导入</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label" style="color:#e85d5d">⚠️ 重置今日打卡状态</div><div class="s-desc">仅清空今日打卡，历史记录保留</div></div>
+        <button class="btn btn-danger" onclick="resetTodayCheckin()">🔄 重置今日</button>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label" style="color:#e85d5d">⚠️ 清空全部数据</div><div class="s-desc">所有目标、打卡、存钱、点数将被删除，不可恢复</div></div>
+        <button class="btn btn-danger" onclick="resetAll()">🗑️ 清空全部</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ 弹窗 ============ -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<div class="toast" id="toast"><span id="toastIcon">🎉</span><span id="toastMsg"></span></div>
+
+<script>
+/* ========================================================
+   粉色可爱工作台 · 核心逻辑
+   数据全部存储于 localStorage
+======================================================== */
+const KEY='kawaii_workbench_v1';
+const DEFAULTS={
+  goals:[],        // 一次性任务：{id,title,emoji,reward,desc,deadline,done,claimed,createdAt}
+  tasks:[],        // 多次打卡任务：{id,title,emoji,reward,target,desc,createdAt,claimed}
+  checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
+  taskCounts:{},   // { taskId: 累计打卡次数 }
+  savings:[], points:0, pointHistory:[],
+  rewards:[
+    {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
+    {id:'r2',name:'喝一杯奶茶',cost:50,icon:'🧋'},
+    {id:'r3',name:'吃一块小蛋糕',cost:80,icon:'🍰'},
+    {id:'r4',name:'买一本新书',cost:200,icon:'📖'},
+    {id:'r5',name:'睡个懒觉',cost:60,icon:'😴'},
+    {id:'r6',name:'逛一次街',cost:300,icon:'🛍️'},
+    {id:'r7',name:'买小饰品',cost:150,icon:'🎀'},
+    {id:'r8',name:'游戏一小时',cost:40,icon:'🎮'}
+  ],
+  redemptions:[], achievements:[],
+  settings:{checkinPoints:10, streakBonus:50},
+  theme:{primary:'#ff5c9c', bg1:'#fff0f6', bg2:'#ffd1e4', heroBg1:'#ffd1e4', heroBg2:'#ffafce', heroText:'#ffffff'},
+  streak:0, lastCheckinDate:null, totalCheckins:0
+};
+
+let state=load();
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(!s)return {...DEFAULTS};
+    const merged={...DEFAULTS,...s,settings:{...DEFAULTS.settings,...(s.settings||{})},theme:{...DEFAULTS.theme,...(s.theme||{})}};
+    return merged;
+  }
+  catch(e){return {...DEFAULTS};}
+}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+// 点数格式化：整数显示整数，小数显示一位（避免浮点误差）
+function fmtPts(n){n=Number(n)||0;return Number.isInteger(n)?String(n):n.toFixed(1);}
+function today(){const d=newDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function newDate(){return new Date();}
+
+/* ===== 每日激励语 60+ 条 ===== */
+const QUOTES=[
+  {zh:"今天的你，已经很棒了。",en:"You're already doing great today."},
+  {zh:"小步慢跑，也能抵达远方。",en:"Small steps still take you far."},
+  {zh:"坚持，是最温柔的力量。",en:"Persistence is the gentlest strength."},
+  {zh:"每一个清晨，都是新的开始。",en:"Every morning is a fresh start."},
+  {zh:"慢慢来，比较快。",en:"Slow and steady wins the race."},
+  {zh:"你比你想象中更勇敢。",en:"You are braver than you believe."},
+  {zh:"今天的努力，是明天的底气。",en:"Today's effort is tomorrow's confidence."},
+  {zh:"温柔且坚定，慢慢发光。",en:"Be gentle, be firm, and shine slowly."},
+  {zh:"种一棵树最好的时间是现在。",en:"The best time to plant a tree is now."},
+  {zh:"心若有光，何惧路长。",en:"With light in heart, no road is too long."},
+  {zh:"把每一天，活成喜欢的样子。",en:"Live each day the way you love."},
+  {zh:"你值得世间所有美好。",en:"You deserve all the good things."},
+  {zh:"今天也要做自己的小太阳。",en:"Be your own little sun today."},
+  {zh:"不必焦虑，慢慢积累就好。",en:"No need to worry, just keep accumulating."},
+  {zh:"成长的路上，你并不孤单。",en:"You're not alone on the path of growth."},
+  {zh:"允许自己慢慢来。",en:"Allow yourself to take it slow."},
+  {zh:"每一份坚持，都不会被辜负。",en:"No persistence is ever in vain."},
+  {zh:"做难事，必有所得。",en:"Doing hard things brings rewards."},
+  {zh:"保持热爱，奔赴山海。",en:"Keep loving, head for mountains and seas."},
+  {zh:"今日事，今日毕，不留遗憾。",en:"Finish today's work today, no regrets."},
+  {zh:"微小的进步，也是进步。",en:"Tiny progress is still progress."},
+  {zh:"你正在变成更好的自己。",en:"You're becoming a better version of yourself."},
+  {zh:"生活明朗，万物可爱。",en:"Life is bright, everything is lovely."},
+  {zh:"愿你所求皆所愿。",en:"May all you wish for come true."},
+  {zh:"不慌不忙，慢慢生长。",en:"No rush, just grow slowly."},
+  {zh:"你种下的，终会开花。",en:"What you plant will eventually bloom."},
+  {zh:"心之所向，素履以往。",en:"Follow your heart, wherever it leads."},
+  {zh:"做一个温柔且有力量的人。",en:"Be gentle and strong."},
+  {zh:"今天的汗水，是明天的星光。",en:"Today's sweat is tomorrow's starlight."},
+  {zh:"把热爱做到极致，便成了价值。",en:"Pursue what you love to the extreme."},
+  {zh:"别急，最好的总在不经意间出现。",en:"Don't rush, the best comes unexpectedly."},
+  {zh:"你只管努力，剩下的交给时间。",en:"Just do your best, leave the rest to time."},
+  {zh:"愿你的努力，配得上你的野心。",en:"May your efforts match your ambition."},
+  {zh:"今天的辛苦，是明天的礼物。",en:"Today's hard work is tomorrow's gift."},
+  {zh:"保持好奇，保持热爱。",en:"Stay curious, stay passionate."},
+  {zh:"你的温柔，自有力量。",en:"Your gentleness has its own power."},
+  {zh:"一步一个脚印，踏实而坚定。",en:"Step by step, steady and firm."},
+  {zh:"每一个不曾起舞的日子，都是辜负。",en:"Every day without dance is a day wasted."},
+  {zh:"你比你以为的，更接近梦想。",en:"You're closer to your dreams than you think."},
+  {zh:"生活总会奖励默默努力的人。",en:"Life rewards those who quietly work hard."},
+  {zh:"做自己，因为别人都有人做了。",en:"Be yourself, everyone else is taken."},
+  {zh:"眼里有光，心中有爱。",en:"Light in eyes, love in heart."},
+  {zh:"慢慢变好，才是给自己最好的礼物。",en:"Getting better slowly is the best gift to yourself."},
+  {zh:"你笑起来真好看，像春天的花一样。",en:"Your smile is as beautiful as spring flowers."},
+  {zh:"今日可爱，明日可期。",en:"Lovely today, promising tomorrow."},
+  {zh:"把简单的事做到极致，就是不简单。",en:"Doing simple things perfectly is extraordinary."},
+  {zh:"每一个今天，都值得被认真对待。",en:"Every today deserves to be taken seriously."},
+  {zh:"做自己的英雄，无需借别人的光。",en:"Be your own hero, no need to borrow others' light."},
+  {zh:"热爱可抵岁月漫长。",en:"Passion outlasts the long years."},
+  {zh:"你走的每一步，都算数。",en:"Every step you take counts."},
+  {zh:"愿你眼里有星辰，心中有山海。",en:"May you have stars in eyes, seas in heart."},
+  {zh:"今天的你，比昨天更勇敢一点点。",en:"Today you're a bit braver than yesterday."},
+  {zh:"不完美的行动，胜过完美的犹豫。",en:"Imperfect action beats perfect hesitation."},
+  {zh:"给自己一个拥抱，你辛苦了。",en:"Give yourself a hug, you've worked hard."},
+  {zh:"生活是自己的，尽情打扮它。",en:"Life is yours, dress it up."},
+  {zh:"保持善良，保持锋芒。",en:"Stay kind, stay sharp."},
+  {zh:"你的存在，本身就是一种美好。",en:"Your existence itself is a beauty."},
+  {zh:"愿你有梦为马，随处可栖。",en:"May you have dreams as your horse, rest anywhere."},
+  {zh:"一点一点，变成喜欢的样子。",en:"Bit by bit, become who you like."},
+  {zh:"世界很大，慢慢去看。",en:"The world is big, take your time to see it."},
+  {zh:"今天，也要好好爱自己呀。",en:"Today, love yourself well too."}
+];
+
+/* ===== 导航切换 ===== */
+// 使用事件委托：点击 nav-item 内任意位置（图标/文字/空白）都能切换
+document.querySelectorAll('.nav-item').forEach(item=>{
+  // 给整个 nav-item 及其所有子元素绑定点击
+  const handler=(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    const targetPanel=item.dataset.panel;
+    if(!targetPanel)return;
+    // 移除所有 active
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    // 只激活当前点击的那一个菜单和对应页面（其它全部隐藏）
+    item.classList.add('active');
+    const panelEl=document.getElementById('panel-'+targetPanel);
+    if(panelEl)panelEl.classList.add('active');
+    renderPanel(targetPanel);
+  };
+  item.addEventListener('click',handler);
+  // 显式给图标 span 也绑定，确保图标可点
+  const icon=item.querySelector('.nav-icon');
+  if(icon){
+    icon.addEventListener('click',handler);
+    icon.style.cursor='pointer';
+  }
+});
+function renderPanel(p){
+  if(p==='home')renderHome();
+  else if(p==='goals')renderGoals();
+  else if(p==='checkin')renderCheckin();
+  else if(p==='savings')renderSavings();
+  else if(p==='redeem')renderRewards();
+  else if(p==='calendar')renderCalendar();
+  else if(p==='progress')renderProgress();
+  else if(p==='history')renderHistory();
+  else if(p==='ach')renderAchievements();
+  else if(p==='settings')renderSettings();
+}
+
+/* ===== Toast & Modal ===== */
+function toast(msg,icon='🎉'){
+  const t=document.getElementById('toast');
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(window._toastT);
+  window._toastT=setTimeout(()=>t.classList.remove('show'),2600);
+}
+function openModal(html){
+  document.getElementById('modalBox').innerHTML=html;
+  document.getElementById('modalMask').classList.add('show');
+}
+function closeModal(){document.getElementById('modalMask').classList.remove('show');}
+document.getElementById('modalMask').addEventListener('click',e=>{if(e.target.id==='modalMask')closeModal();});
+
+/* ===== 时钟 ===== */
+function tick(){
+  const d=newDate();
+  const h=String(d.getHours()).padStart(2,'0');
+  const m=String(d.getMinutes()).padStart(2,'0');
+  const s=String(d.getSeconds()).padStart(2,'0');
+  document.getElementById('clockTime').textContent=`${h}:${m}:${s}`;
+  const wk=['日','一','二','三','四','五','六'];
+  document.getElementById('clockDate').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${wk[d.getDay()]}`;
+  // 问候语在初始化时随机选取，tick 不再覆盖（见 randomGreet）
+}
+setInterval(tick,1000);tick();
+
+/* ===== 时间框上方随机励志语录（中文） ===== */
+let lastGreetIdx=-1;
+function randomGreet(){
+  if(typeof QUOTES==='undefined'||QUOTES.length===0)return;
+  let idx;
+  if(QUOTES.length<=1){idx=0;}
+  else{ do{ idx=Math.floor(Math.random()*QUOTES.length); }while(idx===lastGreetIdx); }
+  lastGreetIdx=idx;
+  document.getElementById('greetText').textContent=QUOTES[idx].zh;
+}
+randomGreet(); // 初始化随机一句
+
+/* ===== 每日激励语（按日期种子） ===== */
+let lastQuoteIdx=-1; // 记录上次显示的语录，避免连续重复
+function dailyQuote(){
+  // 每次打开/刷新都随机抽一条，避免连续重复
+  let idx;
+  if(QUOTES.length<=1){idx=0;}
+  else{
+    do{ idx=Math.floor(Math.random()*QUOTES.length); }while(idx===lastQuoteIdx);
+  }
+  lastQuoteIdx=idx;
+  return {...QUOTES[idx],index:idx+1};
+}
+
+/* ===== 打卡与连续天数 ===== */
+function calcStreak(){
+  const dates=Object.keys(state.checkins).filter(k=>state.checkins[k].length>0).sort();
+  if(dates.length===0)return 0;
+  let streak=0;let cur=newDate(today());
+  for(;;){
+    const k=cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+    if(state.checkins[k]&&state.checkins[k].length>0){
+      streak++;cur.setDate(cur.getDate()-1);
+    }else{
+      // 如果今天还没打卡，允许从昨天开始算
+      if(streak===0&&k===today()){
+        cur.setDate(cur.getDate()-1);continue;
+      }
+      break;
+    }
+  }
+  return streak;
+}
+function totalCheckins(){
+  return Object.values(state.checkins).reduce((s,a)=>s+a.length,0);
+}
+
+/* ===== 桌面主页 ===== */
+function renderHome(){
+  const q=dailyQuote();
+  document.getElementById('quoteZh').textContent=q.zh;
+  document.getElementById('quoteEn').textContent=q.en;
+  document.getElementById('dayIndex').textContent=q.index;
+  document.getElementById('heroPoints').textContent=fmtPts(state.points);
+  // 待办任务 = 未完成的一次性任务 + 未领取的打卡任务
+  const pendingGoals=state.goals.filter(g=>!g.claimed).length;
+  const pendingTasks=state.tasks.filter(t=>!t.claimed).length;
+  document.getElementById('qsGoals').textContent=pendingGoals+pendingTasks;
+  document.getElementById('qsStreak').textContent=calcStreak();
+  const bal=savingsBalance();
+  document.getElementById('qsSavings').textContent='¥'+bal.toFixed(0);
+  document.getElementById('qsRedeemed').textContent=state.redemptions.length;
+  // 今日打卡任务列表（只显示打卡任务，不含一次性任务）
+  const list=document.getElementById('homeCheckinList');
+  const activeTasks=state.tasks.filter(t=>!t.claimed);
+  if(activeTasks.length===0){
+    list.innerHTML='<div class="empty-state"><span class="emoji">🌱</span>还没有打卡任务，去「打卡界面」创建一个吧～</div>';
+    return;
+  }
+  const td=today();const todayCis=state.checkins[td]||[];
+  list.innerHTML=activeTasks.map(t=>{
+    const done=todayCis.some(c=>c.taskId===t.id);
+    return `<div class="checkin-goal-row"><div class="gname">${t.emoji} ${t.title}</div>
+      <button class="btn ${done?'btn-done':'btn-pink'} btn-sm" ${done?'disabled':''} onclick="doCheckin('${t.id}')">${done?'✓ 已打卡':'打卡'}</button></div>`;
+  }).join('');
+}
+
+/* ===== 目标界面：一次性任务 ===== */
+function openGoalModal(){
+  openModal(`<h3>➕ 新建一次性任务</h3>
+    <div style="margin-bottom:14px"><label class="label">任务名称</label><input class="input" id="goalTitle" placeholder="例如：写完毕业论文"></div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">任务图标</label>
+        <select class="select" id="goalEmoji">
+          <option>📚</option><option>🏃</option><option>💧</option><option>🧘</option><option>✍️</option>
+          <option>🎨</option><option>🎸</option><option>💻</option><option>🌱</option><option>⭐</option>
+          <option>🍎</option><option>🛌</option><option>🦷</option><option>🚭</option><option>🏆</option><option>📦</option>
+        </select>
+      </div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" min="0.1" step="0.1" value="50" placeholder="完成后可领取的点数"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">截止日期（选填）</label><input class="input" id="goalDeadline" type="date"></div>
+      <div><label class="label">备注（选填）</label><input class="input" id="goalDesc" placeholder="为什么想完成它？"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addGoal()">🌈 创建任务</button></div>`);
+}
+function addGoal(){
+  const title=document.getElementById('goalTitle').value.trim();
+  if(!title){toast('请填写任务名称～','😊');return;}
+  const reward=Math.max(0.1,parseFloat(document.getElementById('goalReward').value)||50);
+  const g={
+    id:uid(),title,
+    emoji:document.getElementById('goalEmoji').value,
+    reward,
+    deadline:document.getElementById('goalDeadline').value,
+    desc:document.getElementById('goalDesc').value,
+    done:false,       // 是否标记完成
+    claimed:false,    // 是否已领取奖励
+    createdAt:Date.now()
+  };
+  state.goals.push(g);save();renderGoals();closeModal();toast('一次性任务创建成功！🎉','🌟');
+}
+function renderGoals(){
+  const grid=document.getElementById('goalGrid');
+  if(state.goals.length===0){
+    grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><span class="emoji">🎯</span>还没有一次性任务，先在上面创建一个吧～</div>';return;
+  }
+  grid.innerHTML=state.goals.map(g=>{
+    return `<div class="goal-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <span class="emoji">${g.emoji}</span>
+        ${g.claimed?'<span class="tag" style="background:#e8f8e8;color:#5cb85c">✓ 已领奖</span>':(g.done?'<span class="tag" style="background:#fff5cc;color:#cc9900">⏳ 待领奖</span>':'<span class="tag">进行中</span>')}
+      </div>
+      <h3>${g.title}</h3>
+      <div class="desc">${g.desc||'—'}</div>
+      <div style="margin:10px 0;padding:10px 12px;background:var(--pink-50);border-radius:12px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:var(--ink-soft)">🎁 奖励点数</span>
+        <span style="font-size:18px;font-weight:800;color:var(--pink-500)">${fmtPts(g.reward)} 🌟</span>
+      </div>
+      ${g.deadline?`<div class="goal-deadline">⏰ 截止：${g.deadline}</div>`:''}
+      <div class="goal-actions">
+        ${g.claimed
+          ? '<button class="btn btn-done btn-sm" disabled>任务已完成</button>'
+          : (g.done
+              ? `<button class="btn btn-pink btn-sm" onclick="claimGoal('${g.id}')">🎁 领取 ${fmtPts(g.reward)} 点</button>`
+              : `<button class="btn btn-pink btn-sm" onclick="completeGoal('${g.id}')">✓ 标记完成</button>`
+            )
+        }
+        <button class="btn btn-ghost btn-sm" onclick="editGoal('${g.id}')">✏️ 编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="delGoal('${g.id}')" style="margin-left:auto">删除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function completeGoal(id){
+  const g=state.goals.find(x=>x.id===id);if(!g||g.done)return;
+  g.done=true;save();renderGoals();
+  toast('任务已完成！记得领取奖励哦～🎉','🏆');
+}
+function claimGoal(id){
+  const g=state.goals.find(x=>x.id===id);if(!g||g.claimed)return;
+  if(!g.done){toast('请先标记任务完成～','😊');return;}
+  g.claimed=true;
+  state.points+=g.reward;
+  state.pointHistory.push({id:uid(),type:'earn',amount:g.reward,note:`一次性任务：${g.title}`,date:Date.now()});
+  save();checkAchievements();renderGoals();
+  toast(`领取成功！+${fmtPts(g.reward)} 点数！🎉`,'🎁');
+}
+function editGoal(id){
+  const g=state.goals.find(x=>x.id===id);if(!g)return;
+  const emojis=['📚','🏃','💧','🧘','✍️','🎨','🎸','💻','🌱','⭐','🍎','🛌','🦷','🚭','🏆','📦'];
+  openModal(`<h3>✏️ 编辑一次性任务</h3>
+    <div style="margin-bottom:14px"><label class="label">任务名称</label><input class="input" id="goalTitle" value="${g.title.replace(/"/g,'&quot;')}" placeholder="例如：写完毕业论文"></div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">任务图标</label>
+        <select class="select" id="goalEmoji">
+          ${emojis.map(e=>`<option ${e===g.emoji?'selected':''}>${e}</option>`).join('')}
+        </select>
+      </div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" min="0.1" step="0.1" value="${g.reward}" placeholder="完成后可领取的点数"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">截止日期（选填）</label><input class="input" id="goalDeadline" type="date" value="${g.deadline||''}"></div>
+      <div><label class="label">备注（选填）</label><input class="input" id="goalDesc" value="${(g.desc||'').replace(/"/g,'&quot;')}" placeholder="为什么想完成它？"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveEditGoal('${id}')">💾 保存修改</button></div>`);
+}
+function saveEditGoal(id){
+  const g=state.goals.find(x=>x.id===id);if(!g)return;
+  const title=document.getElementById('goalTitle').value.trim();
+  if(!title){toast('请填写任务名称～','😊');return;}
+  g.title=title;
+  g.emoji=document.getElementById('goalEmoji').value;
+  g.reward=Math.max(0.1,parseFloat(document.getElementById('goalReward').value)||g.reward);
+  g.deadline=document.getElementById('goalDeadline').value;
+  g.desc=document.getElementById('goalDesc').value;
+  save();renderGoals();closeModal();toast('任务已更新！✏️','🌟');
+}
+function delGoal(id){
+  openModal(`<h3>删除任务？</h3><p>删除后不可恢复，确定要删除这个任务吗？</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmDelGoal('${id}')">确定删除</button></div>`);
+}
+function confirmDelGoal(id){
+  state.goals=state.goals.filter(g=>g.id!==id);save();renderGoals();closeModal();toast('已删除','🗑️');
+}
+
+/* ===== 打卡界面：多次打卡任务 ===== */
+function openTaskModal(){
+  openModal(`<h3>➕ 新建打卡任务</h3>
+    <div style="margin-bottom:14px"><label class="label">任务名称</label><input class="input" id="taskTitle" placeholder="例如：每天喝8杯水"></div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">任务图标</label>
+        <select class="select" id="taskEmoji">
+          <option>💧</option><option>📚</option><option>🏃</option><option>🧘</option><option>✍️</option>
+          <option>🎨</option><option>🎸</option><option>💻</option><option>🌱</option><option>⭐</option>
+          <option>🍎</option><option>🛌</option><option>🦷</option><option>🚭</option>
+        </select>
+      </div>
+      <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="21" placeholder="打卡多少次算达成"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" min="0.1" step="0.1" value="100" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" placeholder="为什么想坚持它？"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addTask()">🌈 创建打卡任务</button></div>`);
+}
+function addTask(){
+  const title=document.getElementById('taskTitle').value.trim();
+  if(!title){toast('请填写任务名称～','😊');return;}
+  const target=Math.max(1,+document.getElementById('taskTarget').value||21);
+  const reward=Math.max(0.1,parseFloat(document.getElementById('taskReward').value)||100);
+  const t={
+    id:uid(),title,
+    emoji:document.getElementById('taskEmoji').value,
+    target,reward,
+    desc:document.getElementById('taskDesc').value,
+    claimed:false,
+    createdAt:Date.now()
+  };
+  state.tasks.push(t);
+  state.taskCounts[t.id]=0;
+  save();renderCheckin();closeModal();toast('打卡任务创建成功！🎉','🌟');
+}
+function doCheckin(taskId){
+  const t=state.tasks.find(x=>x.id===taskId);if(!t||t.claimed)return;
+  const td=today();
+  if(!state.checkins[td])state.checkins[td]=[];
+  if(state.checkins[td].some(c=>c.taskId===taskId)){toast('今天这个任务已经打过卡啦～','😊');return;}
+  state.checkins[td].push({taskId,time:Date.now()});
+  // 累计该任务打卡次数
+  state.taskCounts[taskId]=(state.taskCounts[taskId]||0)+1;
+  const count=state.taskCounts[taskId];
+  const reached=count>=t.target;
+  // 每次打卡也给一点小点数鼓励（用设置的 checkinPoints）
+  const pts=state.settings.checkinPoints;
+  state.points+=pts;
+  state.pointHistory.push({id:uid(),type:'earn',amount:pts,note:`打卡：${t.title}`,date:Date.now()});
+  // 连续天数奖励
+  const streak=calcStreak()+1;
+  let msg=`打卡成功！${t.title} ${count}/${t.target} 次 +${fmtPts(pts)} 点🌟`;
+  if(streak>0&&streak%7===0){
+    const bonus=state.settings.streakBonus;
+    state.points+=bonus;
+    state.pointHistory.push({id:uid(),type:'bonus',amount:bonus,note:`连续打卡${streak}天奖励`,date:Date.now()});
+    msg+=` · 连续${streak}天额外 +${fmtPts(bonus)}！🔥`;
+  }
+  if(reached&&!t.claimed){
+    msg+=` · 目标达成，可领取 ${fmtPts(t.reward)} 点奖励！🎁`;
+  }
+  save();checkAchievements();
+  renderHome();renderCheckin();
+  toast(msg,reached?'🎁':'✅');
+}
+function claimTask(id){
+  const t=state.tasks.find(x=>x.id===id);if(!t||t.claimed)return;
+  const count=state.taskCounts[id]||0;
+  if(count<t.target){toast(`还差 ${t.target-count} 次才能领奖哦～`,'😊');return;}
+  t.claimed=true;
+  state.points+=t.reward;
+  state.pointHistory.push({id:uid(),type:'earn',amount:t.reward,note:`打卡任务达成：${t.title}`,date:Date.now()});
+  save();checkAchievements();renderCheckin();
+  toast(`领取成功！+${fmtPts(t.reward)} 点数！🎉`,'🎁');
+}
+function editTask(id){
+  const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  const emojis=['💧','📚','🏃','🧘','✍️','🎨','🎸','💻','🌱','⭐','🍎','🛌','🦷','🚭'];
+  openModal(`<h3>✏️ 编辑打卡任务</h3>
+    <div style="margin-bottom:14px"><label class="label">任务名称</label><input class="input" id="taskTitle" value="${t.title.replace(/"/g,'&quot;')}" placeholder="例如：每天喝8杯水"></div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">任务图标</label>
+        <select class="select" id="taskEmoji">
+          ${emojis.map(e=>`<option ${e===t.emoji?'selected':''}>${e}</option>`).join('')}
+        </select>
+      </div>
+      <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="${t.target}" placeholder="打卡多少次算达成"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" min="0.1" step="0.1" value="${t.reward}" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" value="${(t.desc||'').replace(/"/g,'&quot;')}" placeholder="为什么想坚持它？"></div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveEditTask('${id}')">💾 保存修改</button></div>`);
+}
+function saveEditTask(id){
+  const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  const title=document.getElementById('taskTitle').value.trim();
+  if(!title){toast('请填写任务名称～','😊');return;}
+  t.title=title;
+  t.emoji=document.getElementById('taskEmoji').value;
+  t.target=Math.max(1,+document.getElementById('taskTarget').value||t.target);
+  t.reward=Math.max(0.1,parseFloat(document.getElementById('taskReward').value)||t.reward);
+  t.desc=document.getElementById('taskDesc').value;
+  save();renderCheckin();closeModal();toast('打卡任务已更新！✏️','🌟');
+}
+function delTask(id){
+  openModal(`<h3>删除打卡任务？</h3><p>删除后不可恢复，确定要删除这个打卡任务吗？</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmDelTask('${id}')">确定删除</button></div>`);
+}
+function confirmDelTask(id){
+  state.tasks=state.tasks.filter(t=>t.id!==id);
+  delete state.taskCounts[id];
+  save();renderCheckin();closeModal();toast('已删除','🗑️');
+}
+function renderCheckin(){
+  const td=today();const tc=state.checkins[td]||[];
+  const activeTasks=state.tasks.filter(t=>!t.claimed);
+  document.getElementById('ciToday').textContent=`${tc.length}/${activeTasks.length}`;
+  document.getElementById('ciStreak').textContent=calcStreak();
+  document.getElementById('ciTotal').textContent=totalCheckins();
+  document.getElementById('ciPoints').textContent=fmtPts(state.points);
+  const list=document.getElementById('checkinList');
+  if(state.tasks.length===0){
+    list.innerHTML='<div class="empty-state"><span class="emoji">🌱</span>还没有打卡任务，先在上面创建一个吧～</div>';return;
+  }
+  list.innerHTML=state.tasks.map(t=>{
+    const count=state.taskCounts[t.id]||0;
+    const pct=Math.min(100,Math.round(count/t.target*100));
+    const reached=count>=t.target;
+    const doneToday=tc.some(c=>c.taskId===t.id);
+    let action;
+    if(t.claimed){
+      action='<button class="btn btn-done btn-sm" disabled>✓ 已领奖</button>';
+    }else if(reached){
+      action=`<button class="btn btn-pink btn-sm" onclick="claimTask('${t.id}')">🎁 领取 ${fmtPts(t.reward)} 点</button>`;
+    }else{
+      action=`<button class="btn ${doneToday?'btn-done':'btn-pink'} btn-sm" ${doneToday?'disabled':''} onclick="doCheckin('${t.id}')">${doneToday?'✓ 今日已打卡':'立即打卡'}</button>`;
+    }
+    return `<div class="checkin-card ${doneToday?'done':''}" style="${t.claimed?'opacity:.7':''}">
+      <span class="big-emoji">${t.emoji}</span>
+      <div class="info">
+        <h4>${t.title} ${t.claimed?'<span class="tag" style="background:#e8f8e8;color:#5cb85c">已完成</span>':''}</h4>
+        <p>${t.desc||'坚持下去，你一定可以的～'}</p>
+        <div class="progress-wrap" style="margin-top:8px">
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <div class="progress-text"><span>${count} / ${t.target} 次</span><span>🎁 ${fmtPts(t.reward)} 🌟</span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        ${action}
+        <button class="btn btn-ghost btn-sm" onclick="editTask('${t.id}')">✏️ 编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="delTask('${t.id}')">删除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 存钱 ===== */
+function savingsBalance(){return state.savings.reduce((s,r)=>s+(r.type==='in'?r.amount:-r.amount),0);}
+function openSavingModal(type){
+  const title=type==='in'?'💰 存入金额':'💸 取出金额';
+  openModal(`<h3>${title}</h3>
+    <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="savAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
+    <div style="margin-bottom:14px"><label class="label">备注</label><input class="input" id="savNote" placeholder="选填，例如：本月零花钱"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addSaving('${type}')">确定</button></div>`);
+}
+function addSaving(type){
+  const amt=parseFloat(document.getElementById('savAmt').value);
+  if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
+  const note=document.getElementById('savNote').value.trim();
+  state.savings.push({id:uid(),type,amount:amt,note:note||(type==='in'?'存入':'取出'),date:Date.now()});
+  save();renderSavings();closeModal();
+  toast(type==='in'?`存入 ¥${amt} 成功！🐷`:`取出 ¥${amt} 成功`,'💰');
+}
+function renderSavings(){
+  document.getElementById('savingsAmount').textContent='¥'+savingsBalance().toFixed(2);
+  // 渲染完整流水（原存钱流水界面内容已合并到这里）
+  const el=document.getElementById('flowFull');
+  const list=state.savings.slice().reverse();
+  if(list.length===0){el.innerHTML='<div class="empty-state"><span class="emoji">🧾</span>还没有存钱记录，点上方按钮存第一笔吧～</div>';return;}
+  el.innerHTML=list.map(r=>flowItemHTML(r.type==='in'?'💰':'💸',r.note,r.date,r.type==='in'?`+¥${r.amount}`:`-¥${r.amount}`,r.type==='in'?'in':'out')).join('');
+}
+function flowItemHTML(icon,note,date,amount,cls){
+  const d=new Date(date);
+  const ds=`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return `<div class="flow-item"><span class="f-icon">${icon}</span><div class="f-info"><h5>${note}</h5><p>${ds}</p></div><div class="f-amount ${cls}">${amount}</div></div>`;
+}
+
+/* ===== 兑换 ===== */
+function openRewardModal(){
+  openModal(`<h3>➕ 添加自定义奖励</h3>
+    <div style="margin-bottom:14px"><label class="label">奖励名称</label><input class="input" id="rwName" placeholder="例如：看一场电影"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" min="0.1" step="0.1" value="50"></div>
+      <div><label class="label">图标（无图时显示）</label>
+        <select class="select" id="rwIcon">
+          <option>🎁</option><option>🎬</option><option>🎮</option><option>🧋</option><option>🍰</option>
+          <option>🛍️</option><option>📖</option><option>🎀</option><option>🍭</option><option>💆</option>
+          <option>🎵</option><option>🏖️</option><option>📱</option><option>✨</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="label">奖励图片（选填，本地上传作为卡片背景）</label>
+      <input type="file" id="rwImgFile" accept="image/*" style="display:none" onchange="previewRewardImg(event)">
+      <div id="rwImgPreview" style="margin-top:8px;border-radius:12px;overflow:hidden;border:2px dashed var(--pink-100);min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:13px;cursor:pointer;background:var(--pink-50)" onclick="document.getElementById('rwImgFile').click()">📷 点击上传本地图片</div>
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addReward()">添加</button></div>`);
+}
+let _rewardImgData=null;
+function previewRewardImg(e){
+  const file=e.target.files[0];if(!file)return;
+  if(file.size>2*1024*1024){toast('图片太大啦，请选 2MB 以内的图片～','😢');return;}
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    _rewardImgData=ev.target.result;
+    const prev=document.getElementById('rwImgPreview');
+    prev.innerHTML=`<img src="${_rewardImgData}" style="width:100%;max-height:140px;object-fit:cover;display:block"><div style="padding:6px;font-size:12px">✓ 已选择，点击可更换</div>`;
+    prev.style.border='2px solid var(--pink-300)';
+  };
+  reader.readAsDataURL(file);
+}
+function addReward(){
+  const name=document.getElementById('rwName').value.trim();
+  if(!name){toast('请填写奖励名称～','😊');return;}
+  const cost=Math.max(0.1,parseFloat(document.getElementById('rwCost').value)||50);
+  const icon=document.getElementById('rwIcon').value;
+  const reward={id:uid(),name,cost,icon};
+  if(_rewardImgData){reward.img=_rewardImgData;}
+  state.rewards.push(reward);
+  _rewardImgData=null;
+  save();renderRewards();closeModal();toast('奖励已添加！🎁','🌟');
+}
+function redeem(id){
+  const r=state.rewards.find(x=>x.id===id);if(!r)return;
+  if(state.points<r.cost){toast(`点数不够，还差 ${fmtPts(r.cost-state.points)} 点哦～`,'😢');return;}
+  openModal(`<h3>兑换「${r.icon} ${r.name}」？</h3>
+    <p>将消耗 <b style="color:var(--pink-500)">${fmtPts(r.cost)} 点</b>，当前余额 ${fmtPts(state.points)} 点。兑换后点数将扣除，记得去享受你的奖励哦～</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">再想想</button>
+    <button class="btn btn-pink" onclick="confirmRedeem('${id}')">确定兑换</button></div>`);
+}
+function confirmRedeem(id){
+  const r=state.rewards.find(x=>x.id===id);if(!r)return;
+  state.points-=r.cost;
+  state.redemptions.push({id:uid(),rewardId:r.id,name:r.name,icon:r.icon,cost:r.cost,date:Date.now()});
+  state.pointHistory.push({id:uid(),type:'spend',amount:-r.cost,note:`兑换：${r.name}`,date:Date.now()});
+  save();renderRewards();closeModal();toast(`兑换成功！去享受 ${r.name} 吧～🎉`,'🎁');
+}
+function editReward(id){
+  const r=state.rewards.find(x=>x.id===id);if(!r)return;
+  _rewardImgData=r.img||null;
+  const emojis=['🎁','🎬','🎮','🧋','🍰','🛍️','📖','🎀','🍭','💆','🎵','🏖️','📱','✨'];
+  openModal(`<h3>✏️ 编辑奖励</h3>
+    <div style="margin-bottom:14px"><label class="label">奖励名称</label><input class="input" id="rwName" value="${r.name.replace(/"/g,'&quot;')}" placeholder="例如：看一场电影"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" min="0.1" step="0.1" value="${r.cost}"></div>
+      <div><label class="label">图标（无图时显示）</label>
+        <select class="select" id="rwIcon">
+          ${emojis.map(e=>`<option ${e===r.icon?'selected':''}>${e}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="label">奖励图片（选填，本地上传作为卡片背景）</label>
+      <input type="file" id="rwImgFile" accept="image/*" style="display:none" onchange="previewRewardImg(event)">
+      <div id="rwImgPreview" style="margin-top:8px;border-radius:12px;overflow:hidden;border:2px dashed var(--pink-100);min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:13px;cursor:pointer;background:var(--pink-50)" onclick="document.getElementById('rwImgFile').click()">
+        ${r.img?`<img src="${r.img}" style="width:100%;max-height:140px;object-fit:cover;display:block"><div style="padding:6px;font-size:12px">✓ 当前图片，点击可更换</div>`:'📷 点击上传本地图片'}
+      </div>
+      ${r.img?'<div style="margin-top:6px"><button class="btn btn-danger btn-sm" onclick="_rewardImgData=null;document.getElementById(\'rwImgPreview\').innerHTML=\'📷 点击上传本地图片\';document.getElementById(\'rwImgPreview\').style.border=\'2px dashed var(--pink-100)\'">🗑️ 移除图片</button></div>':''}
+    </div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveEditReward('${id}')">💾 保存修改</button></div>`);
+}
+function saveEditReward(id){
+  const r=state.rewards.find(x=>x.id===id);if(!r)return;
+  const name=document.getElementById('rwName').value.trim();
+  if(!name){toast('请填写奖励名称～','😊');return;}
+  r.name=name;
+  r.cost=Math.max(0.1,parseFloat(document.getElementById('rwCost').value)||r.cost);
+  r.icon=document.getElementById('rwIcon').value;
+  if(_rewardImgData){r.img=_rewardImgData;}
+  else{delete r.img;}
+  _rewardImgData=null;
+  save();renderRewards();closeModal();toast('奖励已更新！✏️','🌟');
+}
+function delReward(id){
+  state.rewards=state.rewards.filter(r=>r.id!==id);save();renderRewards();toast('奖励已删除','🗑️');
+}
+function renderRewards(){
+  document.getElementById('redeemPoints').textContent=fmtPts(state.points)+' 🌟';
+  const grid=document.getElementById('rewardGrid');
+  if(state.rewards.length===0){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><span class="emoji">🎁</span>还没有奖励，添加一个吧～</div>';return;}
+  grid.innerHTML=state.rewards.map(r=>{
+    const can=state.points>=r.cost;
+    const hasBg=!!r.img;
+    const bgStyle=hasBg?`background-image:url('${r.img}')`:'';
+    return `<div class="reward-card ${hasBg?'has-bg':''}" style="${bgStyle}">
+      ${hasBg?'':`<div class="r-icon">${r.icon}</div>`}
+      <h4>${r.name}</h4>
+      <div class="cost"><span class="coin">🌟</span> ${fmtPts(r.cost)} 点</div>
+      <button class="btn ${can?'btn-pink':'btn-ghost'} btn-sm" style="width:100%;margin-bottom:4px;padding:5px 8px;font-size:11px" ${can?'':'disabled'} onclick="redeem('${r.id}')">${can?'立即兑换':'点数不足'}</button>
+      <button class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:4px;padding:5px 8px;font-size:11px" onclick="editReward('${r.id}')">✏️ 编辑</button>
+      <button class="btn btn-danger btn-sm" style="width:100%;padding:5px 8px;font-size:11px" onclick="delReward('${r.id}')">删除</button>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 日历 ===== */
+let calYear,calMonth;
+function renderCalendar(){
+  if(!calYear){const d=newDate();calYear=d.getFullYear();calMonth=d.getMonth();}
+  const dow=['日','一','二','三','四','五','六'];
+  document.getElementById('calDow').innerHTML=dow.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  document.getElementById('calTitle').textContent=`${calYear}年${calMonth+1}月`;
+  const first=new Date(calYear,calMonth,1);
+  const days=new Date(calYear,calMonth+1,0).getDate();
+  const startDow=first.getDay();
+  const todayStr=today();
+  let html='';
+  for(let i=0;i<startDow;i++)html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cis=state.checkins[ds]||[];
+    const checked=cis.length>0;
+    const isToday=ds===todayStr;
+    let cls='cal-day';
+    if(checked)cls+=' checked';
+    if(isToday)cls+=' today';
+    html+=`<div class="${cls}">${d}<div class="dots">${checked?'·'.repeat(Math.min(cis.length,3)):''}</div></div>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+}
+function changeMonth(n){
+  if(n===0){const d=newDate();calYear=d.getFullYear();calMonth=d.getMonth();}
+  else{calMonth+=n;if(calMonth<0){calMonth=11;calYear--}else if(calMonth>11){calMonth=0;calYear++}}
+  renderCalendar();
+}
+
+/* ===== 目标进度 ===== */
+function renderProgress(){
+  const bars=document.getElementById('progressBars');
+  // 合并展示：一次性任务（0/1）+ 打卡任务（count/target）
+  const allItems=[
+    ...state.goals.map(g=>({type:'goal',id:g.id,emoji:g.emoji,title:g.title+'（一次性）',current:g.claimed?1:0,target:1,reward:g.reward})),
+    ...state.tasks.map(t=>({type:'task',id:t.id,emoji:t.emoji,title:t.title+'（打卡）',current:Math.min(state.taskCounts[t.id]||0,t.target),target:t.target,reward:t.reward}))
+  ];
+  if(allItems.length===0){bars.innerHTML='<div class="empty-state"><span class="emoji">📈</span>还没有任务，去创建一个吧～</div>';}
+  else{
+    bars.innerHTML=allItems.map(it=>{
+      const pct=Math.min(100,Math.round(it.current/it.target*100));
+      return `<div style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px"><span>${it.emoji} ${it.title}</span><span style="color:var(--pink-500)">${pct}%</span></div>
+        <div class="progress-bar" style="height:14px"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-text"><span>${it.current} / ${it.target}</span><span>${it.target-it.current>0?`还差 ${it.target-it.current}`:'已达成 🎉'}</span></div>
+      </div>`;
+    }).join('');
+  }
+  // 整体完成率环形图
+  const ringWrap=document.getElementById('ringWrap');
+  if(allItems.length===0){ringWrap.innerHTML='<div class="empty-state">暂无数据</div>';}
+  else{
+    const total=allItems.reduce((s,it)=>s+it.target,0);
+    const done=allItems.reduce((s,it)=>s+Math.min(it.current,it.target),0);
+    const pct=total>0?Math.round(done/total*100):0;
+    const allDone=allItems.filter(it=>it.current>=it.target).length;
+    ringWrap.innerHTML=ringSVG(pct,'整体完成')+ringSVG(allItems.length?Math.round(allDone/allItems.length*100):0,'已达成任务');
+  }
+  // 近7天打卡次数
+  const wc=document.getElementById('weekChart');
+  const labels=[];const data=[];
+  for(let i=6;i>=0;i--){
+    const d=newDate();d.setDate(d.getDate()-i);
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    labels.push((d.getMonth()+1)+'/'+d.getDate());
+    data.push((state.checkins[ds]||[]).length);
+  }
+  const max=Math.max(1,...data);
+  wc.innerHTML=data.map((v,i)=>`<div class="chart-bar-col"><div style="font-size:11px;color:var(--pink-500);font-weight:700">${v}</div><div class="chart-bar" style="height:${v/max*100}%"></div><div class="chart-bar-label">${labels[i]}</div></div>`).join('');
+}
+function ringSVG(pct,label){
+  const r=50,c=2*Math.PI*r,off=c*(1-pct/100);
+  return `<div class="ring-item">
+    <svg class="ring" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="${r}" fill="none" stroke="#ffe4ee" stroke-width="12"/>
+      <circle cx="60" cy="60" r="${r}" fill="none" stroke="url(#g1)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset .8s"/>
+      <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffa6c9"/><stop offset="1" stop-color="#ff5c9c"/></linearGradient></defs>
+      <text x="60" y="60" text-anchor="middle" dy="6" font-size="22" font-weight="800" fill="#ff5c9c">${pct}%</text>
+    </svg>
+    <div style="font-size:13px;color:var(--ink-soft);margin-top:6px">${label}</div>
+  </div>`;
+}
+
+/* 存钱流水已合并到存钱数额界面，由 renderSavings 统一渲染 */
+function renderFlow(){renderSavings();}
+
+/* ===== 兑换记录 ===== */
+function renderHistory(){
+  const el=document.getElementById('historyList');
+  const list=state.redemptions.slice().reverse();
+  if(list.length===0){el.innerHTML='<div class="empty-state"><span class="emoji">📜</span>还没有兑换记录，去换一份小奖励吧～</div>';return;}
+  el.innerHTML=list.map(r=>{
+    const d=new Date(r.date);
+    const ds=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    return `<div class="flow-item"><span class="f-icon">${r.icon}</span><div class="f-info"><h5>${r.name}</h5><p>${ds}</p></div><div class="f-amount out">-${r.cost} 🌟</div></div>`;
+  }).join('');
+}
+
+/* ===== 成就 ===== */
+const ACHIEVEMENTS=[
+  {id:'first_checkin',icon:'🌱',name:'初次打卡',desc:'完成第一次打卡'},
+  {id:'streak_3',icon:'🔥',name:'三天坚持',desc:'连续打卡 3 天'},
+  {id:'streak_7',icon:'⚡',name:'一周达人',desc:'连续打卡 7 天'},
+  {id:'streak_30',icon:'🏆',name:'月度王者',desc:'连续打卡 30 天'},
+  {id:'checkin_10',icon:'✨',name:'十次打卡',desc:'累计打卡 10 次'},
+  {id:'checkin_50',icon:'🌟',name:'五十次打卡',desc:'累计打卡 50 次'},
+  {id:'checkin_100',icon:'💎',name:'百次打卡',desc:'累计打卡 100 次'},
+  {id:'first_goal',icon:'🎯',name:'目标启航',desc:'创建第一个目标'},
+  {id:'goal_done',icon:'🎉',name:'目标达成',desc:'完成一个目标'},
+  {id:'first_saving',icon:'🐷',name:'小猪起步',desc:'第一次存钱'},
+  {id:'saving_100',icon:'💰',name:'百元小富',desc:'存钱累计满 100 元'},
+  {id:'saving_1000',icon:'👑',name:'千元大户',desc:'存钱累计满 1000 元'},
+  {id:'first_redeem',icon:'🎁',name:'初次兑换',desc:'兑换第一份奖励'},
+  {id:'points_100',icon:'🌟',name:'点数小能手',desc:'累计获得 100 点数'},
+  {id:'points_500',icon:'💫',name:'点数达人',desc:'累计获得 500 点数'}
+];
+function checkAchievements(){
+  const streak=calcStreak();
+  const total=totalCheckins();
+  const totalEarned=state.pointHistory.filter(p=>p.amount>0).reduce((s,p)=>s+p.amount,0);
+  const bal=savingsBalance();
+  const conditions={
+    first_checkin:total>=1,
+    streak_3:streak>=3, streak_7:streak>=7, streak_30:streak>=30,
+    checkin_10:total>=10, checkin_50:total>=50, checkin_100:total>=100,
+    first_goal:(state.goals.length+state.tasks.length)>=1,
+    goal_done:state.goals.some(g=>g.claimed)||state.tasks.some(t=>t.claimed),
+    first_saving:state.savings.length>=1,
+    saving_100:bal>=100, saving_1000:bal>=1000,
+    first_redeem:state.redemptions.length>=1,
+    points_100:totalEarned>=100, points_500:totalEarned>=500
+  };
+  let unlocked=false;
+  Object.keys(conditions).forEach(id=>{
+    if(conditions[id]&&!state.achievements.includes(id)){
+      state.achievements.push(id);unlocked=true;
+      const ach=ACHIEVEMENTS.find(a=>a.id===id);
+      setTimeout(()=>toast(`解锁成就：${ach.icon} ${ach.name}！🎉`,'🏆'),600);
+    }
+  });
+  if(unlocked)save();
+}
+function renderAchievements(){
+  document.getElementById('achCount').textContent=state.achievements.length;
+  document.getElementById('achTotal').textContent=ACHIEVEMENTS.length;
+  document.getElementById('achGrid').innerHTML=ACHIEVEMENTS.map(a=>{
+    const unlocked=state.achievements.includes(a.id);
+    return `<div class="ach-card ${unlocked?'unlocked':'locked'}">
+      ${unlocked?'<div class="badge">✓</div>':''}
+      <div class="ach-icon">${a.icon}</div>
+      <h4>${a.name}</h4><p>${a.desc}</p>
+    </div>`;
+  }).join('');
+}
+
+/* ===== 设置 ===== */
+function renderSettings(){
+  document.getElementById('setCheckinPoints').value=state.settings.checkinPoints;
+  document.getElementById('setStreakBonus').value=state.settings.streakBonus;
+  renderThemeSettings();
+}
+function saveSettings(){
+  state.settings.checkinPoints=Math.max(0.1,parseFloat(document.getElementById('setCheckinPoints').value)||10);
+  state.settings.streakBonus=Math.max(0,parseFloat(document.getElementById('setStreakBonus').value)||50);
+  save();toast('设置已保存～','💾');
+}
+
+/* ===== 主题颜色自定义 ===== */
+const THEME_PRESETS=[
+  {name:'樱花粉',primary:'#ff5c9c',bg1:'#fff0f6',bg2:'#ffd1e4',heroBg1:'#ffd1e4',heroBg2:'#ffafce',heroText:'#ffffff',emoji:'🌸'},
+  {name:'薰衣草紫',primary:'#9b6dff',bg1:'#f5f0ff',bg2:'#e0d4ff',heroBg1:'#d9c8ff',heroBg2:'#b89aff',heroText:'#ffffff',emoji:'💜'},
+  {name:'薄荷绿',primary:'#3cb371',bg1:'#f0fff5',bg2:'#d4f5e0',heroBg1:'#b5ecc8',heroBg2:'#7ed99a',heroText:'#ffffff',emoji:'🌿'},
+  {name:'天空蓝',primary:'#4a9eff',bg1:'#f0f8ff',bg2:'#d4ecff',heroBg1:'#a8d4ff',heroBg2:'#6ab8ff',heroText:'#ffffff',emoji:'💙'},
+  {name:'蜜桃橙',primary:'#ff8c5a',bg1:'#fff5f0',bg2:'#ffe0d0',heroBg1:'#ffc4a8',heroBg2:'#ff9a70',heroText:'#ffffff',emoji:'🍑'},
+  {name:'柠檬黄',primary:'#e6a800',bg1:'#fffdf0',bg2:'#fff5cc',heroBg1:'#fff0a8',heroBg2:'#ffe070',heroText:'#5a4500',emoji:'🍋'},
+  {name:'玫瑰红',primary:'#e63946',bg1:'#fff0f1',bg2:'#ffd6da',heroBg1:'#ffb3bc',heroBg2:'#ff8a99',heroText:'#ffffff',emoji:'🌹'},
+  {name:'抹茶绿',primary:'#7a9a3a',bg1:'#f5f8ee',bg2:'#e0ebcc',heroBg1:'#d0e0a8',heroBg2:'#a8c870',heroText:'#ffffff',emoji:'🍵'},
+  {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',emoji:'☕'},
+  {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',emoji:'🌙'}
+];
+// 根据主色派生出浅色变体（用于 --pink-50/100/200/300/400）
+function shade(hex,percent){
+  hex=hex.replace('#','');
+  const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+  const f=(c)=>{const v=percent<0?c*(1+percent):c+(255-c)*percent;return Math.round(v);};
+  const to2=(n)=>n.toString(16).padStart(2,'0');
+  return '#'+to2(f(r))+to2(f(g))+to2(f(b));
+}
+function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText){
+  const root=document.documentElement;
+  root.style.setProperty('--pink-400',primary);
+  root.style.setProperty('--pink-500',primary);
+  root.style.setProperty('--pink-300',shade(primary,-0.15));
+  root.style.setProperty('--pink-600',shade(primary,-0.2));
+  root.style.setProperty('--pink-700',shade(primary,-0.35));
+  root.style.setProperty('--pink-200',shade(primary,-0.4));
+  root.style.setProperty('--pink-100',shade(primary,-0.65));
+  root.style.setProperty('--pink-50',shade(primary,-0.8));
+  root.style.setProperty('--line',shade(primary,-0.6));
+  // 文字色：暗背景用浅色，亮背景用深色
+  const isDark=isColorDark(bg1);
+  root.style.setProperty('--ink',isDark?'#f5e8ee':'#5a3d4a');
+  root.style.setProperty('--ink-soft',isDark?'#c4b0bb':'#8a6b78');
+  root.style.setProperty('--cream',isDark?'#2a2428':'#fffaf6');
+  document.body.style.background=`linear-gradient(135deg,${bg1} 0%,${bg2} 50%,${shade(bg2,-0.05)} 100%)`;
+  // 时间框颜色
+  if(heroBg1)root.style.setProperty('--hero-bg1',heroBg1);
+  if(heroBg2)root.style.setProperty('--hero-bg2',heroBg2);
+  if(heroText)root.style.setProperty('--hero-text',heroText);
+}
+function isColorDark(hex){
+  hex=hex.replace('#','');
+  const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+  // 感知亮度
+  return (0.299*r+0.587*g+0.114*b)<140;
+}
+function renderThemeSettings(){
+  const t=state.theme||DEFAULTS.theme;
+  document.getElementById('themePrimary').value=t.primary;
+  document.getElementById('themePrimaryText').value=t.primary;
+  document.getElementById('themeBg1').value=t.bg1;
+  document.getElementById('themeBg1Text').value=t.bg1;
+  document.getElementById('themeBg2').value=t.bg2;
+  document.getElementById('themeBg2Text').value=t.bg2;
+  document.getElementById('themeHeroBg1').value=t.heroBg1;
+  document.getElementById('themeHeroBg1Text').value=t.heroBg1;
+  document.getElementById('themeHeroBg2').value=t.heroBg2;
+  document.getElementById('themeHeroBg2Text').value=t.heroBg2;
+  document.getElementById('themeHeroText').value=t.heroText;
+  document.getElementById('themeHeroTextText').value=t.heroText;
+  // 预设主题按钮
+  const wrap=document.getElementById('themePresets');
+  wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
+  // 颜色选择器和文本框联动
+  const link=(colorId,textId)=>{
+    document.getElementById(colorId).addEventListener('input',e=>{document.getElementById(textId).value=e.target.value;});
+    document.getElementById(textId).addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))document.getElementById(colorId).value=e.target.value;});
+  };
+  // 避免重复绑定
+  if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');wrap.dataset.bound='1';}
+}
+function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText){
+  document.getElementById('themePrimary').value=primary;document.getElementById('themePrimaryText').value=primary;
+  document.getElementById('themeBg1').value=bg1;document.getElementById('themeBg1Text').value=bg1;
+  document.getElementById('themeBg2').value=bg2;document.getElementById('themeBg2Text').value=bg2;
+  document.getElementById('themeHeroBg1').value=heroBg1;document.getElementById('themeHeroBg1Text').value=heroBg1;
+  document.getElementById('themeHeroBg2').value=heroBg2;document.getElementById('themeHeroBg2Text').value=heroBg2;
+  document.getElementById('themeHeroText').value=heroText;document.getElementById('themeHeroTextText').value=heroText;
+  // 预览：立即应用
+  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText);
+}
+function applyTheme(){
+  const primary=document.getElementById('themePrimaryText').value.trim();
+  const bg1=document.getElementById('themeBg1Text').value.trim();
+  const bg2=document.getElementById('themeBg2Text').value.trim();
+  const heroBg1=document.getElementById('themeHeroBg1Text').value.trim();
+  const heroBg2=document.getElementById('themeHeroBg2Text').value.trim();
+  const heroText=document.getElementById('themeHeroTextText').value.trim();
+  const vals=[primary,bg1,bg2,heroBg1,heroBg2,heroText];
+  if(vals.some(v=>!/^#[0-9a-fA-F]{6}$/.test(v))){
+    toast('颜色格式不正确，请用 #RRGGBB 格式～','😢');return;
+  }
+  state.theme={primary,bg1,bg2,heroBg1,heroBg2,heroText};save();
+  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText);
+  toast('主题已应用并保存！🎨','🎨');
+}
+function resetTheme(){
+  const d=DEFAULTS.theme;
+  state.theme={...d};save();
+  document.getElementById('themePrimary').value=d.primary;document.getElementById('themePrimaryText').value=d.primary;
+  document.getElementById('themeBg1').value=d.bg1;document.getElementById('themeBg1Text').value=d.bg1;
+  document.getElementById('themeBg2').value=d.bg2;document.getElementById('themeBg2Text').value=d.bg2;
+  document.getElementById('themeHeroBg1').value=d.heroBg1;document.getElementById('themeHeroBg1Text').value=d.heroBg1;
+  document.getElementById('themeHeroBg2').value=d.heroBg2;document.getElementById('themeHeroBg2Text').value=d.heroBg2;
+  document.getElementById('themeHeroText').value=d.heroText;document.getElementById('themeHeroTextText').value=d.heroText;
+  applyThemeColors(d.primary,d.bg1,d.bg2,d.heroBg1,d.heroBg2,d.heroText);
+  toast('已恢复默认粉色主题～','🌸');
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`pinky-workbench-backup-${today()}.json`;a.click();
+  URL.revokeObjectURL(url);toast('数据已导出～','📤');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      state={...DEFAULTS,...data,settings:{...DEFAULTS.settings,...(data.settings||{})}};
+      save();toast('数据导入成功！','📥');
+      renderPanel(document.querySelector('.nav-item.active').dataset.panel);
+    }catch(err){toast('导入失败，文件格式错误','😢');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
+function resetTodayCheckin(){
+  openModal(`<h3>重置今日打卡？</h3><p>将清空今天的打卡记录（不会退还点数），历史记录保留。确定继续吗？</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmResetToday()">确定重置</button></div>`);
+}
+function confirmResetToday(){
+  const td=today();
+  const todayCis=state.checkins[td]||[];
+  // 回退每个任务的累计打卡次数
+  todayCis.forEach(c=>{if(c.taskId&&state.taskCounts[c.taskId])state.taskCounts[c.taskId]--;});
+  delete state.checkins[td];save();closeModal();
+  renderHome();renderCheckin();toast('今日打卡已重置','🔄');
+}
+function resetAll(){
+  openModal(`<h3 style="color:#e85d5d">⚠️ 清空全部数据？</h3>
+    <p>此操作将删除<b>所有</b>目标、打卡、存钱、点数、兑换记录和成就，<b>且不可恢复</b>！建议先导出备份。确定要继续吗？</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmResetAll()">我确定，全部清空</button></div>`);
+}
+function confirmResetAll(){
+  state={...DEFAULTS,rewards:DEFAULTS.rewards.map(r=>({...r}))};save();closeModal();
+  renderPanel('home');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('[data-panel="home"]').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-home').classList.add('active');
+  toast('已清空全部数据','🗑️');
+}
+
+/* ===== 初始化 ===== */
+// 启动时应用已保存的主题
+(function(){const t=state.theme||DEFAULTS.theme;if(t)applyThemeColors(t.primary,t.bg1,t.bg2,t.heroBg1,t.heroBg2,t.heroText);})();
+checkAchievements();
+renderHome();
+</script>
+</body>
+</html>
