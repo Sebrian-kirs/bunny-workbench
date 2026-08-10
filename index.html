@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌸 不冰的工作台 · Bunny Workbench</title>
+<title>❄️ 不冰的工作台 · Zayne Workbench</title>
 <style>
   :root{
-    --pink-50:#fff5f8; --pink-100:#ffe4ee; --pink-200:#ffc9dd; --pink-300:#ffa6c9;
-    --pink-400:#ff7eb3; --pink-500:#ff5c9c; --pink-600:#f04080; --pink-700:#cc2f66;
-    --cream:#fffaf6; --ink:#5a3d4a; --ink-soft:#8a6b78; --line:#ffd6e6;
+    --pink-50:#eef4fb; --pink-100:#dae8f5; --pink-200:#bcd6ee; --pink-300:#9bc4e6;
+    --pink-400:#6a9fd8; --pink-500:#4a7cb8; --pink-600:#3a6ba8; --pink-700:#2d5485;
+    --cream:#f8fbff; --ink:#3d4a5a; --ink-soft:#6a7b8e; --line:#bcd6ee;
     --green:#7ed957; --yellow:#ffd84d; --blue:#7ec8ff; --purple:#c89bff;
-    --shadow:0 8px 24px rgba(255,92,156,.12); --shadow-lg:0 14px 40px rgba(255,92,156,.18);
+    --shadow:0 8px 24px rgba(74,124,184,.12); --shadow-lg:0 14px 40px rgba(74,124,184,.18);
     --radius:18px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{
     font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",-apple-system,"Segoe UI",sans-serif;
-    background:linear-gradient(135deg,#fff0f6 0%,#ffe1ec 50%,#ffd1e4 100%);
+    background:linear-gradient(135deg,#eef4fb 0%,#dfeaf5 50%,#d4e4f4 100%);
     color:var(--ink);min-height:100vh;display:flex;overflow:hidden;
   }
   ::-webkit-scrollbar{width:8px;height:8px}
@@ -53,7 +53,7 @@
 
   /* ===== 主区域 ===== */
   .main{flex:1;height:100vh;overflow-y:auto;padding:28px 36px}
-  .panel{display:none;animation:fadein .4s ease}
+  .panel{display:none;animation:fadein .4s ease;position:relative}
   .panel.active{display:block}
   @keyframes fadein{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
@@ -71,15 +71,24 @@
     background:linear-gradient(135deg,var(--hero-bg1,#ffd1e4),var(--hero-bg2,#ffafce));border-radius:26px;padding:34px;color:var(--hero-text,#fff);
     box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:22px;
   }
-  .hero::before{content:"🌸";position:absolute;font-size:120px;opacity:.18;right:-10px;top:-30px;transform:rotate(15deg)}
-  .hero::after{content:"✨";position:absolute;font-size:40px;right:30px;bottom:20px;opacity:.5}
+  .hero::before{content:"❄️";position:absolute;font-size:120px;opacity:.18;right:-10px;top:-30px;transform:rotate(15deg)}
+  .hero::after{content:"🧊";position:absolute;font-size:40px;right:30px;bottom:20px;opacity:.5}
+  .hero-avatar{position:absolute;right:20px;bottom:20px;width:70px;height:70px;border-radius:50%;border:3px solid rgba(255,255,255,.5);box-shadow:0 4px 12px rgba(0,0,0,.15);object-fit:cover;background:#fff;z-index:2}
+
+  /* ===== 黎深 3D 装饰图 ===== */
+  .zayne-bg-decor{position:fixed;pointer-events:none;z-index:0;opacity:.12;filter:blur(1px);right:-40px;bottom:-20px;width:320px;height:auto;border-radius:30px;object-fit:contain;display:none}
+  #panel-home.active ~ .zayne-bg-decor{display:block}
+  .zayne-quote-decor{position:absolute;right:10px;bottom:10px;width:85px;height:85px;border-radius:14px;object-fit:cover;opacity:.72;pointer-events:none;box-shadow:0 4px 14px rgba(74,124,184,.18)}
+  .zayne-panel-decor{position:absolute;right:16px;top:50%;transform:translateY(-50%);width:140px;height:auto;border-radius:16px;object-fit:cover;opacity:.18;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:0}
+  .zayne-card-decor{position:absolute;right:14px;bottom:10px;width:100px;height:100px;border-radius:16px;object-fit:cover;opacity:.22;pointer-events:none;z-index:0}
+  .zayne-banner-decor{position:absolute;left:50%;top:0;transform:translateX(-50%);width:300px;height:auto;border-radius:0 0 18px 18px;object-fit:cover;opacity:.14;pointer-events:none;z-index:0;mask-image:linear-gradient(to bottom,rgba(0,0,0,.4),rgba(0,0,0,0))}
   .hero-greet{font-size:15px;opacity:.95;margin-bottom:6px}
   .hero-time{font-size:54px;font-weight:800;letter-spacing:1px;text-shadow:0 2px 8px rgba(0,0,0,.1);font-variant-numeric:tabular-nums}
   .hero-date{font-size:15px;opacity:.95;margin-top:4px}
   .hero-points{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.28);padding:7px 16px;border-radius:30px;margin-top:16px;font-weight:700;font-size:15px;backdrop-filter:blur(6px)}
 
   .desktop-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
-  .quote-box{background:linear-gradient(135deg,#fff,#fff5f8);border:2px dashed var(--pink-200);border-radius:20px;padding:26px;text-align:center;position:relative}
+  .quote-box{background:linear-gradient(135deg,#fff,#f0f6fc);border:2px dashed var(--pink-200);border-radius:20px;padding:26px;text-align:center;position:relative}
   .quote-mark{font-size:48px;color:var(--pink-200);line-height:0.5;font-family:Georgia,serif}
   .quote-zh{font-size:19px;font-weight:700;color:var(--pink-600);margin:14px 0 8px;line-height:1.5}
   .quote-en{font-size:14px;color:var(--ink-soft);font-style:italic;line-height:1.5}
@@ -90,7 +99,7 @@
   .stat-mini .num{font-size:26px;font-weight:800;color:var(--pink-500)}
   .stat-mini .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
 
-  .today-checkin{background:linear-gradient(135deg,#fff,#fff5f8);border:2px solid var(--line);border-radius:20px;padding:22px}
+  .today-checkin{background:linear-gradient(135deg,#fff,#f0f6fc);border:2px solid var(--line);border-radius:20px;padding:22px}
   .checkin-goal-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px dashed var(--pink-100)}
   .checkin-goal-row:last-child{border-bottom:none}
   .checkin-goal-row .gname{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
@@ -137,14 +146,14 @@
   .streak-badge{display:inline-flex;align-items:center;gap:4px;background:var(--pink-100);color:var(--pink-600);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
 
   /* ===== 存钱 ===== */
-  .savings-hero{background:linear-gradient(135deg,#ffb3d1,#ff85b3);border-radius:22px;padding:28px;color:#fff;text-align:center;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
-  .savings-hero::before{content:"🐷";position:absolute;font-size:130px;opacity:.15;right:0;bottom:-20px}
+  .savings-hero{background:linear-gradient(135deg,var(--savings-bg1,#6a9fd8),var(--savings-bg2,#3a6ba8));border-radius:22px;padding:28px;color:var(--savings-text,#fff);text-align:center;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+  .savings-hero::before{content:"❄️";position:absolute;font-size:130px;opacity:.15;right:0;bottom:-20px}
   .savings-amount{font-size:46px;font-weight:800;margin:10px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
   .savings-label{font-size:14px;opacity:.95}
   .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
 
   /* ===== 兑换 ===== */
-  .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#ffd1e4,#ffa6c9);border-radius:20px;padding:20px 26px;color:#fff;box-shadow:var(--shadow);margin-bottom:20px}
+  .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--points-bg1,#ffd1e4),var(--points-bg2,#ffa6c9));border-radius:20px;padding:20px 26px;color:var(--points-text,#fff);box-shadow:var(--shadow);margin-bottom:20px}
   .points-banner .big{font-size:34px;font-weight:800}
   .reward-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
   .reward-card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px;text-align:center;transition:all .25s;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end}
@@ -239,10 +248,10 @@
 <!-- ============ 左侧导航 ============ -->
 <aside class="sidebar">
   <div class="brand">
-    <span class="brand-logo">🌸</span>
+    <span class="brand-logo">❄️</span>
     <div>
       <div class="brand-name">不冰的工作台</div>
-      <div class="brand-sub">bunny workbench</div>
+      <div class="brand-sub">zayne workbench</div>
     </div>
   </div>
 
@@ -250,7 +259,7 @@
   <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面主页</span></div>
   <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标界面</span></div>
   <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡界面</span></div>
-  <div class="nav-item" data-panel="savings"><span class="nav-icon">🐷</span><span>目前存钱数额</span></div>
+  <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>目前存钱数额</span></div>
   <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>点数兑换奖励</span></div>
 
   <div class="nav-group-label">💕 辅助</div>
@@ -266,9 +275,13 @@
 <!-- ============ 主区域 ============ -->
 <main class="main">
 
+  <!-- 黎深 3D 背景水印（仅桌面主页可见） -->
+  <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-bg-decor" alt="" aria-hidden="true">
+
   <!-- ===== 1. 桌面主页 ===== -->
   <section class="panel active" id="panel-home">
     <div class="hero">
+      <img src="https://patchwiki.biligame.com/images/lysk/b/b3/6bda5aoatfeo5g7jywi2fcnq67lead4.png" class="hero-avatar" alt="黎深Q版" title="黎深">
       <div class="hero-greet" id="greetText">下午好，今天也要加油呀～</div>
       <div class="hero-time" id="clockTime">00:00:00</div>
       <div class="hero-date" id="clockDate">2026年7月29日 星期三</div>
@@ -278,10 +291,12 @@
     <div class="desktop-grid">
       <div>
         <div class="quote-box">
+          <!-- 黎深「雪色深流」装饰图 -->
+          <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-quote-decor" alt="" aria-hidden="true">
           <div class="quote-mark">"</div>
           <div class="quote-zh" id="quoteZh">加载中…</div>
           <div class="quote-en" id="quoteEn">loading…</div>
-          <div class="quote-foot">🌷 每次打开都是新的鼓励 · 第 <span id="dayIndex">1</span> 条</div>
+          <div class="quote-foot">❄️ 每次打开都是新的鼓励 · 第 <span id="dayIndex">1</span> 条</div>
         </div>
         <div class="quick-stats">
           <div class="stat-mini"><div class="num" id="qsGoals">0</div><div class="lbl">🎯 待办任务</div></div>
@@ -299,6 +314,8 @@
 
   <!-- ===== 2. 目标界面（一次性任务） ===== -->
   <section class="panel" id="panel-goals">
+    <!-- 黎深「拥雪见缘」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">🎯</span><div><h1>目标界面</h1><p>创建一次性任务，完成后领取你设定的奖励点数</p></div></div>
     <div class="section-tip">💡 这里是<b>一次性任务</b>：完成即领取奖励点数，任务结束。需要每天重复打卡请去「打卡界面」</div>
     <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openGoalModal()">➕ 新建一次性任务</button></div>
@@ -307,8 +324,15 @@
 
   <!-- ===== 3. 打卡界面（多次打卡任务） ===== -->
   <section class="panel" id="panel-checkin">
+    <!-- 黎深「一往而深」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">✅</span><div><h1>打卡界面</h1><p>创建多次打卡任务，每打卡一次累计进度，达成目标次数领取奖励</p></div></div>
     <div class="section-tip">💡 这里是<b>多次打卡任务</b>：每天可打卡一次，累计达到目标次数后领取奖励点数</div>
+    <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openTaskModal()">➕ 新建打卡任务</button></div>
+    <div class="card">
+      <div class="card-title">📋 我的打卡任务</div>
+      <div class="checkin-list" id="checkinList"></div>
+    </div>
     <div class="card">
       <div class="card-title">📊 打卡概览</div>
       <div style="display:flex;gap:14px;flex-wrap:wrap">
@@ -318,18 +342,19 @@
         <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciPoints">0</div><div class="lbl">🌟 我的点数</div></div>
       </div>
     </div>
-    <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openTaskModal()">➕ 新建打卡任务</button></div>
     <div class="card">
-      <div class="card-title">📋 我的打卡任务</div>
-      <div class="checkin-list" id="checkinList"></div>
+      <div class="card-title">📜 点数兑换记录</div>
+      <div class="flow-list" id="checkinHistoryList"></div>
     </div>
   </section>
 
   <!-- ===== 4. 目前存钱数额 ===== -->
   <section class="panel" id="panel-savings">
-    <div class="page-head"><span class="ico">🐷</span><div><h1>目前存钱数额</h1><p>把零花钱存进小猪罐，看着它慢慢变胖</p></div></div>
-    <div class="savings-hero">
-      <div class="savings-label">🐷 我的存钱罐余额</div>
+    <div class="page-head"><span class="ico">❄️</span><div><h1>目前存钱数额</h1><p>把零花钱存进冰晶罐，看着它慢慢凝结</p></div></div>
+    <div class="savings-hero" style="position:relative">
+      <!-- 黎深「雪色深流」装饰 -->
+      <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-card-decor" style="right:10px;bottom:8px;width:130px;height:130px;opacity:.25" alt="" aria-hidden="true">
+      <div class="savings-label">❄️ 我的冰晶罐余额</div>
       <div class="savings-amount" id="savingsAmount">¥0.00</div>
       <div class="savings-actions">
         <button class="btn btn-ghost" onclick="openSavingModal('in')">💰 存入</button>
@@ -344,6 +369,8 @@
 
   <!-- ===== 5. 点数兑换奖励 ===== -->
   <section class="panel" id="panel-redeem">
+    <!-- 黎深「一往而深」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" style="opacity:.15" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">🎁</span><div><h1>点数兑换奖励</h1><p>用打卡攒的点数，换一份小确幸</p></div></div>
     <div class="points-banner">
       <div>
@@ -360,6 +387,8 @@
 
   <!-- ===== 6. 打卡日历 ===== -->
   <section class="panel" id="panel-calendar">
+    <!-- 黎深「雪色深流」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-panel-decor" style="opacity:.12;right:10px" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">📅</span><div><h1>打卡日历</h1><p>看看你坚持的每一天</p></div></div>
     <div class="calendar">
       <div class="cal-head">
@@ -380,6 +409,8 @@
 
   <!-- ===== 7. 目标进度 ===== -->
   <section class="panel" id="panel-progress">
+    <!-- 黎深「拥雪见缘」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" style="opacity:.14" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">📈</span><div><h1>目标进度</h1><p>可视化你的每一份努力</p></div></div>
     <div class="card">
       <div class="card-title">📊 各目标完成度</div>
@@ -395,10 +426,10 @@
     </div>
   </section>
 
-  <!-- ===== 8. 兑换记录（原存钱流水已合并到存钱数额界面） ===== -->
-
   <!-- ===== 9. 兑换记录 ===== -->
   <section class="panel" id="panel-history">
+    <!-- 黎深「雪色深流」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-panel-decor" style="opacity:.13" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">📜</span><div><h1>兑换记录</h1><p>回顾你换过的每一份小奖励</p></div></div>
     <div class="card">
       <div class="card-title">📜 历史兑换</div>
@@ -408,6 +439,8 @@
 
   <!-- ===== 10. 成就墙 ===== -->
   <section class="panel" id="panel-ach">
+    <!-- 黎深「一往而深」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" style="opacity:.12" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">🏆</span><div><h1>成就墙</h1><p>收集属于你的可爱勋章</p></div></div>
     <div class="section-tip">🎉 已解锁 <span id="achCount">0</span> / <span id="achTotal">0</span> 个成就，继续加油鸭！</div>
     <div class="ach-grid" id="achGrid"></div>
@@ -465,6 +498,48 @@
           <input class="input" id="themeHeroTextText" value="#ffffff" style="width:110px;font-family:monospace">
         </div>
       </div>
+      <div class="setting-row" style="border-top:2px dashed var(--pink-100);margin-top:6px;padding-top:14px">
+        <div><div class="s-label">❄️ 存钱罐起始色</div><div class="s-desc">存钱罐区域的渐变起始色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeSavingsBg1" value="#6a9fd8" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeSavingsBg1Text" value="#6a9fd8" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">❄️ 存钱罐结束色</div><div class="s-desc">存钱罐区域的渐变结束色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeSavingsBg2" value="#3a6ba8" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeSavingsBg2Text" value="#3a6ba8" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">❄️ 存钱罐文字色</div><div class="s-desc">存钱罐区域的文字颜色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeSavingsText" value="#ffffff" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeSavingsTextText" value="#ffffff" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row" style="border-top:2px dashed var(--pink-100);margin-top:6px;padding-top:14px">
+        <div><div class="s-label">🌟 点数框起始色</div><div class="s-desc">点数余额区域的渐变起始色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themePointsBg1" value="#6a9fd8" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themePointsBg1Text" value="#6a9fd8" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">🌟 点数框结束色</div><div class="s-desc">点数余额区域的渐变结束色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themePointsBg2" value="#3a6ba8" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themePointsBg2Text" value="#3a6ba8" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s">点数余额区域的文字颜色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themePointsText" value="#ffffff" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themePointsTextText" value="#ffffff" style="width:110px;font-family:monospace">
+        </div>
+      </div>
       <div class="setting-row">
         <div></div>
         <div style="display:flex;gap:8px">
@@ -518,7 +593,6 @@
 </div>
 
 <div class="toast" id="toast"><span id="toastIcon">🎉</span><span id="toastMsg"></span></div>
-
 <script>
 /* ========================================================
    粉色可爱工作台 · 核心逻辑
@@ -543,7 +617,7 @@ const DEFAULTS={
   ],
   redemptions:[], achievements:[],
   settings:{checkinPoints:10, streakBonus:50},
-  theme:{primary:'#ff5c9c', bg1:'#fff0f6', bg2:'#ffd1e4', heroBg1:'#ffd1e4', heroBg2:'#ffafce', heroText:'#ffffff'},
+  theme:{primary:'#4a7cb8', bg1:'#eef4fb', bg2:'#d4e4f4', heroBg1:'#6a9fd8', heroBg2:'#3a6ba8', heroText:'#ffffff', savingsBg1:'#6a9fd8', savingsBg2:'#3a6ba8', savingsText:'#ffffff', pointsBg1:'#6a9fd8', pointsBg2:'#3a6ba8', pointsText:'#ffffff'},
   streak:0, lastCheckinDate:null, totalCheckins:0
 };
 
@@ -559,7 +633,6 @@ function load(){
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
-// 点数格式化：整数显示整数，小数显示一位（避免浮点误差）
 function fmtPts(n){n=Number(n)||0;return Number.isInteger(n)?String(n):n.toFixed(1);}
 function today(){const d=newDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function newDate(){return new Date();}
@@ -630,25 +703,20 @@ const QUOTES=[
 ];
 
 /* ===== 导航切换 ===== */
-// 使用事件委托：点击 nav-item 内任意位置（图标/文字/空白）都能切换
 document.querySelectorAll('.nav-item').forEach(item=>{
-  // 给整个 nav-item 及其所有子元素绑定点击
   const handler=(e)=>{
     e.preventDefault();
     e.stopPropagation();
     const targetPanel=item.dataset.panel;
     if(!targetPanel)return;
-    // 移除所有 active
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-    // 只激活当前点击的那一个菜单和对应页面（其它全部隐藏）
     item.classList.add('active');
     const panelEl=document.getElementById('panel-'+targetPanel);
     if(panelEl)panelEl.classList.add('active');
     renderPanel(targetPanel);
   };
   item.addEventListener('click',handler);
-  // 显式给图标 span 也绑定，确保图标可点
   const icon=item.querySelector('.nav-icon');
   if(icon){
     icon.addEventListener('click',handler);
@@ -656,6 +724,8 @@ document.querySelectorAll('.nav-item').forEach(item=>{
   }
 });
 function renderPanel(p){
+  const bgDec=document.querySelector('.zayne-bg-decor');
+  if(bgDec)bgDec.style.display=(p==='home')?'block':'none';
   if(p==='home')renderHome();
   else if(p==='goals')renderGoals();
   else if(p==='checkin')renderCheckin();
@@ -693,11 +763,10 @@ function tick(){
   document.getElementById('clockTime').textContent=`${h}:${m}:${s}`;
   const wk=['日','一','二','三','四','五','六'];
   document.getElementById('clockDate').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${wk[d.getDay()]}`;
-  // 问候语在初始化时随机选取，tick 不再覆盖（见 randomGreet）
 }
 setInterval(tick,1000);tick();
 
-/* ===== 时间框上方随机励志语录（中文） ===== */
+/* ===== 时间框上方随机励志语录 ===== */
 let lastGreetIdx=-1;
 function randomGreet(){
   if(typeof QUOTES==='undefined'||QUOTES.length===0)return;
@@ -707,12 +776,11 @@ function randomGreet(){
   lastGreetIdx=idx;
   document.getElementById('greetText').textContent=QUOTES[idx].zh;
 }
-randomGreet(); // 初始化随机一句
+randomGreet();
 
-/* ===== 每日激励语（按日期种子） ===== */
-let lastQuoteIdx=-1; // 记录上次显示的语录，避免连续重复
+/* ===== 每日激励语 ===== */
+let lastQuoteIdx=-1;
 function dailyQuote(){
-  // 每次打开/刷新都随机抽一条，避免连续重复
   let idx;
   if(QUOTES.length<=1){idx=0;}
   else{
@@ -732,7 +800,6 @@ function calcStreak(){
     if(state.checkins[k]&&state.checkins[k].length>0){
       streak++;cur.setDate(cur.getDate()-1);
     }else{
-      // 如果今天还没打卡，允许从昨天开始算
       if(streak===0&&k===today()){
         cur.setDate(cur.getDate()-1);continue;
       }
@@ -752,7 +819,6 @@ function renderHome(){
   document.getElementById('quoteEn').textContent=q.en;
   document.getElementById('dayIndex').textContent=q.index;
   document.getElementById('heroPoints').textContent=fmtPts(state.points);
-  // 待办任务 = 未完成的一次性任务 + 未领取的打卡任务
   const pendingGoals=state.goals.filter(g=>!g.claimed).length;
   const pendingTasks=state.tasks.filter(t=>!t.claimed).length;
   document.getElementById('qsGoals').textContent=pendingGoals+pendingTasks;
@@ -760,7 +826,6 @@ function renderHome(){
   const bal=savingsBalance();
   document.getElementById('qsSavings').textContent='¥'+bal.toFixed(0);
   document.getElementById('qsRedeemed').textContent=state.redemptions.length;
-  // 今日打卡任务列表（只显示打卡任务，不含一次性任务）
   const list=document.getElementById('homeCheckinList');
   const activeTasks=state.tasks.filter(t=>!t.claimed);
   if(activeTasks.length===0){
@@ -806,8 +871,7 @@ function addGoal(){
     reward,
     deadline:document.getElementById('goalDeadline').value,
     desc:document.getElementById('goalDesc').value,
-    done:false,       // 是否标记完成
-    claimed:false,    // 是否已领取奖励
+    done:false, claimed:false,
     createdAt:Date.now()
   };
   state.goals.push(g);save();renderGoals();closeModal();toast('一次性任务创建成功！🎉','🌟');
@@ -942,15 +1006,12 @@ function doCheckin(taskId){
   if(!state.checkins[td])state.checkins[td]=[];
   if(state.checkins[td].some(c=>c.taskId===taskId)){toast('今天这个任务已经打过卡啦～','😊');return;}
   state.checkins[td].push({taskId,time:Date.now()});
-  // 累计该任务打卡次数
   state.taskCounts[taskId]=(state.taskCounts[taskId]||0)+1;
   const count=state.taskCounts[taskId];
   const reached=count>=t.target;
-  // 每次打卡也给一点小点数鼓励（用设置的 checkinPoints）
   const pts=state.settings.checkinPoints;
   state.points+=pts;
   state.pointHistory.push({id:uid(),type:'earn',amount:pts,note:`打卡：${t.title}`,date:Date.now()});
-  // 连续天数奖励
   const streak=calcStreak()+1;
   let msg=`打卡成功！${t.title} ${count}/${t.target} 次 +${fmtPts(pts)} 点🌟`;
   if(streak>0&&streak%7===0){
@@ -1058,6 +1119,19 @@ function renderCheckin(){
       </div>
     </div>`;
   }).join('');
+  const histEl=document.getElementById('checkinHistoryList');
+  if(histEl){
+    const list=state.redemptions.slice().reverse();
+    if(list.length===0){
+      histEl.innerHTML='<div class="empty-state" style="padding:20px"><span class="emoji">📜</span>还没有兑换记录</div>';
+    }else{
+      histEl.innerHTML=list.map(r=>{
+        const d=new Date(r.date);
+        const ds=`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        return `<div class="flow-item"><span class="f-icon">${r.icon}</span><div class="f-info"><h5>${r.name}</h5><p>${ds}</p></div><div class="f-amount out">-${fmtPts(r.cost)} 🌟</div></div>`;
+      }).join('');
+    }
+  }
 }
 
 /* ===== 存钱 ===== */
@@ -1080,7 +1154,6 @@ function addSaving(type){
 }
 function renderSavings(){
   document.getElementById('savingsAmount').textContent='¥'+savingsBalance().toFixed(2);
-  // 渲染完整流水（原存钱流水界面内容已合并到这里）
   const el=document.getElementById('flowFull');
   const list=state.savings.slice().reverse();
   if(list.length===0){el.innerHTML='<div class="empty-state"><span class="emoji">🧾</span>还没有存钱记录，点上方按钮存第一笔吧～</div>';return;}
@@ -1246,7 +1319,6 @@ function changeMonth(n){
 /* ===== 目标进度 ===== */
 function renderProgress(){
   const bars=document.getElementById('progressBars');
-  // 合并展示：一次性任务（0/1）+ 打卡任务（count/target）
   const allItems=[
     ...state.goals.map(g=>({type:'goal',id:g.id,emoji:g.emoji,title:g.title+'（一次性）',current:g.claimed?1:0,target:1,reward:g.reward})),
     ...state.tasks.map(t=>({type:'task',id:t.id,emoji:t.emoji,title:t.title+'（打卡）',current:Math.min(state.taskCounts[t.id]||0,t.target),target:t.target,reward:t.reward}))
@@ -1262,7 +1334,6 @@ function renderProgress(){
       </div>`;
     }).join('');
   }
-  // 整体完成率环形图
   const ringWrap=document.getElementById('ringWrap');
   if(allItems.length===0){ringWrap.innerHTML='<div class="empty-state">暂无数据</div>';}
   else{
@@ -1272,7 +1343,6 @@ function renderProgress(){
     const allDone=allItems.filter(it=>it.current>=it.target).length;
     ringWrap.innerHTML=ringSVG(pct,'整体完成')+ringSVG(allItems.length?Math.round(allDone/allItems.length*100):0,'已达成任务');
   }
-  // 近7天打卡次数
   const wc=document.getElementById('weekChart');
   const labels=[];const data=[];
   for(let i=6;i>=0;i--){
@@ -1297,7 +1367,6 @@ function ringSVG(pct,label){
   </div>`;
 }
 
-/* 存钱流水已合并到存钱数额界面，由 renderSavings 统一渲染 */
 function renderFlow(){renderSavings();}
 
 /* ===== 兑换记录 ===== */
@@ -1383,18 +1452,18 @@ function saveSettings(){
 
 /* ===== 主题颜色自定义 ===== */
 const THEME_PRESETS=[
-  {name:'樱花粉',primary:'#ff5c9c',bg1:'#fff0f6',bg2:'#ffd1e4',heroBg1:'#ffd1e4',heroBg2:'#ffafce',heroText:'#ffffff',emoji:'🌸'},
-  {name:'薰衣草紫',primary:'#9b6dff',bg1:'#f5f0ff',bg2:'#e0d4ff',heroBg1:'#d9c8ff',heroBg2:'#b89aff',heroText:'#ffffff',emoji:'💜'},
-  {name:'薄荷绿',primary:'#3cb371',bg1:'#f0fff5',bg2:'#d4f5e0',heroBg1:'#b5ecc8',heroBg2:'#7ed99a',heroText:'#ffffff',emoji:'🌿'},
-  {name:'天空蓝',primary:'#4a9eff',bg1:'#f0f8ff',bg2:'#d4ecff',heroBg1:'#a8d4ff',heroBg2:'#6ab8ff',heroText:'#ffffff',emoji:'💙'},
-  {name:'蜜桃橙',primary:'#ff8c5a',bg1:'#fff5f0',bg2:'#ffe0d0',heroBg1:'#ffc4a8',heroBg2:'#ff9a70',heroText:'#ffffff',emoji:'🍑'},
-  {name:'柠檬黄',primary:'#e6a800',bg1:'#fffdf0',bg2:'#fff5cc',heroBg1:'#fff0a8',heroBg2:'#ffe070',heroText:'#5a4500',emoji:'🍋'},
-  {name:'玫瑰红',primary:'#e63946',bg1:'#fff0f1',bg2:'#ffd6da',heroBg1:'#ffb3bc',heroBg2:'#ff8a99',heroText:'#ffffff',emoji:'🌹'},
-  {name:'抹茶绿',primary:'#7a9a3a',bg1:'#f5f8ee',bg2:'#e0ebcc',heroBg1:'#d0e0a8',heroBg2:'#a8c870',heroText:'#ffffff',emoji:'🍵'},
-  {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',emoji:'☕'},
-  {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',emoji:'🌙'}
+  {name:'黎深·冰',primary:'#4a7cb8',bg1:'#eef4fb',bg2:'#d4e4f4',heroBg1:'#6a9fd8',heroBg2:'#3a6ba8',heroText:'#ffffff',savingsBg1:'#6a9fd8',savingsBg2:'#3a6ba8',savingsText:'#ffffff',pointsBg1:'#6a9fd8',pointsBg2:'#3a6ba8',pointsText:'#ffffff',emoji:'❄️'},
+  {name:'樱花粉',primary:'#ff5c9c',bg1:'#fff0f6',bg2:'#ffd1e4',heroBg1:'#ffd1e4',heroBg2:'#ffafce',heroText:'#ffffff',savingsBg1:'#ffb3d1',savingsBg2:'#ff85b3',savingsText:'#ffffff',pointsBg1:'#ffd1e4',pointsBg2:'#ffa6c9',pointsText:'#ffffff',emoji:'🌸'},
+  {name:'薰衣草紫',primary:'#9b6dff',bg1:'#f5f0ff',bg2:'#e0d4ff',heroBg1:'#d9c8ff',heroBg2:'#b89aff',heroText:'#ffffff',savingsBg1:'#c8b0ff',savingsBg2:'#9a7aff',savingsText:'#ffffff',pointsBg1:'#d9c8ff',pointsBg2:'#b89aff',pointsText:'#ffffff',emoji:'💜'},
+  {name:'薄荷绿',primary:'#3cb371',bg1:'#f0fff5',bg2:'#d4f5e0',heroBg1:'#b5ecc8',heroBg2:'#7ed99a',heroText:'#ffffff',savingsBg1:'#7ed99a',savingsBg2:'#4a9d6e',savingsText:'#ffffff',pointsBg1:'#b5ecc8',pointsBg2:'#7ed99a',pointsText:'#ffffff',emoji:'🌿'},
+  {name:'天空蓝',primary:'#4a9eff',bg1:'#f0f8ff',bg2:'#d4ecff',heroBg1:'#a8d4ff',heroBg2:'#6ab8ff',heroText:'#ffffff',savingsBg1:'#7eb8ff',savingsBg2:'#4a90e8',savingsText:'#ffffff',pointsBg1:'#a8d4ff',pointsBg2:'#6ab8ff',pointsText:'#ffffff',emoji:'💙'},
+  {name:'蜜桃橙',primary:'#ff8c5a',bg1:'#fff5f0',bg2:'#ffe0d0',heroBg1:'#ffc4a8',heroBg2:'#ff9a70',heroText:'#ffffff',savingsBg1:'#ffaa80',savingsBg2:'#ff7744',savingsText:'#ffffff',pointsBg1:'#ffc4a8',pointsBg2:'#ff9a70',pointsText:'#ffffff',emoji:'🍑'},
+  {name:'柠檬黄',primary:'#e6a800',bg1:'#fffdf0',bg2:'#fff5cc',heroBg1:'#fff0a8',heroBg2:'#ffe070',heroText:'#5a4500',savingsBg1:'#ffe880',savingsBg2:'#e6c000',savingsText:'#5a4500',pointsBg1:'#fff0a8',pointsBg2:'#ffe070',pointsText:'#5a4500',emoji:'🍋'},
+  {name:'玫瑰红',primary:'#e63946',bg1:'#fff0f1',bg2:'#ffd6da',heroBg1:'#ffb3bc',heroBg2:'#ff8a99',heroText:'#ffffff',savingsBg1:'#ff8a99',savingsBg2:'#e05060',savingsText:'#ffffff',pointsBg1:'#ffb3bc',pointsBg2:'#ff8a99',pointsText:'#ffffff',emoji:'🌹'},
+  {name:'抹茶绿',primary:'#7a9a3a',bg1:'#f5f8ee',bg2:'#e0ebcc',heroBg1:'#d0e0a8',heroBg2:'#a8c870',heroText:'#ffffff',savingsBg1:'#a8c870',savingsBg2:'#6a8a2a',savingsText:'#ffffff',pointsBg1:'#d0e0a8',pointsBg2:'#a8c870',pointsText:'#ffffff',emoji:'🍵'},
+  {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',savingsBg1:'#c8a878',savingsBg2:'#9a7040',savingsText:'#ffffff',pointsBg1:'#e0cbb0',pointsBg2:'#c8a878',pointsText:'#ffffff',emoji:'☕'},
+  {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',savingsBg1:'#4a3a6a',savingsBg2:'#2e2245',savingsText:'#f0e8ff',pointsBg1:'#4a3a6a',pointsBg2:'#2e2245',pointsText:'#f0e8ff',emoji:'🌙'}
 ];
-// 根据主色派生出浅色变体（用于 --pink-50/100/200/300/400）
 function shade(hex,percent){
   hex=hex.replace('#','');
   const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
@@ -1402,7 +1471,7 @@ function shade(hex,percent){
   const to2=(n)=>n.toString(16).padStart(2,'0');
   return '#'+to2(f(r))+to2(f(g))+to2(f(b));
 }
-function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText){
+function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText){
   const root=document.documentElement;
   root.style.setProperty('--pink-400',primary);
   root.style.setProperty('--pink-500',primary);
@@ -1413,21 +1482,24 @@ function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText){
   root.style.setProperty('--pink-100',shade(primary,-0.65));
   root.style.setProperty('--pink-50',shade(primary,-0.8));
   root.style.setProperty('--line',shade(primary,-0.6));
-  // 文字色：暗背景用浅色，亮背景用深色
   const isDark=isColorDark(bg1);
   root.style.setProperty('--ink',isDark?'#f5e8ee':'#5a3d4a');
   root.style.setProperty('--ink-soft',isDark?'#c4b0bb':'#8a6b78');
   root.style.setProperty('--cream',isDark?'#2a2428':'#fffaf6');
   document.body.style.background=`linear-gradient(135deg,${bg1} 0%,${bg2} 50%,${shade(bg2,-0.05)} 100%)`;
-  // 时间框颜色
   if(heroBg1)root.style.setProperty('--hero-bg1',heroBg1);
   if(heroBg2)root.style.setProperty('--hero-bg2',heroBg2);
   if(heroText)root.style.setProperty('--hero-text',heroText);
+  if(savingsBg1)root.style.setProperty('--savings-bg1',savingsBg1);
+  if(savingsBg2)root.style.setProperty('--savings-bg2',savingsBg2);
+  if(savingsText)root.style.setProperty('--savings-text',savingsText);
+  if(pointsBg1)root.style.setProperty('--points-bg1',pointsBg1);
+  if(pointsBg2)root.style.setProperty('--points-bg2',pointsBg2);
+  if(pointsText)root.style.setProperty('--points-text',pointsText);
 }
 function isColorDark(hex){
   hex=hex.replace('#','');
   const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
-  // 感知亮度
   return (0.299*r+0.587*g+0.114*b)<140;
 }
 function renderThemeSettings(){
@@ -1444,26 +1516,40 @@ function renderThemeSettings(){
   document.getElementById('themeHeroBg2Text').value=t.heroBg2;
   document.getElementById('themeHeroText').value=t.heroText;
   document.getElementById('themeHeroTextText').value=t.heroText;
-  // 预设主题按钮
+  document.getElementById('themeSavingsBg1').value=t.savingsBg1||t.heroBg1||'#6a9fd8';
+  document.getElementById('themeSavingsBg1Text').value=t.savingsBg1||t.heroBg1||'#6a9fd8';
+  document.getElementById('themeSavingsBg2').value=t.savingsBg2||t.heroBg2||'#3a6ba8';
+  document.getElementById('themeSavingsBg2Text').value=t.savingsBg2||t.heroBg2||'#3a6ba8';
+  document.getElementById('themeSavingsText').value=t.savingsText||'#ffffff';
+  document.getElementById('themeSavingsTextText').value=t.savingsText||'#ffffff';
+  document.getElementById('themePointsBg1').value=t.pointsBg1||t.heroBg1||'#6a9fd8';
+  document.getElementById('themePointsBg1Text').value=t.pointsBg1||t.heroBg1||'#6a9fd8';
+  document.getElementById('themePointsBg2').value=t.pointsBg2||t.heroBg2||'#3a6ba8';
+  document.getElementById('themePointsBg2Text').value=t.pointsBg2||t.heroBg2||'#3a6ba8';
+  document.getElementById('themePointsText').value=t.pointsText||'#ffffff';
+  document.getElementById('themePointsTextText').value=t.pointsText||'#ffffff';
   const wrap=document.getElementById('themePresets');
-  wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
-  // 颜色选择器和文本框联动
+  wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}','${p.savingsBg1||p.heroBg1}','${p.savingsBg2||p.heroBg2}','${p.savingsText||p.heroText}','${p.pointsBg1||p.heroBg1}','${p.pointsBg2||p.heroBg2}','${p.pointsText||p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
   const link=(colorId,textId)=>{
     document.getElementById(colorId).addEventListener('input',e=>{document.getElementById(textId).value=e.target.value;});
     document.getElementById(textId).addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))document.getElementById(colorId).value=e.target.value;});
   };
-  // 避免重复绑定
-  if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');wrap.dataset.bound='1';}
+  if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');link('themeSavingsBg1','themeSavingsBg1Text');link('themeSavingsBg2','themeSavingsBg2Text');link('themeSavingsText','themeSavingsTextText');link('themePointsBg1','themePointsBg1Text');link('themePointsBg2','themePointsBg2Text');link('themePointsText','themePointsTextText');wrap.dataset.bound='1';}
 }
-function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText){
+function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText){
   document.getElementById('themePrimary').value=primary;document.getElementById('themePrimaryText').value=primary;
   document.getElementById('themeBg1').value=bg1;document.getElementById('themeBg1Text').value=bg1;
   document.getElementById('themeBg2').value=bg2;document.getElementById('themeBg2Text').value=bg2;
   document.getElementById('themeHeroBg1').value=heroBg1;document.getElementById('themeHeroBg1Text').value=heroBg1;
   document.getElementById('themeHeroBg2').value=heroBg2;document.getElementById('themeHeroBg2Text').value=heroBg2;
   document.getElementById('themeHeroText').value=heroText;document.getElementById('themeHeroTextText').value=heroText;
-  // 预览：立即应用
-  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText);
+  document.getElementById('themeSavingsBg1').value=savingsBg1||heroBg1;document.getElementById('themeSavingsBg1Text').value=savingsBg1||heroBg1;
+  document.getElementById('themeSavingsBg2').value=savingsBg2||heroBg2;document.getElementById('themeSavingsBg2Text').value=savingsBg2||heroBg2;
+  document.getElementById('themeSavingsText').value=savingsText||heroText;document.getElementById('themeSavingsTextText').value=savingsText||heroText;
+  document.getElementById('themePointsBg1').value=pointsBg1||heroBg1;document.getElementById('themePointsBg1Text').value=pointsBg1||heroBg1;
+  document.getElementById('themePointsBg2').value=pointsBg2||heroBg2;document.getElementById('themePointsBg2Text').value=pointsBg2||heroBg2;
+  document.getElementById('themePointsText').value=pointsText||heroText;document.getElementById('themePointsTextText').value=pointsText||heroText;
+  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText);
 }
 function applyTheme(){
   const primary=document.getElementById('themePrimaryText').value.trim();
@@ -1472,12 +1558,18 @@ function applyTheme(){
   const heroBg1=document.getElementById('themeHeroBg1Text').value.trim();
   const heroBg2=document.getElementById('themeHeroBg2Text').value.trim();
   const heroText=document.getElementById('themeHeroTextText').value.trim();
-  const vals=[primary,bg1,bg2,heroBg1,heroBg2,heroText];
+  const savingsBg1=document.getElementById('themeSavingsBg1Text').value.trim();
+  const savingsBg2=document.getElementById('themeSavingsBg2Text').value.trim();
+  const savingsText=document.getElementById('themeSavingsTextText').value.trim();
+  const pointsBg1=document.getElementById('themePointsBg1Text').value.trim();
+  const pointsBg2=document.getElementById('themePointsBg2Text').value.trim();
+  const pointsText=document.getElementById('themePointsTextText').value.trim();
+  const vals=[primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText];
   if(vals.some(v=>!/^#[0-9a-fA-F]{6}$/.test(v))){
     toast('颜色格式不正确，请用 #RRGGBB 格式～','😢');return;
   }
-  state.theme={primary,bg1,bg2,heroBg1,heroBg2,heroText};save();
-  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText);
+  state.theme={primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText};save();
+  applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText);
   toast('主题已应用并保存！🎨','🎨');
 }
 function resetTheme(){
@@ -1489,8 +1581,14 @@ function resetTheme(){
   document.getElementById('themeHeroBg1').value=d.heroBg1;document.getElementById('themeHeroBg1Text').value=d.heroBg1;
   document.getElementById('themeHeroBg2').value=d.heroBg2;document.getElementById('themeHeroBg2Text').value=d.heroBg2;
   document.getElementById('themeHeroText').value=d.heroText;document.getElementById('themeHeroTextText').value=d.heroText;
-  applyThemeColors(d.primary,d.bg1,d.bg2,d.heroBg1,d.heroBg2,d.heroText);
-  toast('已恢复默认粉色主题～','🌸');
+  document.getElementById('themeSavingsBg1').value=d.savingsBg1;document.getElementById('themeSavingsBg1Text').value=d.savingsBg1;
+  document.getElementById('themeSavingsBg2').value=d.savingsBg2;document.getElementById('themeSavingsBg2Text').value=d.savingsBg2;
+  document.getElementById('themeSavingsText').value=d.savingsText;document.getElementById('themeSavingsTextText').value=d.savingsText;
+  document.getElementById('themePointsBg1').value=d.pointsBg1;document.getElementById('themePointsBg1Text').value=d.pointsBg1;
+  document.getElementById('themePointsBg2').value=d.pointsBg2;document.getElementById('themePointsBg2Text').value=d.pointsBg2;
+  document.getElementById('themePointsText').value=d.pointsText;document.getElementById('themePointsTextText').value=d.pointsText;
+  applyThemeColors(d.primary,d.bg1,d.bg2,d.heroBg1,d.heroBg2,d.heroText,d.savingsBg1,d.savingsBg2,d.savingsText,d.pointsBg1,d.pointsBg2,d.pointsText);
+  toast('已恢复默认黎深冰蓝主题～','❄️');
 }
 function exportData(){
   const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
@@ -1520,7 +1618,6 @@ function resetTodayCheckin(){
 function confirmResetToday(){
   const td=today();
   const todayCis=state.checkins[td]||[];
-  // 回退每个任务的累计打卡次数
   todayCis.forEach(c=>{if(c.taskId&&state.taskCounts[c.taskId])state.taskCounts[c.taskId]--;});
   delete state.checkins[td];save();closeModal();
   renderHome();renderCheckin();toast('今日打卡已重置','🔄');
@@ -1541,8 +1638,7 @@ function confirmResetAll(){
 }
 
 /* ===== 初始化 ===== */
-// 启动时应用已保存的主题
-(function(){const t=state.theme||DEFAULTS.theme;if(t)applyThemeColors(t.primary,t.bg1,t.bg2,t.heroBg1,t.heroBg2,t.heroText);})();
+(function(){const t=state.theme||DEFAULTS.theme;if(t)applyThemeColors(t.primary,t.bg1,t.bg2,t.heroBg1,t.heroBg2,t.heroText,t.savingsBg1,t.savingsBg2,t.savingsText,t.pointsBg1,t.pointsBg2,t.pointsText);})();
 checkAchievements();
 renderHome();
 </script>
