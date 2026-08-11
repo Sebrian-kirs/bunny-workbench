@@ -907,7 +907,7 @@ function openGoalModal(){
           <option>🍎</option><option>🛌</option><option>🦷</option><option>🚭</option><option>🏆</option><option>📦</option>
         </select>
       </div>
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" min="0.1" step="0.1" value="50" placeholder="完成后可领取的点数"></div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" step="0.1" value="50" placeholder="完成后可领取的点数"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
       <div><label class="label">截止日期（选填）</label><input class="input" id="goalDeadline" type="date"></div>
@@ -919,7 +919,7 @@ function openGoalModal(){
 function addGoal(){
   const title=document.getElementById('goalTitle').value.trim();
   if(!title){toast('请填写任务名称～','😊');return;}
-  const reward=Math.max(0.1,parseFloat(document.getElementById('goalReward').value)||50);
+  const reward=parseFloat(document.getElementById('goalReward').value);if(isNaN(reward)||reward===0){toast('请输入有效点数～','😊');return;}
   const g={
     id:uid(),title,
     emoji:document.getElementById('goalEmoji').value,
@@ -988,7 +988,7 @@ function editGoal(id){
           ${emojis.map(e=>`<option ${e===g.emoji?'selected':''}>${e}</option>`).join('')}
         </select>
       </div>
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" min="0.1" step="0.1" value="${g.reward}" placeholder="完成后可领取的点数"></div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="goalReward" type="number" step="0.1" value="${g.reward}" placeholder="完成后可领取的点数"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
       <div><label class="label">截止日期（选填）</label><input class="input" id="goalDeadline" type="date" value="${g.deadline||''}"></div>
@@ -1003,7 +1003,8 @@ function saveEditGoal(id){
   if(!title){toast('请填写任务名称～','😊');return;}
   g.title=title;
   g.emoji=document.getElementById('goalEmoji').value;
-  g.reward=Math.max(0.1,parseFloat(document.getElementById('goalReward').value)||g.reward);
+  g.reward=parseFloat(document.getElementById('goalReward').value);
+  if(isNaN(g.reward)||g.reward===0){toast('请输入有效点数～','😊');return;}
   g.deadline=document.getElementById('goalDeadline').value;
   g.desc=document.getElementById('goalDesc').value;
   save();renderGoals();closeModal();toast('任务已更新！✏️','🌟');
@@ -1032,7 +1033,7 @@ function openTaskModal(){
       <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="21" placeholder="打卡多少次算达成"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" min="0.1" step="0.1" value="100" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="100" placeholder="达成后可领取的点数"></div>
       <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" placeholder="为什么想坚持它？"></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
@@ -1041,8 +1042,8 @@ function openTaskModal(){
 function addTask(){
   const title=document.getElementById('taskTitle').value.trim();
   if(!title){toast('请填写任务名称～','😊');return;}
-  const target=Math.max(1,+document.getElementById('taskTarget').value||21);
-  const reward=Math.max(0.1,parseFloat(document.getElementById('taskReward').value)||100);
+  const target=Math.max(-9999,+document.getElementById('taskTarget').value||21);
+  const reward=parseFloat(document.getElementById('taskReward').value);if(isNaN(reward)||reward===0){toast('请输入有效点数～','😊');return;}
   const t={
     id:uid(),title,
     emoji:document.getElementById('taskEmoji').value,
@@ -1098,7 +1099,7 @@ function editTask(id){
       <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="${t.target}" placeholder="打卡多少次算达成"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" min="0.1" step="0.1" value="${t.reward}" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="${t.reward}" placeholder="达成后可领取的点数"></div>
       <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" value="${(t.desc||'').replace(/"/g,'&quot;')}" placeholder="为什么想坚持它？"></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
@@ -1110,8 +1111,9 @@ function saveEditTask(id){
   if(!title){toast('请填写任务名称～','😊');return;}
   t.title=title;
   t.emoji=document.getElementById('taskEmoji').value;
-  t.target=Math.max(1,+document.getElementById('taskTarget').value||t.target);
-  t.reward=Math.max(0.1,parseFloat(document.getElementById('taskReward').value)||t.reward);
+  t.target=Math.max(-9999,+document.getElementById('taskTarget').value||t.target);
+  t.reward=parseFloat(document.getElementById('taskReward').value);
+  if(isNaN(t.reward)||t.reward===0){toast('请输入有效点数～','😊');return;}
   t.desc=document.getElementById('taskDesc').value;
   save();renderCheckin();closeModal();toast('打卡任务已更新！✏️','🌟');
 }
@@ -1165,7 +1167,7 @@ function renderCheckin(){
       </div>
     </div>`;
   }).join('');
-  // 渲染打卡历史明细（所有已打卡的，按日期倒序）
+  // 渲染打卡历史明细（同一任务合并，显示共几次）
   const histEl=document.getElementById('checkinHistoryList');
   if(histEl){
     const allDates=Object.keys(state.checkins).sort().reverse();
@@ -1174,14 +1176,23 @@ function renderCheckin(){
     }else{
       histEl.innerHTML=allDates.map(ds=>{
         const entries=state.checkins[ds]||[];
-        return entries.map(c=>{
-          const task=state.tasks.find(t=>t.id===c.taskId);
+        // 合并同一天同一任务的打卡记录
+        const merged={};
+        entries.forEach(c=>{
+          const key=c.taskId||'unknown';
+          if(!merged[key])merged[key]={taskId:c.taskId,count:0,lastTime:c.time};
+          merged[key].count++;
+          if(c.time>merged[key].lastTime)merged[key].lastTime=c.time;
+        });
+        return Object.values(merged).map(m=>{
+          const task=state.tasks.find(t=>t.id===m.taskId);
           const name=task?task.title:'已删除的任务';
           const emoji=task?task.emoji:'❓';
-          const t=new Date(c.time);
+          const t=new Date(m.lastTime);
           const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
           const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
-          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
+          const countStr=m.count>1?` · 共 ${m.count} 次`:'';
+          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}${countStr}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
         }).join('');
       }).join('');
     }
@@ -1225,7 +1236,7 @@ function openRewardModal(){
   openModal(`<h3>➕ 添加自定义奖励</h3>
     <div style="margin-bottom:14px"><label class="label">奖励名称</label><input class="input" id="rwName" placeholder="例如：看一场电影"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" min="0.1" step="0.1" value="50"></div>
+      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" step="0.1" value="50"></div>
       <div><label class="label">图标（无图时显示）</label>
         <select class="select" id="rwIcon">
           <option>🎁</option><option>🎬</option><option>🎮</option><option>🧋</option><option>🍰</option>
@@ -1258,7 +1269,7 @@ function previewRewardImg(e){
 function addReward(){
   const name=document.getElementById('rwName').value.trim();
   if(!name){toast('请填写奖励名称～','😊');return;}
-  const cost=Math.max(0.1,parseFloat(document.getElementById('rwCost').value)||50);
+  const cost=parseFloat(document.getElementById('rwCost').value);if(isNaN(cost)||cost===0){toast('请输入有效点数～','😊');return;}
   const icon=document.getElementById('rwIcon').value;
   const reward={id:uid(),name,cost,icon};
   if(_rewardImgData){reward.img=_rewardImgData;}
@@ -1288,7 +1299,7 @@ function editReward(id){
   openModal(`<h3>✏️ 编辑奖励</h3>
     <div style="margin-bottom:14px"><label class="label">奖励名称</label><input class="input" id="rwName" value="${r.name.replace(/"/g,'&quot;')}" placeholder="例如：看一场电影"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" min="0.1" step="0.1" value="${r.cost}"></div>
+      <div><label class="label">所需点数</label><input class="input" id="rwCost" type="number" step="0.1" value="${r.cost}"></div>
       <div><label class="label">图标（无图时显示）</label>
         <select class="select" id="rwIcon">
           ${emojis.map(e=>`<option ${e===r.icon?'selected':''}>${e}</option>`).join('')}
@@ -1311,7 +1322,8 @@ function saveEditReward(id){
   const name=document.getElementById('rwName').value.trim();
   if(!name){toast('请填写奖励名称～','😊');return;}
   r.name=name;
-  r.cost=Math.max(0.1,parseFloat(document.getElementById('rwCost').value)||r.cost);
+  r.cost=parseFloat(document.getElementById('rwCost').value);
+  if(isNaN(r.cost)||r.cost===0){toast('请输入有效点数～','😊');return;}
   r.icon=document.getElementById('rwIcon').value;
   if(_rewardImgData){r.img=_rewardImgData;}
   else{delete r.img;}
@@ -1400,7 +1412,7 @@ function renderProgress(){
     const allDone=allItems.filter(it=>it.current>=it.target).length;
     ringWrap.innerHTML=ringSVG(pct,'整体完成')+ringSVG(allItems.length?Math.round(allDone/allItems.length*100):0,'已达成任务');
   }
-  // 全部打卡明细（按日期倒序）
+  // 全部打卡明细（同一任务合并，显示共几次）
   const cd=document.getElementById('allCheckinDetail');
   if(cd){
     const allDates=Object.keys(state.checkins).sort().reverse();
@@ -1409,14 +1421,23 @@ function renderProgress(){
     }else{
       cd.innerHTML=allDates.map(ds=>{
         const entries=state.checkins[ds]||[];
-        return entries.map(c=>{
-          const task=state.tasks.find(t=>t.id===c.taskId);
+        // 合并同一天同一任务的打卡记录
+        const merged={};
+        entries.forEach(c=>{
+          const key=c.taskId||'unknown';
+          if(!merged[key])merged[key]={taskId:c.taskId,count:0,lastTime:c.time};
+          merged[key].count++;
+          if(c.time>merged[key].lastTime)merged[key].lastTime=c.time;
+        });
+        return Object.values(merged).map(m=>{
+          const task=state.tasks.find(t=>t.id===m.taskId);
           const name=task?task.title:'已删除的任务';
           const emoji=task?task.emoji:'❓';
-          const t=new Date(c.time);
+          const t=new Date(m.lastTime);
           const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
           const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
-          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
+          const countStr=m.count>1?` · 共 ${m.count} 次`:'';
+          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}${countStr}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
         }).join('');
       }).join('');
     }
