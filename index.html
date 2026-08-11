@@ -20,36 +20,42 @@
     background:linear-gradient(135deg,#eef4fb 0%,#dfeaf5 50%,#d4e4f4 100%);
     color:var(--ink);min-height:100vh;display:flex;overflow:hidden;
   }
+  .nav-icon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",emoji,sans-serif}
   ::-webkit-scrollbar{width:8px;height:8px}
   ::-webkit-scrollbar-thumb{background:var(--pink-200);border-radius:8px}
   ::-webkit-scrollbar-track{background:transparent}
 
   /* ===== 左侧导航 ===== */
   .sidebar{
-    width:230px;flex-shrink:0;background:rgba(255,255,255,.7);backdrop-filter:blur(14px);
-    border-right:2px solid var(--line);padding:22px 14px;display:flex;flex-direction:column;
+    width:100px;flex-shrink:0;background:rgba(255,255,255,.78);backdrop-filter:blur(14px);
+    border-right:2px solid var(--line);padding:16px 8px;display:flex;flex-direction:column;
     height:100vh;overflow-y:auto;box-shadow:4px 0 24px rgba(255,92,156,.06);
+    align-items:center;
   }
-  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;border-bottom:2px dashed var(--pink-100);margin-bottom:14px}
-  .brand-logo{font-size:30px;animation:bounce 2.4s ease-in-out infinite}
+  .brand{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0 14px;border-bottom:2px dashed var(--pink-100);margin-bottom:12px;width:100%}
+  .brand-logo{font-size:26px;animation:bounce 2.4s ease-in-out infinite}
   @keyframes bounce{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-6px) rotate(6deg)}}
-  .brand-name{font-size:17px;font-weight:800;color:var(--pink-600);line-height:1.2}
-  .brand-sub{font-size:11px;color:var(--ink-soft);letter-spacing:.5px}
+  .brand-name{font-size:12px;font-weight:800;color:var(--pink-600);line-height:1.2;text-align:center}
+  .brand-sub{font-size:9px;color:var(--ink-soft);letter-spacing:.5px;text-align:center}
 
-  .nav-group-label{font-size:11px;color:var(--ink-soft);font-weight:700;padding:10px 12px 6px;letter-spacing:1px}
+  .nav-group-label{font-size:10px;color:var(--ink-soft);font-weight:700;padding:10px 4px 6px;letter-spacing:1.5px;text-align:center;width:100%;text-transform:uppercase;opacity:.7}
+  .nav-group-divider{width:60%;height:1px;background:var(--pink-100);margin:4px auto 6px}
   .nav-item{
-    display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;cursor:pointer;
-    font-size:14.5px;font-weight:600;color:var(--ink);transition:all .22s;margin-bottom:4px;
-    border:2px solid transparent;user-select:none;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    padding:12px 4px 10px;border-radius:16px;cursor:pointer;
+    font-size:13px;font-weight:800;color:var(--ink);transition:all .22s;margin-bottom:6px;
+    border:2px solid transparent;user-select:none;width:100%;text-align:center;min-height:70px;
+    letter-spacing:.5px;
   }
-  .nav-item:hover{background:var(--pink-50);transform:translateX(3px)}
+  .nav-item:hover{background:var(--pink-50);transform:translateY(-2px)}
   .nav-item.active{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;box-shadow:var(--shadow)}
-  .nav-icon{font-size:20px;width:26px;text-align:center;flex-shrink:0;pointer-events:auto;cursor:pointer;user-select:none}
+  .nav-icon{font-size:26px;text-align:center;flex-shrink:0;pointer-events:auto;cursor:pointer;user-select:none;line-height:1;display:block;margin-bottom:2px}
+  .nav-item span:last-child{font-size:13px;font-weight:800;display:block;margin-top:2px}
   .nav-item *{pointer-events:auto}
   .nav-item.active .nav-icon{animation:wiggle .6s ease}
   @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
 
-  .sidebar-footer{margin-top:auto;padding-top:14px;border-top:2px dashed var(--pink-100);font-size:11px;color:var(--ink-soft);text-align:center;line-height:1.6}
+  .sidebar-footer{margin-top:auto;padding-top:10px;border-top:2px dashed var(--pink-100);font-size:9px;color:var(--ink-soft);text-align:center;line-height:1.4;width:100%}
 
   /* ===== 主区域 ===== */
   .main{flex:1;height:100vh;overflow-y:auto;padding:28px 36px}
@@ -237,8 +243,12 @@
 
   @media(max-width:880px){
     .desktop-grid,.form-row,.form-row-3{grid-template-columns:1fr}
-    .sidebar{width:64px}.brand-name,.brand-sub,.nav-item span:not(.nav-icon),.nav-group-label,.sidebar-footer{display:none}
-    .nav-item{justify-content:center}
+    .sidebar{width:80px;padding:10px 4px}
+    .brand-name,.brand-sub,.sidebar-footer{display:none}
+    .nav-group-label{font-size:8px;padding:6px 2px 4px}
+    .nav-item{padding:8px 2px 6px;min-height:56px;font-size:10px;gap:3px}
+    .nav-icon{font-size:20px}
+    .nav-item span:last-child{font-size:10px}
     .main{padding:18px}
   }
 </style>
@@ -249,35 +259,35 @@
 <aside class="sidebar">
   <div class="brand">
     <span class="brand-logo">❄️</span>
-    <div>
-      <div class="brand-name">不冰的工作台</div>
-      <div class="brand-sub">zayne workbench</div>
-    </div>
+    <div class="brand-name">不冰的工作台</div>
+    <div class="brand-sub">zayne workbench</div>
   </div>
 
-  <div class="nav-group-label">✨ 核心</div>
-  <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面主页</span></div>
-  <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标界面</span></div>
-  <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡界面</span></div>
-  <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>目前存钱数额</span></div>
-  <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>点数兑换奖励</span></div>
+  <div class="nav-group-label">Keeping</div>
+  <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面</span></div>
+  <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡</span></div>
+  <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标</span></div>
+  <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>存钱</span></div>
+  <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>兑换</span></div>
 
-  <div class="nav-group-label">💕 辅助</div>
-  <div class="nav-item" data-panel="calendar"><span class="nav-icon">📅</span><span>打卡日历</span></div>
-  <div class="nav-item" data-panel="progress"><span class="nav-icon">📈</span><span>目标进度</span></div>
-  <div class="nav-item" data-panel="history"><span class="nav-icon">📜</span><span>兑换记录</span></div>
-  <div class="nav-item" data-panel="ach"><span class="nav-icon">🏆</span><span>成就墙</span></div>
-  <div class="nav-item" data-panel="settings"><span class="nav-icon">⚙️</span><span>设置中心</span></div>
+  <div class="nav-group-divider"></div>
+  <div class="nav-group-label">成就</div>
+  <div class="nav-item" data-panel="calendar"><span class="nav-icon">📅</span><span>日历</span></div>
+  <div class="nav-item" data-panel="progress"><span class="nav-icon">📈</span><span>进度</span></div>
+  <div class="nav-item" data-panel="history"><span class="nav-icon">📜</span><span>记录</span></div>
+  <div class="nav-item" data-panel="pointslog"><span class="nav-icon">🌟</span><span>点数</span></div>
+  <div class="nav-item" data-panel="ach"><span class="nav-icon">🏆</span><span>成就</span></div>
+  <div class="nav-item" data-panel="settings"><span class="nav-icon">⚙️</span><span>设置</span></div>
 
-  <div class="sidebar-footer">Made with 💖<br>数据本地留存 · 2026</div>
+  <div class="sidebar-footer">Made with 💖<br>本地留存 · 2026</div>
 </aside>
 
 <!-- ============ 主区域 ============ -->
 <main class="main">
 
   <!-- 黎深 3D 背景水印（仅桌面主页可见） -->
-  <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-bg-decor" alt="" aria-hidden="true">
-
+  <img src="https://patchwiki.biligame.com/images/lysk/4/4c/j2xr4lkmi5ok4usacxo5zq6eh788dsc.png" class="zayne-bg-decor" alt="" aria-hidden="true">
+```
   <!-- ===== 1. 桌面主页 ===== -->
   <section class="panel active" id="panel-home">
     <div class="hero">
@@ -343,7 +353,7 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-title">📜 点数兑换记录</div>
+      <div class="card-title">📜 打卡历史明细</div>
       <div class="flow-list" id="checkinHistoryList"></div>
     </div>
   </section>
@@ -421,10 +431,12 @@
       <div class="ring-wrap" id="ringWrap"></div>
     </div>
     <div class="card">
-      <div class="card-title">📉 近 7 天打卡次数</div>
-      <div class="chart-bar-wrap" id="weekChart"></div>
+      <div class="card-title">📜 全部打卡明细</div>
+      <div class="flow-list" id="allCheckinDetail"></div>
     </div>
   </section>
+
+  <!-- ===== 8. 兑换记录（原存钱流水已合并到存钱数额界面） ===== -->
 
   <!-- ===== 9. 兑换记录 ===== -->
   <section class="panel" id="panel-history">
@@ -437,7 +449,30 @@
     </div>
   </section>
 
-  <!-- ===== 10. 成就墙 ===== -->
+  <!-- ===== 10. 点数明细 ===== -->
+  <section class="panel" id="panel-pointslog">
+    <!-- 黎深「雪色深流」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-panel-decor" style="opacity:.13" alt="" aria-hidden="true">
+    <div class="page-head"><span class="ico">🌟</span><div><h1>点数明细</h1><p>每一点数的来龙去脉，清清楚楚</p></div></div>
+    <div class="points-banner" style="margin-bottom:20px">
+      <div>
+        <div style="font-size:14px;opacity:.9">当前点数余额</div>
+        <div class="big" id="pointslogBalance">0 🌟</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:12px;opacity:.8">累计获得</div>
+        <div style="font-size:20px;font-weight:700" id="pointslogEarned">+0 🌟</div>
+        <div style="font-size:12px;opacity:.8;margin-top:4px">累计消耗</div>
+        <div style="font-size:20px;font-weight:700" id="pointslogSpent">-0 🌟</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📜 点数变动明细</div>
+      <div class="flow-list" id="pointslogList"></div>
+    </div>
+  </section>
+
+  <!-- ===== 11. 成就墙 ===== -->
   <section class="panel" id="panel-ach">
     <!-- 黎深「一往而深」装饰 -->
     <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" style="opacity:.12" alt="" aria-hidden="true">
@@ -446,7 +481,7 @@
     <div class="ach-grid" id="achGrid"></div>
   </section>
 
-  <!-- ===== 11. 设置中心 ===== -->
+  <!-- ===== 12. 设置中心 ===== -->
   <section class="panel" id="panel-settings">
     <div class="page-head"><span class="ico">⚙️</span><div><h1>设置中心</h1><p>个性化你的工作台</p></div></div>
     <div class="card">
@@ -534,7 +569,7 @@
         </div>
       </div>
       <div class="setting-row">
-        <div><div class="s">点数余额区域的文字颜色</div></div>
+        <div><div class="s-label">🌟 点数框文字色</div><div class="s-desc">点数余额区域的文字颜色</div></div>
         <div style="display:flex;align-items:center;gap:8px">
           <input type="color" id="themePointsText" value="#ffffff" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
           <input class="input" id="themePointsTextText" value="#ffffff" style="width:110px;font-family:monospace">
@@ -546,21 +581,6 @@
           <button class="btn btn-ghost" onclick="resetTheme()">↩️ 恢复默认粉色</button>
           <button class="btn btn-pink" onclick="applyTheme()">💾 应用主题</button>
         </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">⚙️ 点数规则</div>
-      <div class="setting-row">
-        <div><div class="s-label">每次打卡获得点数</div><div class="s-desc">完成一次打卡奖励的点数</div></div>
-        <input class="input" type="number" min="0.1" step="0.1" style="width:100px" id="setCheckinPoints">
-      </div>
-      <div class="setting-row">
-        <div><div class="s-label">连续 7 天额外奖励</div><div class="s-desc">每连续打卡 7 天的额外点数</div></div>
-        <input class="input" type="number" min="0" step="0.1" style="width:100px" id="setStreakBonus">
-      </div>
-      <div class="setting-row">
-        <div></div>
-        <button class="btn btn-pink" onclick="saveSettings()">💾 保存设置</button>
       </div>
     </div>
     <div class="card">
@@ -593,6 +613,7 @@
 </div>
 
 <div class="toast" id="toast"><span id="toastIcon">🎉</span><span id="toastMsg"></span></div>
+```
 <script>
 /* ========================================================
    粉色可爱工作台 · 核心逻辑
@@ -616,7 +637,6 @@ const DEFAULTS={
     {id:'r8',name:'游戏一小时',cost:40,icon:'🎮'}
   ],
   redemptions:[], achievements:[],
-  settings:{checkinPoints:10, streakBonus:50},
   theme:{primary:'#4a7cb8', bg1:'#eef4fb', bg2:'#d4e4f4', heroBg1:'#6a9fd8', heroBg2:'#3a6ba8', heroText:'#ffffff', savingsBg1:'#6a9fd8', savingsBg2:'#3a6ba8', savingsText:'#ffffff', pointsBg1:'#6a9fd8', pointsBg2:'#3a6ba8', pointsText:'#ffffff'},
   streak:0, lastCheckinDate:null, totalCheckins:0
 };
@@ -626,13 +646,14 @@ function load(){
   try{
     const s=JSON.parse(localStorage.getItem(KEY));
     if(!s)return {...DEFAULTS};
-    const merged={...DEFAULTS,...s,settings:{...DEFAULTS.settings,...(s.settings||{})},theme:{...DEFAULTS.theme,...(s.theme||{})}};
+    const merged={...DEFAULTS,...s,theme:{...DEFAULTS.theme,...(s.theme||{})}};
     return merged;
   }
   catch(e){return {...DEFAULTS};}
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+// 点数格式化：整数显示整数，小数显示一位（避免浮点误差）
 function fmtPts(n){n=Number(n)||0;return Number.isInteger(n)?String(n):n.toFixed(1);}
 function today(){const d=newDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function newDate(){return new Date();}
@@ -703,20 +724,25 @@ const QUOTES=[
 ];
 
 /* ===== 导航切换 ===== */
+// 使用事件委托：点击 nav-item 内任意位置（图标/文字/空白）都能切换
 document.querySelectorAll('.nav-item').forEach(item=>{
+  // 给整个 nav-item 及其所有子元素绑定点击
   const handler=(e)=>{
     e.preventDefault();
     e.stopPropagation();
     const targetPanel=item.dataset.panel;
     if(!targetPanel)return;
+    // 移除所有 active
     document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    // 只激活当前点击的那一个菜单和对应页面（其它全部隐藏）
     item.classList.add('active');
     const panelEl=document.getElementById('panel-'+targetPanel);
     if(panelEl)panelEl.classList.add('active');
     renderPanel(targetPanel);
   };
   item.addEventListener('click',handler);
+  // 显式给图标 span 也绑定，确保图标可点
   const icon=item.querySelector('.nav-icon');
   if(icon){
     icon.addEventListener('click',handler);
@@ -724,6 +750,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{
   }
 });
 function renderPanel(p){
+  // 控制背景水印：仅在桌面主页显示
   const bgDec=document.querySelector('.zayne-bg-decor');
   if(bgDec)bgDec.style.display=(p==='home')?'block':'none';
   if(p==='home')renderHome();
@@ -734,6 +761,7 @@ function renderPanel(p){
   else if(p==='calendar')renderCalendar();
   else if(p==='progress')renderProgress();
   else if(p==='history')renderHistory();
+  else if(p==='pointslog')renderPointsLog();
   else if(p==='ach')renderAchievements();
   else if(p==='settings')renderSettings();
 }
@@ -763,10 +791,11 @@ function tick(){
   document.getElementById('clockTime').textContent=`${h}:${m}:${s}`;
   const wk=['日','一','二','三','四','五','六'];
   document.getElementById('clockDate').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${wk[d.getDay()]}`;
+  // 问候语在初始化时随机选取，tick 不再覆盖（见 randomGreet）
 }
 setInterval(tick,1000);tick();
 
-/* ===== 时间框上方随机励志语录 ===== */
+/* ===== 时间框上方随机励志语录（中文） ===== */
 let lastGreetIdx=-1;
 function randomGreet(){
   if(typeof QUOTES==='undefined'||QUOTES.length===0)return;
@@ -776,11 +805,12 @@ function randomGreet(){
   lastGreetIdx=idx;
   document.getElementById('greetText').textContent=QUOTES[idx].zh;
 }
-randomGreet();
+randomGreet(); // 初始化随机一句
 
-/* ===== 每日激励语 ===== */
-let lastQuoteIdx=-1;
+/* ===== 每日激励语（按日期种子） ===== */
+let lastQuoteIdx=-1; // 记录上次显示的语录，避免连续重复
 function dailyQuote(){
+  // 每次打开/刷新都随机抽一条，避免连续重复
   let idx;
   if(QUOTES.length<=1){idx=0;}
   else{
@@ -800,6 +830,7 @@ function calcStreak(){
     if(state.checkins[k]&&state.checkins[k].length>0){
       streak++;cur.setDate(cur.getDate()-1);
     }else{
+      // 如果今天还没打卡，允许从昨天开始算
       if(streak===0&&k===today()){
         cur.setDate(cur.getDate()-1);continue;
       }
@@ -819,6 +850,7 @@ function renderHome(){
   document.getElementById('quoteEn').textContent=q.en;
   document.getElementById('dayIndex').textContent=q.index;
   document.getElementById('heroPoints').textContent=fmtPts(state.points);
+  // 待办任务 = 未领取的一次性任务 + 未领取的打卡任务
   const pendingGoals=state.goals.filter(g=>!g.claimed).length;
   const pendingTasks=state.tasks.filter(t=>!t.claimed).length;
   document.getElementById('qsGoals').textContent=pendingGoals+pendingTasks;
@@ -826,6 +858,7 @@ function renderHome(){
   const bal=savingsBalance();
   document.getElementById('qsSavings').textContent='¥'+bal.toFixed(0);
   document.getElementById('qsRedeemed').textContent=state.redemptions.length;
+  // 今日打卡任务列表（只显示打卡任务，不含一次性任务）
   const list=document.getElementById('homeCheckinList');
   const activeTasks=state.tasks.filter(t=>!t.claimed);
   if(activeTasks.length===0){
@@ -839,7 +872,7 @@ function renderHome(){
       <button class="btn ${done?'btn-done':'btn-pink'} btn-sm" ${done?'disabled':''} onclick="doCheckin('${t.id}')">${done?'✓ 已打卡':'打卡'}</button></div>`;
   }).join('');
 }
-
+```
 /* ===== 目标界面：一次性任务 ===== */
 function openGoalModal(){
   openModal(`<h3>➕ 新建一次性任务</h3>
@@ -871,21 +904,24 @@ function addGoal(){
     reward,
     deadline:document.getElementById('goalDeadline').value,
     desc:document.getElementById('goalDesc').value,
-    done:false, claimed:false,
+    done:false,       // 是否标记完成
+    claimed:false,    // 是否已领取奖励
     createdAt:Date.now()
   };
   state.goals.push(g);save();renderGoals();closeModal();toast('一次性任务创建成功！🎉','🌟');
 }
 function renderGoals(){
   const grid=document.getElementById('goalGrid');
-  if(state.goals.length===0){
+  // 不显示已完成（已领奖）的一次性任务
+  const activeGoals=state.goals.filter(g=>!g.claimed);
+  if(activeGoals.length===0){
     grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><span class="emoji">🎯</span>还没有一次性任务，先在上面创建一个吧～</div>';return;
   }
-  grid.innerHTML=state.goals.map(g=>{
+  grid.innerHTML=activeGoals.map(g=>{
     return `<div class="goal-card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <span class="emoji">${g.emoji}</span>
-        ${g.claimed?'<span class="tag" style="background:#e8f8e8;color:#5cb85c">✓ 已领奖</span>':(g.done?'<span class="tag" style="background:#fff5cc;color:#cc9900">⏳ 待领奖</span>':'<span class="tag">进行中</span>')}
+        ${g.done?'<span class="tag" style="background:#fff5cc;color:#cc9900">⏳ 待领奖</span>':'<span class="tag">进行中</span>'}
       </div>
       <h3>${g.title}</h3>
       <div class="desc">${g.desc||'—'}</div>
@@ -895,12 +931,9 @@ function renderGoals(){
       </div>
       ${g.deadline?`<div class="goal-deadline">⏰ 截止：${g.deadline}</div>`:''}
       <div class="goal-actions">
-        ${g.claimed
-          ? '<button class="btn btn-done btn-sm" disabled>任务已完成</button>'
-          : (g.done
-              ? `<button class="btn btn-pink btn-sm" onclick="claimGoal('${g.id}')">🎁 领取 ${fmtPts(g.reward)} 点</button>`
-              : `<button class="btn btn-pink btn-sm" onclick="completeGoal('${g.id}')">✓ 标记完成</button>`
-            )
+        ${g.done
+          ? `<button class="btn btn-pink btn-sm" onclick="claimGoal('${g.id}')">🎁 领取 ${fmtPts(g.reward)} 点</button>`
+          : `<button class="btn btn-pink btn-sm" onclick="completeGoal('${g.id}')">✓ 标记完成</button>`
         }
         <button class="btn btn-ghost btn-sm" onclick="editGoal('${g.id}')">✏️ 编辑</button>
         <button class="btn btn-danger btn-sm" onclick="delGoal('${g.id}')" style="margin-left:auto">删除</button>
@@ -1006,20 +1039,12 @@ function doCheckin(taskId){
   if(!state.checkins[td])state.checkins[td]=[];
   if(state.checkins[td].some(c=>c.taskId===taskId)){toast('今天这个任务已经打过卡啦～','😊');return;}
   state.checkins[td].push({taskId,time:Date.now()});
+  // 累计该任务打卡次数
   state.taskCounts[taskId]=(state.taskCounts[taskId]||0)+1;
   const count=state.taskCounts[taskId];
   const reached=count>=t.target;
-  const pts=state.settings.checkinPoints;
-  state.points+=pts;
-  state.pointHistory.push({id:uid(),type:'earn',amount:pts,note:`打卡：${t.title}`,date:Date.now()});
-  const streak=calcStreak()+1;
-  let msg=`打卡成功！${t.title} ${count}/${t.target} 次 +${fmtPts(pts)} 点🌟`;
-  if(streak>0&&streak%7===0){
-    const bonus=state.settings.streakBonus;
-    state.points+=bonus;
-    state.pointHistory.push({id:uid(),type:'bonus',amount:bonus,note:`连续打卡${streak}天奖励`,date:Date.now()});
-    msg+=` · 连续${streak}天额外 +${fmtPts(bonus)}！🔥`;
-  }
+  // 打卡本身不给点数，点数只在达成目标后领取任务奖励时发放
+  let msg=`打卡成功！${t.title} ${count}/${t.target} 次`;
   if(reached&&!t.claimed){
     msg+=` · 目标达成，可领取 ${fmtPts(t.reward)} 点奖励！🎁`;
   }
@@ -1080,32 +1105,31 @@ function confirmDelTask(id){
 }
 function renderCheckin(){
   const td=today();const tc=state.checkins[td]||[];
+  // 不显示已完成（已领奖）的打卡任务
   const activeTasks=state.tasks.filter(t=>!t.claimed);
   document.getElementById('ciToday').textContent=`${tc.length}/${activeTasks.length}`;
   document.getElementById('ciStreak').textContent=calcStreak();
   document.getElementById('ciTotal').textContent=totalCheckins();
   document.getElementById('ciPoints').textContent=fmtPts(state.points);
   const list=document.getElementById('checkinList');
-  if(state.tasks.length===0){
+  if(activeTasks.length===0){
     list.innerHTML='<div class="empty-state"><span class="emoji">🌱</span>还没有打卡任务，先在上面创建一个吧～</div>';return;
   }
-  list.innerHTML=state.tasks.map(t=>{
+  list.innerHTML=activeTasks.map(t=>{
     const count=state.taskCounts[t.id]||0;
     const pct=Math.min(100,Math.round(count/t.target*100));
     const reached=count>=t.target;
     const doneToday=tc.some(c=>c.taskId===t.id);
     let action;
-    if(t.claimed){
-      action='<button class="btn btn-done btn-sm" disabled>✓ 已领奖</button>';
-    }else if(reached){
+    if(reached){
       action=`<button class="btn btn-pink btn-sm" onclick="claimTask('${t.id}')">🎁 领取 ${fmtPts(t.reward)} 点</button>`;
     }else{
       action=`<button class="btn ${doneToday?'btn-done':'btn-pink'} btn-sm" ${doneToday?'disabled':''} onclick="doCheckin('${t.id}')">${doneToday?'✓ 今日已打卡':'立即打卡'}</button>`;
     }
-    return `<div class="checkin-card ${doneToday?'done':''}" style="${t.claimed?'opacity:.7':''}">
+    return `<div class="checkin-card ${doneToday?'done':''}">
       <span class="big-emoji">${t.emoji}</span>
       <div class="info">
-        <h4>${t.title} ${t.claimed?'<span class="tag" style="background:#e8f8e8;color:#5cb85c">已完成</span>':''}</h4>
+        <h4>${t.title} ${reached?'<span class="tag" style="background:#fff5cc;color:#cc9900">可领奖</span>':''}</h4>
         <p>${t.desc||'坚持下去，你一定可以的～'}</p>
         <div class="progress-wrap" style="margin-top:8px">
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
@@ -1119,21 +1143,29 @@ function renderCheckin(){
       </div>
     </div>`;
   }).join('');
+  // 渲染打卡历史明细（所有已打卡的，按日期倒序）
   const histEl=document.getElementById('checkinHistoryList');
   if(histEl){
-    const list=state.redemptions.slice().reverse();
-    if(list.length===0){
-      histEl.innerHTML='<div class="empty-state" style="padding:20px"><span class="emoji">📜</span>还没有兑换记录</div>';
+    const allDates=Object.keys(state.checkins).sort().reverse();
+    if(allDates.length===0){
+      histEl.innerHTML='<div class="empty-state" style="padding:20px"><span class="emoji">📜</span>还没有打卡记录</div>';
     }else{
-      histEl.innerHTML=list.map(r=>{
-        const d=new Date(r.date);
-        const ds=`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        return `<div class="flow-item"><span class="f-icon">${r.icon}</span><div class="f-info"><h5>${r.name}</h5><p>${ds}</p></div><div class="f-amount out">-${fmtPts(r.cost)} 🌟</div></div>`;
+      histEl.innerHTML=allDates.map(ds=>{
+        const entries=state.checkins[ds]||[];
+        return entries.map(c=>{
+          const task=state.tasks.find(t=>t.id===c.taskId);
+          const name=task?task.title:'已删除的任务';
+          const emoji=task?task.emoji:'❓';
+          const t=new Date(c.time);
+          const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+          const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
+          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
+        }).join('');
       }).join('');
     }
   }
 }
-
+```
 /* ===== 存钱 ===== */
 function savingsBalance(){return state.savings.reduce((s,r)=>s+(r.type==='in'?r.amount:-r.amount),0);}
 function openSavingModal(type){
@@ -1154,6 +1186,7 @@ function addSaving(type){
 }
 function renderSavings(){
   document.getElementById('savingsAmount').textContent='¥'+savingsBalance().toFixed(2);
+  // 渲染完整流水（原存钱流水界面内容已合并到这里）
   const el=document.getElementById('flowFull');
   const list=state.savings.slice().reverse();
   if(list.length===0){el.innerHTML='<div class="empty-state"><span class="emoji">🧾</span>还没有存钱记录，点上方按钮存第一笔吧～</div>';return;}
@@ -1319,9 +1352,10 @@ function changeMonth(n){
 /* ===== 目标进度 ===== */
 function renderProgress(){
   const bars=document.getElementById('progressBars');
+  // 合并展示：一次性任务（0/1）+ 打卡任务（count/target），不显示已完成
   const allItems=[
-    ...state.goals.map(g=>({type:'goal',id:g.id,emoji:g.emoji,title:g.title+'（一次性）',current:g.claimed?1:0,target:1,reward:g.reward})),
-    ...state.tasks.map(t=>({type:'task',id:t.id,emoji:t.emoji,title:t.title+'（打卡）',current:Math.min(state.taskCounts[t.id]||0,t.target),target:t.target,reward:t.reward}))
+    ...state.goals.filter(g=>!g.claimed).map(g=>({type:'goal',id:g.id,emoji:g.emoji,title:g.title+'（一次性）',current:g.claimed?1:0,target:1,reward:g.reward})),
+    ...state.tasks.filter(t=>!t.claimed).map(t=>({type:'task',id:t.id,emoji:t.emoji,title:t.title+'（打卡）',current:Math.min(state.taskCounts[t.id]||0,t.target),target:t.target,reward:t.reward}))
   ];
   if(allItems.length===0){bars.innerHTML='<div class="empty-state"><span class="emoji">📈</span>还没有任务，去创建一个吧～</div>';}
   else{
@@ -1334,6 +1368,7 @@ function renderProgress(){
       </div>`;
     }).join('');
   }
+  // 整体完成率环形图
   const ringWrap=document.getElementById('ringWrap');
   if(allItems.length===0){ringWrap.innerHTML='<div class="empty-state">暂无数据</div>';}
   else{
@@ -1343,16 +1378,27 @@ function renderProgress(){
     const allDone=allItems.filter(it=>it.current>=it.target).length;
     ringWrap.innerHTML=ringSVG(pct,'整体完成')+ringSVG(allItems.length?Math.round(allDone/allItems.length*100):0,'已达成任务');
   }
-  const wc=document.getElementById('weekChart');
-  const labels=[];const data=[];
-  for(let i=6;i>=0;i--){
-    const d=newDate();d.setDate(d.getDate()-i);
-    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    labels.push((d.getMonth()+1)+'/'+d.getDate());
-    data.push((state.checkins[ds]||[]).length);
+  // 全部打卡明细（按日期倒序）
+  const cd=document.getElementById('allCheckinDetail');
+  if(cd){
+    const allDates=Object.keys(state.checkins).sort().reverse();
+    if(allDates.length===0){
+      cd.innerHTML='<div class="empty-state"><span class="emoji">📜</span>还没有打卡记录</div>';
+    }else{
+      cd.innerHTML=allDates.map(ds=>{
+        const entries=state.checkins[ds]||[];
+        return entries.map(c=>{
+          const task=state.tasks.find(t=>t.id===c.taskId);
+          const name=task?task.title:'已删除的任务';
+          const emoji=task?task.emoji:'❓';
+          const t=new Date(c.time);
+          const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+          const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
+          return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
+        }).join('');
+      }).join('');
+    }
   }
-  const max=Math.max(1,...data);
-  wc.innerHTML=data.map((v,i)=>`<div class="chart-bar-col"><div style="font-size:11px;color:var(--pink-500);font-weight:700">${v}</div><div class="chart-bar" style="height:${v/max*100}%"></div><div class="chart-bar-label">${labels[i]}</div></div>`).join('');
 }
 function ringSVG(pct,label){
   const r=50,c=2*Math.PI*r,off=c*(1-pct/100);
@@ -1367,6 +1413,7 @@ function ringSVG(pct,label){
   </div>`;
 }
 
+/* 存钱流水已合并到存钱数额界面，由 renderSavings 统一渲染 */
 function renderFlow(){renderSavings();}
 
 /* ===== 兑换记录 ===== */
@@ -1381,6 +1428,36 @@ function renderHistory(){
   }).join('');
 }
 
+/* ===== 点数明细 ===== */
+function renderPointsLog(){
+  document.getElementById('pointslogBalance').textContent=fmtPts(state.points)+' 🌟';
+  const earned=state.pointHistory.filter(p=>p.amount>0).reduce((s,p)=>s+p.amount,0);
+  const spent=state.pointHistory.filter(p=>p.amount<0).reduce((s,p)=>s+Math.abs(p.amount),0);
+  document.getElementById('pointslogEarned').textContent='+'+fmtPts(earned)+' 🌟';
+  document.getElementById('pointslogSpent').textContent='-'+fmtPts(spent)+' 🌟';
+  const el=document.getElementById('pointslogList');
+  const list=state.pointHistory.slice().reverse();
+  if(list.length===0){
+    el.innerHTML='<div class="empty-state"><span class="emoji">🌟</span>还没有点数变动记录</div>';return;
+  }
+  el.innerHTML=list.map(p=>{
+    const d=new Date(p.date);
+    const ds=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const isEarn=p.amount>0;
+    const icons={earn:'🎯',bonus:'🔥',spend:'🎁',redeem:'🎁'};
+    const typeLabels={earn:'任务奖励',bonus:'连续打卡奖励',spend:'兑换消耗',redeem:'兑换消耗'};
+    const icon=icons[p.type]||(isEarn?'🌟':'🎁');
+    const typeLabel=typeLabels[p.type]||(isEarn?'获得':'消耗');
+    return `<div class="flow-item">
+      <span class="f-icon">${icon}</span>
+      <div class="f-info"><h5>${typeLabel}：${p.note}</h5><p>${ds}</p></div>
+      <div class="f-amount ${isEarn?'in':'out'}">${isEarn?'+':'-'}${fmtPts(Math.abs(p.amount))} 🌟</div>
+    </div>`;
+  }).join('');
+}
+```
+
+```
 /* ===== 成就 ===== */
 const ACHIEVEMENTS=[
   {id:'first_checkin',icon:'🌱',name:'初次打卡',desc:'完成第一次打卡'},
@@ -1440,16 +1517,8 @@ function renderAchievements(){
 
 /* ===== 设置 ===== */
 function renderSettings(){
-  document.getElementById('setCheckinPoints').value=state.settings.checkinPoints;
-  document.getElementById('setStreakBonus').value=state.settings.streakBonus;
   renderThemeSettings();
 }
-function saveSettings(){
-  state.settings.checkinPoints=Math.max(0.1,parseFloat(document.getElementById('setCheckinPoints').value)||10);
-  state.settings.streakBonus=Math.max(0,parseFloat(document.getElementById('setStreakBonus').value)||50);
-  save();toast('设置已保存～','💾');
-}
-
 /* ===== 主题颜色自定义 ===== */
 const THEME_PRESETS=[
   {name:'黎深·冰',primary:'#4a7cb8',bg1:'#eef4fb',bg2:'#d4e4f4',heroBg1:'#6a9fd8',heroBg2:'#3a6ba8',heroText:'#ffffff',savingsBg1:'#6a9fd8',savingsBg2:'#3a6ba8',savingsText:'#ffffff',pointsBg1:'#6a9fd8',pointsBg2:'#3a6ba8',pointsText:'#ffffff',emoji:'❄️'},
@@ -1464,6 +1533,7 @@ const THEME_PRESETS=[
   {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',savingsBg1:'#c8a878',savingsBg2:'#9a7040',savingsText:'#ffffff',pointsBg1:'#e0cbb0',pointsBg2:'#c8a878',pointsText:'#ffffff',emoji:'☕'},
   {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',savingsBg1:'#4a3a6a',savingsBg2:'#2e2245',savingsText:'#f0e8ff',pointsBg1:'#4a3a6a',pointsBg2:'#2e2245',pointsText:'#f0e8ff',emoji:'🌙'}
 ];
+// 根据主色派生出浅色变体（用于 --pink-50/100/200/300/400）
 function shade(hex,percent){
   hex=hex.replace('#','');
   const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
@@ -1482,17 +1552,21 @@ function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,sa
   root.style.setProperty('--pink-100',shade(primary,-0.65));
   root.style.setProperty('--pink-50',shade(primary,-0.8));
   root.style.setProperty('--line',shade(primary,-0.6));
+  // 文字色：暗背景用浅色，亮背景用深色
   const isDark=isColorDark(bg1);
   root.style.setProperty('--ink',isDark?'#f5e8ee':'#5a3d4a');
   root.style.setProperty('--ink-soft',isDark?'#c4b0bb':'#8a6b78');
   root.style.setProperty('--cream',isDark?'#2a2428':'#fffaf6');
   document.body.style.background=`linear-gradient(135deg,${bg1} 0%,${bg2} 50%,${shade(bg2,-0.05)} 100%)`;
+  // 时间框颜色
   if(heroBg1)root.style.setProperty('--hero-bg1',heroBg1);
   if(heroBg2)root.style.setProperty('--hero-bg2',heroBg2);
   if(heroText)root.style.setProperty('--hero-text',heroText);
+  // 存钱罐颜色
   if(savingsBg1)root.style.setProperty('--savings-bg1',savingsBg1);
   if(savingsBg2)root.style.setProperty('--savings-bg2',savingsBg2);
   if(savingsText)root.style.setProperty('--savings-text',savingsText);
+  // 点数余额框颜色
   if(pointsBg1)root.style.setProperty('--points-bg1',pointsBg1);
   if(pointsBg2)root.style.setProperty('--points-bg2',pointsBg2);
   if(pointsText)root.style.setProperty('--points-text',pointsText);
@@ -1500,6 +1574,7 @@ function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,sa
 function isColorDark(hex){
   hex=hex.replace('#','');
   const r=parseInt(hex.substr(0,2),16),g=parseInt(hex.substr(2,2),16),b=parseInt(hex.substr(4,2),16);
+  // 感知亮度
   return (0.299*r+0.587*g+0.114*b)<140;
 }
 function renderThemeSettings(){
@@ -1528,12 +1603,15 @@ function renderThemeSettings(){
   document.getElementById('themePointsBg2Text').value=t.pointsBg2||t.heroBg2||'#3a6ba8';
   document.getElementById('themePointsText').value=t.pointsText||'#ffffff';
   document.getElementById('themePointsTextText').value=t.pointsText||'#ffffff';
+  // 预设主题按钮
   const wrap=document.getElementById('themePresets');
   wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}','${p.savingsBg1||p.heroBg1}','${p.savingsBg2||p.heroBg2}','${p.savingsText||p.heroText}','${p.pointsBg1||p.heroBg1}','${p.pointsBg2||p.heroBg2}','${p.pointsText||p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
+  // 颜色选择器和文本框联动
   const link=(colorId,textId)=>{
     document.getElementById(colorId).addEventListener('input',e=>{document.getElementById(textId).value=e.target.value;});
     document.getElementById(textId).addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))document.getElementById(colorId).value=e.target.value;});
   };
+  // 避免重复绑定
   if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');link('themeSavingsBg1','themeSavingsBg1Text');link('themeSavingsBg2','themeSavingsBg2Text');link('themeSavingsText','themeSavingsTextText');link('themePointsBg1','themePointsBg1Text');link('themePointsBg2','themePointsBg2Text');link('themePointsText','themePointsTextText');wrap.dataset.bound='1';}
 }
 function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText){
@@ -1549,6 +1627,7 @@ function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg
   document.getElementById('themePointsBg1').value=pointsBg1||heroBg1;document.getElementById('themePointsBg1Text').value=pointsBg1||heroBg1;
   document.getElementById('themePointsBg2').value=pointsBg2||heroBg2;document.getElementById('themePointsBg2Text').value=pointsBg2||heroBg2;
   document.getElementById('themePointsText').value=pointsText||heroText;document.getElementById('themePointsTextText').value=pointsText||heroText;
+  // 预览：立即应用
   applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText);
 }
 function applyTheme(){
@@ -1603,7 +1682,7 @@ function importData(e){
   reader.onload=ev=>{
     try{
       const data=JSON.parse(ev.target.result);
-      state={...DEFAULTS,...data,settings:{...DEFAULTS.settings,...(data.settings||{})}};
+      state={...DEFAULTS,...data};
       save();toast('数据导入成功！','📥');
       renderPanel(document.querySelector('.nav-item.active').dataset.panel);
     }catch(err){toast('导入失败，文件格式错误','😢');}
@@ -1618,6 +1697,7 @@ function resetTodayCheckin(){
 function confirmResetToday(){
   const td=today();
   const todayCis=state.checkins[td]||[];
+  // 回退每个任务的累计打卡次数
   todayCis.forEach(c=>{if(c.taskId&&state.taskCounts[c.taskId])state.taskCounts[c.taskId]--;});
   delete state.checkins[td];save();closeModal();
   renderHome();renderCheckin();toast('今日打卡已重置','🔄');
@@ -1638,6 +1718,7 @@ function confirmResetAll(){
 }
 
 /* ===== 初始化 ===== */
+// 启动时应用已保存的主题
 (function(){const t=state.theme||DEFAULTS.theme;if(t)applyThemeColors(t.primary,t.bg1,t.bg2,t.heroBg1,t.heroBg2,t.heroText,t.savingsBg1,t.savingsBg2,t.savingsText,t.pointsBg1,t.pointsBg2,t.pointsText);})();
 checkAchievements();
 renderHome();
