@@ -287,7 +287,7 @@
 
   <!-- 黎深 3D 背景水印（仅桌面主页可见） -->
   <img src="https://patchwiki.biligame.com/images/lysk/4/4c/j2xr4lkmi5ok4usacxo5zq6eh788dsc.png" class="zayne-bg-decor" alt="" aria-hidden="true">
-```
+
   <!-- ===== 1. 桌面主页 ===== -->
   <section class="panel active" id="panel-home">
     <div class="hero">
@@ -613,6 +613,9 @@
 </div>
 
 <div class="toast" id="toast"><span id="toastIcon">🎉</span><span id="toastMsg"></span></div>
+
+  **第 2 段（共 3 段）— JS 前半部分：**
+
 ```
 <script>
 /* ========================================================
@@ -872,7 +875,7 @@ function renderHome(){
       <button class="btn ${done?'btn-done':'btn-pink'} btn-sm" ${done?'disabled':''} onclick="doCheckin('${t.id}')">${done?'✓ 已打卡':'打卡'}</button></div>`;
   }).join('');
 }
-```
+
 /* ===== 目标界面：一次性任务 ===== */
 function openGoalModal(){
   openModal(`<h3>➕ 新建一次性任务</h3>
@@ -1165,7 +1168,7 @@ function renderCheckin(){
     }
   }
 }
-```
+
 /* ===== 存钱 ===== */
 function savingsBalance(){return state.savings.reduce((s,r)=>s+(r.type==='in'?r.amount:-r.amount),0);}
 function openSavingModal(type){
@@ -1317,7 +1320,6 @@ function renderRewards(){
     </div>`;
   }).join('');
 }
-
 /* ===== 日历 ===== */
 let calYear,calMonth;
 function renderCalendar(){
@@ -1455,9 +1457,7 @@ function renderPointsLog(){
     </div>`;
   }).join('');
 }
-```
 
-```
 /* ===== 成就 ===== */
 const ACHIEVEMENTS=[
   {id:'first_checkin',icon:'🌱',name:'初次打卡',desc:'完成第一次打卡'},
