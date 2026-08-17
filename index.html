@@ -965,8 +965,13 @@ function renderGoals(){
 }
 function completeGoal(id){
   const g=state.goals.find(x=>x.id===id);if(!g||g.done)return;
-  g.done=true;save();renderGoals();
-  toast('任务已完成！记得领取奖励哦～🎉','🏆');
+  g.done=true;
+  g.claimed=true;
+  // 标记完成时立即获得奖励点数
+  state.points+=g.reward;
+  state.pointHistory.push({id:uid(),type:'earn',amount:g.reward,note:`一次性任务完成：${g.title}`,date:Date.now()});
+  save();checkAchievements();renderGoals();
+  toast(`任务完成！+${fmtPts(g.reward)} 点数！🎉`,'🏆');
 }
 function claimGoal(id){
   const g=state.goals.find(x=>x.id===id);if(!g||g.claimed)return;
@@ -1033,7 +1038,10 @@ function openTaskModal(){
       <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="21" placeholder="打卡多少次算达成"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="100" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">单次打卡奖励 🌟</label><input class="input" id="taskPerReward" type="number" step="0.1" value="5" placeholder="每次打卡获得的点数"></div>
+      <div><label class="label">达成奖励 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="100" placeholder="达成目标后额外领取的点数"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
       <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" placeholder="为什么想坚持它？"></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
@@ -1042,12 +1050,13 @@ function openTaskModal(){
 function addTask(){
   const title=document.getElementById('taskTitle').value.trim();
   if(!title){toast('请填写任务名称～','😊');return;}
-  const target=Math.max(-9999,+document.getElementById('taskTarget').value||21);
-  const reward=parseFloat(document.getElementById('taskReward').value);if(isNaN(reward)||reward===0){toast('请输入有效点数～','😊');return;}
+  const target=Math.max(1,+document.getElementById('taskTarget').value||21);
+  const reward=parseFloat(document.getElementById('taskReward').value);if(isNaN(reward)||reward===0){toast('请输入有效达成奖励～','😊');return;}
+  const perReward=parseFloat(document.getElementById('taskPerReward').value);if(isNaN(perReward)||perReward===0){toast('请输入有效单次奖励～','😊');return;}
   const t={
     id:uid(),title,
     emoji:document.getElementById('taskEmoji').value,
-    target,reward,
+    target,reward,perReward,
     desc:document.getElementById('taskDesc').value,
     claimed:false,
     createdAt:Date.now()
@@ -1066,8 +1075,14 @@ function doCheckin(taskId){
   state.taskCounts[taskId]=(state.taskCounts[taskId]||0)+1;
   const count=state.taskCounts[taskId];
   const reached=count>=t.target;
-  // 打卡本身不给点数，点数只在达成目标后领取任务奖励时发放
+  // 每次打卡获得单次奖励点数
+  const perReward=t.perReward||0;
+  if(perReward!==0){
+    state.points+=perReward;
+    state.pointHistory.push({id:uid(),type:'earn',amount:perReward,note:`打卡：${t.title}（第${count}次）`,date:Date.now()});
+  }
   let msg=`打卡成功！${t.title} ${count}/${t.target} 次`;
+  if(perReward!==0)msg+=` · +${fmtPts(perReward)} 🌟`;
   if(reached&&!t.claimed){
     msg+=` · 目标达成，可领取 ${fmtPts(t.reward)} 点奖励！🎁`;
   }
@@ -1099,7 +1114,10 @@ function editTask(id){
       <div><label class="label">目标次数</label><input class="input" id="taskTarget" type="number" min="1" value="${t.target}" placeholder="打卡多少次算达成"></div>
     </div>
     <div class="form-row" style="margin-bottom:14px">
-      <div><label class="label">奖励点数 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="${t.reward}" placeholder="达成后可领取的点数"></div>
+      <div><label class="label">单次打卡奖励 🌟</label><input class="input" id="taskPerReward" type="number" step="0.1" value="${t.perReward||0}" placeholder="每次打卡获得的点数"></div>
+      <div><label class="label">达成奖励 🌟</label><input class="input" id="taskReward" type="number" step="0.1" value="${t.reward}" placeholder="达成目标后额外领取的点数"></div>
+    </div>
+    <div class="form-row" style="margin-bottom:14px">
       <div><label class="label">备注（选填）</label><input class="input" id="taskDesc" value="${(t.desc||'').replace(/"/g,'&quot;')}" placeholder="为什么想坚持它？"></div>
     </div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
@@ -1111,8 +1129,9 @@ function saveEditTask(id){
   if(!title){toast('请填写任务名称～','😊');return;}
   t.title=title;
   t.emoji=document.getElementById('taskEmoji').value;
-  t.target=Math.max(-9999,+document.getElementById('taskTarget').value||t.target);
+  t.target=Math.max(1,+document.getElementById('taskTarget').value||t.target);
   t.reward=parseFloat(document.getElementById('taskReward').value);
+  t.perReward=parseFloat(document.getElementById('taskPerReward').value)||0;
   if(isNaN(t.reward)||t.reward===0){toast('请输入有效点数～','😊');return;}
   t.desc=document.getElementById('taskDesc').value;
   save();renderCheckin();closeModal();toast('打卡任务已更新！✏️','🌟');
@@ -1157,7 +1176,7 @@ function renderCheckin(){
         <p>${t.desc||'坚持下去，你一定可以的～'}</p>
         <div class="progress-wrap" style="margin-top:8px">
           <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <div class="progress-text"><span>${count} / ${t.target} 次</span><span>🎁 ${fmtPts(t.reward)} 🌟</span></div>
+          <div class="progress-text"><span>${count} / ${t.target} 次</span><span>每次 +${fmtPts(t.perReward||0)} 🌟 · 达成 +${fmtPts(t.reward)} 🌟</span></div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
