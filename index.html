@@ -171,6 +171,7 @@
   .jar-info p{font-size:12px;color:var(--ink-soft);margin-top:2px}
   .jar-edit{display:flex;gap:6px}
   .jar-btns{display:flex;gap:8px;margin-top:10px}
+  .jar-note{font-size:12px;color:var(--ink-soft);background:var(--pink-50);border-radius:10px;padding:8px 10px;margin:4px 0 2px;line-height:1.5}
 
   /* ===== 兑换 ===== */
   .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--points-bg1,#ffd1e4),var(--points-bg2,#ffa6c9));border-radius:20px;padding:20px 26px;color:var(--points-text,#fff);box-shadow:var(--shadow);margin-bottom:20px}
@@ -1262,6 +1263,7 @@ function openJarModal(jarId){ // 空 id = 新增；否则编辑
     <div style="margin-bottom:14px"><label class="label">名称</label><input class="input" id="jarName" value="${j?j.name:''}" placeholder="例如：旅行基金"></div>
     <div style="margin-bottom:14px"><label class="label">图标</label><select class="select" id="jarIcon">${JAR_ICONS.map(i=>`<option ${j&&j.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
     <div style="margin-bottom:14px"><label class="label">目标金额（选填，0 或留空 = 不设目标）</label><input class="input" id="jarTarget" type="number" min="0" step="0.01" value="${j?j.target||'':''}" placeholder="例如：1000"></div>
+    <div style="margin-bottom:14px"><label class="label">备注/说明（选填，写在卡片上）</label><textarea class="textarea" id="jarNote" rows="2" placeholder="例如：攒够去旅行的基金，每月存一点">${j?(j.note||'').replace(/"/g,'&quot;'):''}</textarea></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
     <button class="btn btn-pink" onclick="saveJar('${jarId||''}')">确定</button></div>`);
 }
@@ -1271,8 +1273,9 @@ function saveJar(jarId){
   const icon=document.getElementById('jarIcon').value;
   const target=parseFloat(document.getElementById('jarTarget').value)||0;
   if(target<0){toast('目标金额不能为负～','😊');return;}
-  if(jarId){Object.assign(jars().find(j=>j.id===jarId),{name,icon,target});}
-  else{jars().push({id:uid(),name,icon,target,createdAt:Date.now()});}
+  const note=document.getElementById('jarNote').value.trim();
+  if(jarId){Object.assign(jars().find(j=>j.id===jarId),{name,icon,target,note});}
+  else{jars().push({id:uid(),name,icon,target,note,createdAt:Date.now()});}
   save();renderSavings();closeModal();toast(jarId?'存钱罐已更新～':'新建存钱罐成功！','❄️');
 }
 function deleteJar(jarId){
@@ -1331,6 +1334,7 @@ function renderSavings(){
           <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();deleteJar('${j.id}')">🗑️</button>
         </div>
       </div>
+      ${j.note?`<div class="jar-note">📝 ${j.note}</div>`:''}
       ${prog}
       <div class="jar-btns">
         <button class="btn btn-ghost btn-sm" onclick="openSavingModal('in','${j.id}')">💰 存入</button>
