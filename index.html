@@ -151,14 +151,14 @@
 
   /* ===== 存钱 ===== */
   .savings-hero{background:linear-gradient(135deg,var(--savings-bg1,#6a9fd8),var(--savings-bg2,#3a6ba8));border-radius:22px;padding:28px;color:var(--savings-text,#fff);text-align:center;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
-  .savings-hero::before{content:"❄️";position:absolute;font-size:130px;opacity:.15;right:0;bottom:-20px}
+  .savings-hero::before{content:"❄️";position:absolute;font-size:130px;opacity:.15;right:0;bottom:-20px;pointer-events:none}
   .savings-amount{font-size:46px;font-weight:800;margin:10px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
   .savings-label{font-size:14px;opacity:.95}
-  .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
+  .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px;position:relative;z-index:1}
 
   /* ===== 生活费 ===== */
   .living-hero{background:linear-gradient(135deg,var(--living-bg1,#ffd9a8),var(--living-bg2,#ffb36b));border-radius:22px;padding:24px 28px;color:var(--living-text,#fff);box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:20px}
-  .living-hero::before{content:"💵";position:absolute;font-size:110px;opacity:.15;right:6px;bottom:-16px}
+  .living-hero::before{content:"💵";position:absolute;font-size:110px;opacity:.15;right:6px;bottom:-16px;pointer-events:none}
   .living-head{display:flex;justify-content:space-between;align-items:flex-start}
   .living-label{font-size:14px;opacity:.95}
   .living-amount{font-size:40px;font-weight:800;margin:6px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
