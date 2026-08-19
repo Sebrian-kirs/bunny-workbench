@@ -41,6 +41,7 @@
 
   .nav-group-label{font-size:10px;color:var(--ink-soft);font-weight:700;padding:10px 4px 6px;letter-spacing:1.5px;text-align:center;width:100%;text-transform:uppercase;opacity:.7}
   .nav-group-divider{width:60%;height:1px;background:var(--pink-100);margin:4px auto 6px}
+  .nav-bottom{margin-top:auto}
   .nav-item{
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
     padding:12px 4px 10px;border-radius:16px;cursor:pointer;
@@ -106,10 +107,6 @@
   .stat-mini .num{font-size:26px;font-weight:800;color:var(--pink-500)}
   .stat-mini .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
 
-  .today-checkin{background:linear-gradient(135deg,#fff,#f0f6fc);border:2px solid var(--line);border-radius:20px;padding:22px}
-  .checkin-goal-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px dashed var(--pink-100)}
-  .checkin-goal-row:last-child{border-bottom:none}
-  .checkin-goal-row .gname{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px}
   .btn{border:none;cursor:pointer;font-family:inherit;font-weight:700;border-radius:12px;transition:all .2s;font-size:13px;padding:9px 18px}
   .btn-pink{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;box-shadow:var(--shadow)}
   .btn-pink:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -159,6 +156,44 @@
   .savings-label{font-size:14px;opacity:.95}
   .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
 
+  /* ===== 生活费 ===== */
+  .living-hero{background:linear-gradient(135deg,var(--living-bg1,#ffd9a8),var(--living-bg2,#ffb36b));border-radius:22px;padding:24px 28px;color:var(--living-text,#fff);box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:20px}
+  .living-hero::before{content:"💸";position:absolute;font-size:110px;opacity:.15;right:6px;bottom:-16px}
+  .living-head{display:flex;justify-content:space-between;align-items:flex-start}
+  .living-label{font-size:14px;opacity:.95}
+  .living-amount{font-size:40px;font-weight:800;margin:6px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .living-budget-tip{font-size:12px;opacity:.9}
+  .living-badge{font-size:26px;font-weight:800;background:rgba(255,255,255,.28);padding:6px 16px;border-radius:20px}
+  .living-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .living-actions .btn{background:rgba(255,255,255,.85);color:#c77b2a;border:2px solid rgba(255,255,255,.6)}
+  .living-actions .btn:hover{background:#fff}
+  .living-progress{margin-top:16px}
+  .living-progress .progress-bar{background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.5)}
+  .living-progress .progress-fill{background:linear-gradient(90deg,#ff8c3a,#e85d2a)}
+  .living-progress .progress-text{color:rgba(255,255,255,.95)}
+  .living-flow{margin-top:16px;max-height:280px;overflow-y:auto}
+  .living-flow .flow-item{background:rgba(255,255,255,.85)}
+  .living-flow .empty-state{padding:20px;color:var(--ink-soft)}
+  /* 寝室费独立预算 */
+  .living-room{margin-top:20px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .living-room-head{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;margin-bottom:10px;color:var(--ink)}
+  .living-room-budget{font-size:12px;color:var(--ink-soft);font-weight:600;background:var(--pink-50);padding:4px 10px;border-radius:12px}
+  .living-room-bar .progress-bar{background:var(--pink-100);border-color:var(--pink-100);height:8px}
+  .living-room-bar .progress-fill{background:linear-gradient(90deg,#c86bd6,#9a4ab5)}
+  .living-room-text{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:4px}
+  .living-room-actions{display:flex;gap:8px;margin-top:12px}
+  .living-room-actions .btn{flex:1;font-size:12px;padding:8px 10px}
+  /* 生活费/寝室费可折叠明细 */
+  .living-details{margin-top:16px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .living-details.room-details{margin-top:16px}
+  .living-details-summary{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink);list-style:none;user-select:none}
+  .living-details-summary::-webkit-details-marker{display:none}
+  .living-details-summary::after{content:"▾";color:var(--pink-400);font-size:16px;transition:transform .25s}
+  .living-details[open] .living-details-summary::after{transform:rotate(180deg)}
+  .living-details-count{font-size:12px;color:var(--ink-soft);font-weight:600}
+  .living-details-body{padding:0 18px 16px;border-top:1px dashed var(--pink-100)}
+  .living-details-body .flow-list{margin-top:12px}
+
   /* ===== 存钱罐卡片 ===== */
   .jar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:18px}
   .jar-card{background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);padding:16px;transition:all .25s}
@@ -176,6 +211,7 @@
   /* ===== 兑换 ===== */
   .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--points-bg1,#ffd1e4),var(--points-bg2,#ffa6c9));border-radius:20px;padding:20px 26px;color:var(--points-text,#fff);box-shadow:var(--shadow);margin-bottom:20px}
   .points-banner .big{font-size:34px;font-weight:800}
+  .points-chip{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--points-bg1,#ffd1e4),var(--points-bg2,#ffa6c9));color:var(--points-text,#fff);padding:8px 18px;border-radius:30px;font-weight:800;font-size:15px;box-shadow:var(--shadow);margin-bottom:16px}
   .reward-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
   .reward-card{background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px;text-align:center;transition:all .25s;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end}
   .reward-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--pink-300)}
@@ -265,6 +301,56 @@
     .nav-icon{font-size:20px}
     .nav-item span:last-child{font-size:10px}
     .main{padding:18px}
+    /* ===== 手机端缩小各类任务窗格 ===== */
+    .goal-grid{grid-template-columns:1fr;gap:10px}
+    .goal-card{padding:14px;border-radius:14px}
+    .goal-card h3{font-size:15px}
+    .goal-card .desc{font-size:11px;min-height:0}
+    .goal-card .emoji{font-size:22px}
+    .checkin-card{padding:12px 14px;gap:10px;border-radius:13px}
+    .checkin-card .big-emoji{font-size:26px}
+    .checkin-card .info h4{font-size:14px}
+    .checkin-card .info p{font-size:11px}
+    .card{padding:16px;border-radius:15px}
+    .card-title{font-size:15px;margin-bottom:10px}
+    .progress-text{font-size:11px}
+    .savings-hero,.living-hero{padding:18px 16px;border-radius:16px}
+    .savings-amount{font-size:32px}
+    .living-amount{font-size:30px}
+    .jar-grid{grid-template-columns:1fr;gap:10px}
+    .jar-card{padding:13px;border-radius:14px}
+    .jar-icon{font-size:24px}
+    .jar-info h4{font-size:14px}
+    .living-actions,.savings-actions,.jar-btns{flex-wrap:wrap;gap:8px}
+    .living-actions .btn,.savings-actions .btn,.jar-btns .btn{flex:1;min-width:90px;padding:8px 10px;font-size:12px}
+    .btn{padding:8px 14px;font-size:12px}
+    .flow-item{padding:10px 12px;gap:10px;border-radius:12px}
+    .flow-item .f-icon{font-size:20px;width:30px}
+    .flow-item .f-info h5{font-size:13px}
+    .flow-item .f-amount{font-size:14px}
+    .reward-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+    .reward-card{min-height:130px;padding:10px}
+    .ach-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+    .ach-card{padding:12px}
+    .ach-card .ach-icon{font-size:30px}
+    .ach-card h4{font-size:12px}
+    .stat-mini{padding:12px}
+    .stat-mini .num{font-size:22px}
+    .quote-box{padding:18px}
+    .quote-zh{font-size:16px}
+    .page-head{margin-bottom:16px}
+    .page-head h1{font-size:20px}
+    .calendar{padding:14px;border-radius:16px}
+    .cal-day{font-size:12px}
+    .cal-head h3{font-size:16px}
+    .hero{padding:22px 20px}
+    .hero-time{font-size:38px}
+    .points-banner{padding:16px}
+    .points-banner .big{font-size:28px}
+    .living-room{padding:10px 12px}
+    .living-room-actions{flex-direction:column;gap:6px}
+    .living-room-actions .btn{width:100%}
+    .modal{padding:22px}
   }
 </style>
 <script src="https://beacon.cdn.qq.com/sdk/4.5.9/beacon_web.min.js"></script>
@@ -301,19 +387,22 @@
 
   <div class="nav-group-label">Keeping</div>
   <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面</span></div>
-  <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡</span></div>
   <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标</span></div>
+  <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡</span></div>
   <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>存钱</span></div>
+  <div class="nav-item" data-panel="living"><span class="nav-icon">💸</span><span>生活费</span></div>
   <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>兑换</span></div>
 
   <div class="nav-group-divider"></div>
   <div class="nav-group-label">成就</div>
-  <div class="nav-item" data-panel="calendar"><span class="nav-icon">📅</span><span>日历</span></div>
   <div class="nav-item" data-panel="progress"><span class="nav-icon">📈</span><span>进度</span></div>
   <div class="nav-item" data-panel="history"><span class="nav-icon">📜</span><span>记录</span></div>
   <div class="nav-item" data-panel="pointslog"><span class="nav-icon">🌟</span><span>点数</span></div>
-  <div class="nav-item" data-panel="ach"><span class="nav-icon">🏆</span><span>成就</span></div>
-  <div class="nav-item" data-panel="settings"><span class="nav-icon">⚙️</span><span>设置</span></div>
+
+  <!-- 设置与成就：单独区域，与其他分开 -->
+  <div class="nav-group-divider"></div>
+  <div class="nav-item nav-bottom" data-panel="settings"><span class="nav-icon">⚙️</span><span>设置</span></div>
+  <div class="nav-item nav-bottom" data-panel="ach"><span class="nav-icon">🏆</span><span>成就</span></div>
 
   <div class="sidebar-footer">Made with 💖<br>本地留存 · 2026</div>
 </aside>
@@ -351,10 +440,6 @@
           <div class="stat-mini"><div class="num" id="qsRedeemed">0</div><div class="lbl">🎁 已兑换</div></div>
         </div>
       </div>
-      <div class="today-checkin">
-        <div class="card-title">✅ 今日打卡任务</div>
-        <div id="homeCheckinList"></div>
-      </div>
     </div>
   </section>
 
@@ -363,6 +448,7 @@
     <!-- 黎深「拥雪见缘」装饰 -->
     <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">🎯</span><div><h1>目标界面</h1><p>创建一次性任务，完成后领取你设定的奖励点数</p></div></div>
+    <div class="points-chip" id="goalPoints">🌟 当前点数：0</div>
     <div class="section-tip">💡 这里是<b>一次性任务</b>：完成即领取奖励点数，任务结束。需要每天重复打卡请去「打卡界面」</div>
     <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openGoalModal()">➕ 新建一次性任务</button></div>
     <div id="goalGrid" class="goal-grid"></div>
@@ -373,6 +459,7 @@
     <!-- 黎深「一往而深」装饰 -->
     <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">✅</span><div><h1>打卡界面</h1><p>创建多次打卡任务，每打卡一次累计进度，达成目标次数领取奖励</p></div></div>
+    <div class="points-chip" id="checkinPoints">🌟 当前点数：0</div>
     <div class="section-tip">💡 这里是<b>多次打卡任务</b>：每天可打卡一次，累计达到目标次数后领取奖励点数</div>
     <div style="margin-bottom:18px"><button class="btn btn-pink" onclick="openTaskModal()">➕ 新建打卡任务</button></div>
     <div class="card">
@@ -380,26 +467,68 @@
       <div class="checkin-list" id="checkinList"></div>
     </div>
     <div class="card">
-      <div class="card-title">📊 打卡概览</div>
-      <div style="display:flex;gap:14px;flex-wrap:wrap">
-        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciToday">0/0</div><div class="lbl">今日完成</div></div>
-        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciStreak">0</div><div class="lbl">🔥 连续天数</div></div>
-        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciTotal">0</div><div class="lbl">累计打卡</div></div>
-        <div class="stat-mini" style="flex:1;min-width:120px"><div class="num" id="ciPoints">0</div><div class="lbl">🌟 我的点数</div></div>
-      </div>
-    </div>
-    <div class="card">
       <div class="card-title">📜 打卡历史明细</div>
       <div class="flow-list" id="checkinHistoryList"></div>
     </div>
   </section>
 
+  <!-- ===== 生活费（独立窗口） ===== -->
+  <section class="panel" id="panel-living">
+    <div class="page-head"><span class="ico">💸</span><div><h1>我的生活费</h1><p>管理每月开销，把生活过得井井有条</p></div></div>
+
+    <div class="living-hero" style="position:relative">
+      <div class="living-head">
+        <div>
+          <div class="living-label">💸 本月生活费结余</div>
+          <div class="living-amount" id="livingAmount">¥0.00</div>
+          <div class="living-budget-tip" id="livingBudgetTip">未设置月度预算</div>
+        </div>
+        <div class="living-badge" id="livingUsage">0%</div>
+      </div>
+      <div class="living-actions">
+        <button class="btn btn-ghost" onclick="openLivingModal('in')">💵 记一笔收入</button>
+        <button class="btn btn-ghost" onclick="openLivingModal('out')">🛒 记一笔支出</button>
+        <button class="btn btn-ghost" onclick="openLivingBudgetModal()">🎯 设置预算</button>
+      </div>
+      <div class="living-progress">
+        <div class="progress-bar"><div class="progress-fill" id="livingProgressFill" style="width:0%"></div></div>
+        <div class="progress-text"><span id="livingUsed">已支出 ¥0.00</span><span id="livingLeft">剩余 ¥0.00</span></div>
+      </div>
+    </div>
+
+    <!-- 生活费明细：可折叠 -->
+    <details class="living-details">
+      <summary class="living-details-summary"><span>📄 生活费明细</span><span class="living-details-count" id="livingCount">0 条</span></summary>
+      <div class="living-details-body">
+        <div class="flow-list" id="livingFlow"></div>
+      </div>
+    </details>
+
+    <!-- 寝室费：独立卡片 -->
+    <div class="living-room">
+      <div class="living-room-head"><span>🛏️ 寝室费（独立预算）</span><span class="living-room-budget" id="roomBudgetInfo">未设预算</span></div>
+      <div class="living-room-bar"><div class="progress-bar"><div class="progress-fill" id="roomProgressFill" style="width:0%"></div></div></div>
+      <div class="living-room-text"><span id="roomUsed">已用 ¥0.00</span><span id="roomLeft">剩余 ¥0.00</span></div>
+      <div class="living-room-actions">
+        <button class="btn btn-ghost" onclick="openRoomModal('in')">➕ 加一笔</button>
+        <button class="btn btn-ghost" onclick="openRoomModal('out')">➖ 减一笔</button>
+      </div>
+    </div>
+
+    <!-- 寝室费明细：可折叠 -->
+    <details class="living-details room-details">
+      <summary class="living-details-summary"><span>📄 寝室费明细</span><span class="living-details-count" id="roomCount">0 条</span></summary>
+      <div class="living-details-body">
+        <div class="flow-list" id="roomFlow"></div>
+      </div>
+    </details>
+  </section>
+
   <!-- ===== 4. 目前存钱数额 ===== -->
   <section class="panel" id="panel-savings">
     <div class="page-head"><span class="ico">❄️</span><div><h1>我的存钱罐</h1><p>把零花钱分罐存起来，看着它们慢慢凝结</p></div></div>
+
     <div class="savings-hero" style="position:relative">
-      <!-- 黎深「雪色深流」装饰 -->
-      <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-card-decor" style="right:10px;bottom:8px;width:130px;height:130px;opacity:.25" alt="" aria-hidden="true">
       <div class="savings-label">❄️ 全部存钱罐总余额</div>
       <div class="savings-amount" id="savingsAmount">¥0.00</div>
       <div class="savings-actions">
@@ -433,11 +562,11 @@
     </div>
   </section>
 
-  <!-- ===== 6. 打卡日历 ===== -->
-  <section class="panel" id="panel-calendar">
-    <!-- 黎深「雪色深流」装饰 -->
-    <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-panel-decor" style="opacity:.12;right:10px" alt="" aria-hidden="true">
-    <div class="page-head"><span class="ico">📅</span><div><h1>打卡日历</h1><p>看看你坚持的每一天</p></div></div>
+  <!-- ===== 7. 目标进度（含打卡日历） ===== -->
+  <section class="panel" id="panel-progress">
+    <!-- 黎深「拥雪见缘」装饰 -->
+    <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" style="opacity:.14" alt="" aria-hidden="true">
+    <div class="page-head"><span class="ico">📈</span><div><h1>目标进度</h1><p>可视化你的每一份努力</p></div></div>
     <div class="calendar">
       <div class="cal-head">
         <h3 id="calTitle">2026年7月</h3>
@@ -453,13 +582,6 @@
         <span>🟪 已打卡</span><span>⬜ 未打卡</span><span>🔲 今天</span>
       </div>
     </div>
-  </section>
-
-  <!-- ===== 7. 目标进度 ===== -->
-  <section class="panel" id="panel-progress">
-    <!-- 黎深「拥雪见缘」装饰 -->
-    <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" style="opacity:.14" alt="" aria-hidden="true">
-    <div class="page-head"><span class="ico">📈</span><div><h1>目标进度</h1><p>可视化你的每一份努力</p></div></div>
     <div class="card">
       <div class="card-title">📊 各目标完成度</div>
       <div id="progressBars"></div>
@@ -613,6 +735,27 @@
           <input class="input" id="themePointsTextText" value="#ffffff" style="width:110px;font-family:monospace">
         </div>
       </div>
+      <div class="setting-row" style="border-top:2px dashed var(--pink-100);margin-top:6px;padding-top:14px">
+        <div><div class="s-label">💸 生活费起始色</div><div class="s-desc">生活费模块的渐变起始色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeLivingBg1" value="#ffd9a8" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeLivingBg1Text" value="#ffd9a8" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">💸 生活费结束色</div><div class="s-desc">生活费模块的渐变结束色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeLivingBg2" value="#ffb36b" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeLivingBg2Text" value="#ffb36b" style="width:110px;font-family:monospace">
+        </div>
+      </div>
+      <div class="setting-row">
+        <div><div class="s-label">💸 生活费文字色</div><div class="s-desc">生活费模块的文字颜色</div></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" id="themeLivingText" value="#ffffff" style="width:48px;height:36px;border:2px solid var(--pink-100);border-radius:10px;cursor:pointer;background:none">
+          <input class="input" id="themeLivingTextText" value="#ffffff" style="width:110px;font-family:monospace">
+        </div>
+      </div>
       <div class="setting-row">
         <div></div>
         <div style="display:flex;gap:8px">
@@ -664,6 +807,7 @@ const DEFAULTS={
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
   jars:[], savings:[], points:0, pointHistory:[],
+  living:{budget:0,records:[]},
   rewards:[
     {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
     {id:'r2',name:'喝一杯奶茶',cost:50,icon:'🧋'},
@@ -675,7 +819,7 @@ const DEFAULTS={
     {id:'r8',name:'游戏一小时',cost:40,icon:'🎮'}
   ],
   redemptions:[], achievements:[],
-  theme:{primary:'#4a7cb8', bg1:'#eef4fb', bg2:'#d4e4f4', heroBg1:'#6a9fd8', heroBg2:'#3a6ba8', heroText:'#ffffff', savingsBg1:'#6a9fd8', savingsBg2:'#3a6ba8', savingsText:'#ffffff', pointsBg1:'#6a9fd8', pointsBg2:'#3a6ba8', pointsText:'#ffffff'},
+  theme:{primary:'#4a7cb8', bg1:'#eef4fb', bg2:'#d4e4f4', heroBg1:'#6a9fd8', heroBg2:'#3a6ba8', heroText:'#ffffff', savingsBg1:'#6a9fd8', savingsBg2:'#3a6ba8', savingsText:'#ffffff', pointsBg1:'#6a9fd8', pointsBg2:'#3a6ba8', pointsText:'#ffffff', livingBg1:'#ffd9a8', livingBg2:'#ffb36b', livingText:'#ffffff'},
   streak:0, lastCheckinDate:null, totalCheckins:0
 };
 
@@ -810,8 +954,8 @@ function renderPanel(p){
   else if(p==='goals')renderGoals();
   else if(p==='checkin')renderCheckin();
   else if(p==='savings')renderSavings();
+  else if(p==='living')renderLiving();
   else if(p==='redeem')renderRewards();
-  else if(p==='calendar')renderCalendar();
   else if(p==='progress')renderProgress();
   else if(p==='history')renderHistory();
   else if(p==='pointslog')renderPointsLog();
@@ -911,19 +1055,6 @@ function renderHome(){
   const bal=savingsBalance();
   document.getElementById('qsSavings').textContent='¥'+bal.toFixed(0);
   document.getElementById('qsRedeemed').textContent=state.redemptions.length;
-  // 今日打卡任务列表（只显示打卡任务，不含一次性任务）
-  const list=document.getElementById('homeCheckinList');
-  const activeTasks=state.tasks.filter(t=>!t.claimed);
-  if(activeTasks.length===0){
-    list.innerHTML='<div class="empty-state"><span class="emoji">🌱</span>还没有打卡任务，去「打卡界面」创建一个吧～</div>';
-    return;
-  }
-  const td=today();const todayCis=state.checkins[td]||[];
-  list.innerHTML=activeTasks.map(t=>{
-    const done=todayCis.some(c=>c.taskId===t.id);
-    return `<div class="checkin-goal-row"><div class="gname">${t.emoji} ${t.title}</div>
-      <button class="btn ${done?'btn-done':'btn-pink'} btn-sm" ${done?'disabled':''} onclick="doCheckin('${t.id}')">${done?'✓ 已打卡':'打卡'}</button></div>`;
-  }).join('');
 }
 
 /* ===== 目标界面：一次性任务 ===== */
@@ -964,6 +1095,7 @@ function addGoal(){
   state.goals.push(g);save();renderGoals();closeModal();toast('一次性任务创建成功！🎉','🌟');
 }
 function renderGoals(){
+  const cp=document.getElementById('goalPoints');if(cp)cp.textContent=`🌟 当前点数：${fmtPts(state.points)}`;
   const grid=document.getElementById('goalGrid');
   // 不显示已完成（已领奖）的一次性任务
   const activeGoals=state.goals.filter(g=>!g.claimed);
@@ -1178,13 +1310,10 @@ function confirmDelTask(id){
   save();renderCheckin();closeModal();toast('已删除','🗑️');
 }
 function renderCheckin(){
+  const cp=document.getElementById('checkinPoints');if(cp)cp.textContent=`🌟 当前点数：${fmtPts(state.points)}`;
   const td=today();const tc=state.checkins[td]||[];
   // 不显示已完成（已领奖）的打卡任务
   const activeTasks=state.tasks.filter(t=>!t.claimed);
-  document.getElementById('ciToday').textContent=`${tc.length}/${activeTasks.length}`;
-  document.getElementById('ciStreak').textContent=calcStreak();
-  document.getElementById('ciTotal').textContent=totalCheckins();
-  document.getElementById('ciPoints').textContent=fmtPts(state.points);
   const list=document.getElementById('checkinList');
   if(activeTasks.length===0){
     list.innerHTML='<div class="empty-state"><span class="emoji">🌱</span>还没有打卡任务，先在上面创建一个吧～</div>';return;
@@ -1247,6 +1376,117 @@ function renderCheckin(){
       }).join('');
     }
   }
+}
+
+/* ===== 生活费 ===== */
+function livingData(){return state.living=(state.living&&state.living.records)?state.living:{budget:0,roomBudget:0,records:[]};}
+function livingIn(){return livingData().records.filter(r=>r.type==='in').reduce((s,r)=>s+r.amount,0);}
+function livingOut(){return livingData().records.filter(r=>r.type==='out').reduce((s,r)=>s+r.amount,0);}
+function livingRoomOut(){return livingData().records.filter(r=>r.type==='out'&&r.cat==='room').reduce((s,r)=>s+r.amount,0);}
+function livingRoomIn(){return livingData().records.filter(r=>r.type==='in'&&r.cat==='room').reduce((s,r)=>s+r.amount,0);}
+function livingRoomNet(){return livingRoomOut()-livingRoomIn();}
+function livingBalance(){return livingIn()-livingOut();}
+function livingBudget(){return livingData().budget||0;}
+function livingRoomBudget(){return livingData().roomBudget||0;}
+function openLivingModal(type){
+  const title=type==='in'?'💵 记一笔收入':'🛒 记一笔支出';
+  const catSel=type==='out'?`<div style="margin-bottom:14px"><label class="label">分类</label><select class="select" id="livCat">
+    <option value="normal">🍜 普通开销</option><option value="room">🛏️ 寝室费</option>
+  </select></div>`:'';
+  openModal(`<h3>${title}</h3>
+    <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="livAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
+    ${catSel}
+    <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="livNote" placeholder="${type==='in'?'例如：发工资':'例如：买菜'}"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addLiving('${type}')">确定</button></div>`);
+}
+function addLiving(type){
+  const amt=parseFloat(document.getElementById('livAmt').value);
+  if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
+  if(type==='out'&&livingBalance()<amt){toast('生活费余额不足～','😢');return;}
+  const note=document.getElementById('livNote').value.trim();
+  const cat=(type==='out'&&document.getElementById('livCat'))?document.getElementById('livCat').value:'normal';
+  livingData().records.push({id:uid(),type,cat,amount:amt,note:note||(type==='in'?'收入':(cat==='room'?'寝室支出':'支出')),date:Date.now()});
+  save();renderLiving();closeModal();
+  toast(type==='in'?`收入 ¥${amt} 已记入生活费！`:(cat==='room'?`寝室费支出 ¥${amt} 已记录`:`支出 ¥${amt} 已记录`),'💸');
+}
+function openRoomModal(type){
+  const title=type==='in'?'➕ 寝室费加一笔':'➖ 寝室费减一笔';
+  const tip=type==='in'?'用于冲销/退回一笔之前记多的寝室支出（例如记错后退回）':'记录一笔寝室费支出（例如买床品、交电费）';
+  openModal(`<h3>${title}</h3>
+    <div style="margin-bottom:10px;font-size:12px;color:var(--ink-soft);background:var(--pink-50);padding:8px 10px;border-radius:10px">${tip}</div>
+    <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="roomAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
+    <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="roomNote" placeholder="${type==='in'?'例如：退回多记':'例如：买床垫'}"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addRoom('${type}')">确定</button></div>`);
+}
+function addRoom(type){
+  const amt=parseFloat(document.getElementById('roomAmt').value);
+  if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
+  const note=document.getElementById('roomNote').value.trim();
+  livingData().records.push({id:uid(),type,cat:'room',amount:amt,note:note||(type==='in'?'寝室费退回':'寝室支出'),date:Date.now()});
+  save();renderLiving();closeModal();
+  toast(type==='in'?`寝室费退回 ¥${amt}，预算加回～`:`寝室费支出 ¥${amt} 已记录`,'🛏️');
+}
+function openLivingBudgetModal(){
+  openModal(`<h3>🎯 设置月度生活费预算</h3>
+    <div style="margin-bottom:14px"><label class="label">每月总生活费预算（元，0 = 不设）</label><input class="input" id="livBudget" type="number" min="0" step="0.01" value="${livingBudget()||''}" placeholder="例如：2000"></div>
+    <div style="margin-bottom:14px"><label class="label">🛏️ 寝室费预算（元，0 = 不设）</label><input class="input" id="livRoomBudget" type="number" min="0" step="0.01" value="${livingRoomBudget()||''}" placeholder="例如：800"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveLivingBudget()">确定</button></div>`);
+}
+function saveLivingBudget(){
+  const budget=parseFloat(document.getElementById('livBudget').value)||0;
+  const roomBudget=parseFloat(document.getElementById('livRoomBudget').value)||0;
+  if(budget<0||roomBudget<0){toast('预算不能为负～','😊');return;}
+  livingData().budget=budget;
+  livingData().roomBudget=roomBudget;
+  save();renderLiving();closeModal();toast('预算已保存！','🎯');
+}
+function renderLiving(){
+  const el=document.getElementById('livingAmount');
+  if(!el)return;
+  const bal=livingBalance(),budget=livingBudget(),out=livingOut();
+  const roomOut=livingRoomNet(),roomBudget=livingRoomBudget();
+  el.textContent='¥'+bal.toFixed(2);
+  document.getElementById('livingBudgetTip').textContent=budget>0?`预算 ¥${budget} · 已支出 ¥${out.toFixed(2)}`:'未设置月度预算';
+  const usage=budget>0?Math.min(100,Math.round(out/budget*100)):0;
+  document.getElementById('livingUsage').textContent=budget>0?usage+'%':'—';
+  document.getElementById('livingProgressFill').style.width=usage+'%';
+  document.getElementById('livingUsed').textContent=`已支出 ¥${out.toFixed(2)}`;
+  document.getElementById('livingLeft').textContent=budget>0?`剩余 ¥${Math.max(0,budget-out).toFixed(2)}`:'（未设预算）';
+  // 寝室费统计
+  const roomEl=document.getElementById('roomBudgetInfo');
+  if(roomEl){
+    document.getElementById('roomBudgetInfo').textContent=roomBudget>0?`预算 ¥${roomBudget}`:'未设预算';
+    document.getElementById('roomProgressFill').style.width=roomBudget>0?Math.min(100,Math.round(roomOut/roomBudget*100))+'%':'0%';
+    document.getElementById('roomUsed').textContent=`已用 ¥${roomOut.toFixed(2)}`;
+    document.getElementById('roomLeft').textContent=roomBudget>0?`剩余 ¥${Math.max(0,roomBudget-roomOut).toFixed(2)}`:'（未设预算）';
+  }
+  // 生活费明细（排除寝室费）与寝室费明细（只含寝室费）
+  renderFlowInto('livingFlow','livingCount',r=>r.cat!=='room',true);
+  renderFlowInto('roomFlow','roomCount',r=>r.cat==='room',false);
+}
+function renderFlowInto(listId,countId,filter,isLiving){
+  const el=document.getElementById(listId);
+  if(!el)return;
+  const recs=livingData().records.filter(filter).slice().reverse();
+  const cEl=document.getElementById(countId);
+  if(cEl)cEl.textContent=recs.length+' 条';
+  if(recs.length===0){
+    el.innerHTML=`<div class="empty-state"><span class="emoji">${isLiving?'💸':'🛏️'}</span>${isLiving?'还没有生活费记录，记一笔收入开始吧～':'还没有寝室费记录，点「加一笔」开始吧～'}</div>`;
+    return;
+  }
+  el.innerHTML=recs.map(r=>{
+    const d=new Date(r.date);
+    const ds=`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const cls=r.type==='in'?'in':'out';
+    const sign=r.type==='in'?'+':'-';
+    const tag=r.cat==='room'?'<span class="tag" style="background:#f0e6f5;color:#9a4ab5;margin-left:6px">寝室</span>':'';
+    return `<div class="flow-item"><span class="f-icon">${r.cat==='room'?'🛏️':(r.type==='in'?'💵':'🛒')}</span>
+      <div class="f-info"><h5>${r.note}${tag}</h5><p>${ds}</p></div>
+      <div class="f-amount ${cls}">${sign}¥${r.amount}</div></div>`;
+  }).join('');
 }
 
 /* ===== 存钱 ===== */
@@ -1511,8 +1751,9 @@ function changeMonth(n){
   renderCalendar();
 }
 
-/* ===== 目标进度 ===== */
+/* ===== 目标进度（含打卡日历） ===== */
 function renderProgress(){
+  if(typeof renderCalendar==='function')renderCalendar();
   const bars=document.getElementById('progressBars');
   // 合并展示：一次性任务（0/1）+ 打卡任务（count/target），不显示已完成
   const allItems=[
@@ -1690,17 +1931,17 @@ function renderSettings(){
 }
 /* ===== 主题颜色自定义 ===== */
 const THEME_PRESETS=[
-  {name:'黎深·冰',primary:'#4a7cb8',bg1:'#eef4fb',bg2:'#d4e4f4',heroBg1:'#6a9fd8',heroBg2:'#3a6ba8',heroText:'#ffffff',savingsBg1:'#6a9fd8',savingsBg2:'#3a6ba8',savingsText:'#ffffff',pointsBg1:'#6a9fd8',pointsBg2:'#3a6ba8',pointsText:'#ffffff',emoji:'❄️'},
-  {name:'樱花粉',primary:'#ff5c9c',bg1:'#fff0f6',bg2:'#ffd1e4',heroBg1:'#ffd1e4',heroBg2:'#ffafce',heroText:'#ffffff',savingsBg1:'#ffb3d1',savingsBg2:'#ff85b3',savingsText:'#ffffff',pointsBg1:'#ffd1e4',pointsBg2:'#ffa6c9',pointsText:'#ffffff',emoji:'🌸'},
-  {name:'薰衣草紫',primary:'#9b6dff',bg1:'#f5f0ff',bg2:'#e0d4ff',heroBg1:'#d9c8ff',heroBg2:'#b89aff',heroText:'#ffffff',savingsBg1:'#c8b0ff',savingsBg2:'#9a7aff',savingsText:'#ffffff',pointsBg1:'#d9c8ff',pointsBg2:'#b89aff',pointsText:'#ffffff',emoji:'💜'},
-  {name:'薄荷绿',primary:'#3cb371',bg1:'#f0fff5',bg2:'#d4f5e0',heroBg1:'#b5ecc8',heroBg2:'#7ed99a',heroText:'#ffffff',savingsBg1:'#7ed99a',savingsBg2:'#4a9d6e',savingsText:'#ffffff',pointsBg1:'#b5ecc8',pointsBg2:'#7ed99a',pointsText:'#ffffff',emoji:'🌿'},
-  {name:'天空蓝',primary:'#4a9eff',bg1:'#f0f8ff',bg2:'#d4ecff',heroBg1:'#a8d4ff',heroBg2:'#6ab8ff',heroText:'#ffffff',savingsBg1:'#7eb8ff',savingsBg2:'#4a90e8',savingsText:'#ffffff',pointsBg1:'#a8d4ff',pointsBg2:'#6ab8ff',pointsText:'#ffffff',emoji:'💙'},
-  {name:'蜜桃橙',primary:'#ff8c5a',bg1:'#fff5f0',bg2:'#ffe0d0',heroBg1:'#ffc4a8',heroBg2:'#ff9a70',heroText:'#ffffff',savingsBg1:'#ffaa80',savingsBg2:'#ff7744',savingsText:'#ffffff',pointsBg1:'#ffc4a8',pointsBg2:'#ff9a70',pointsText:'#ffffff',emoji:'🍑'},
-  {name:'柠檬黄',primary:'#e6a800',bg1:'#fffdf0',bg2:'#fff5cc',heroBg1:'#fff0a8',heroBg2:'#ffe070',heroText:'#5a4500',savingsBg1:'#ffe880',savingsBg2:'#e6c000',savingsText:'#5a4500',pointsBg1:'#fff0a8',pointsBg2:'#ffe070',pointsText:'#5a4500',emoji:'🍋'},
-  {name:'玫瑰红',primary:'#e63946',bg1:'#fff0f1',bg2:'#ffd6da',heroBg1:'#ffb3bc',heroBg2:'#ff8a99',heroText:'#ffffff',savingsBg1:'#ff8a99',savingsBg2:'#e05060',savingsText:'#ffffff',pointsBg1:'#ffb3bc',pointsBg2:'#ff8a99',pointsText:'#ffffff',emoji:'🌹'},
-  {name:'抹茶绿',primary:'#7a9a3a',bg1:'#f5f8ee',bg2:'#e0ebcc',heroBg1:'#d0e0a8',heroBg2:'#a8c870',heroText:'#ffffff',savingsBg1:'#a8c870',savingsBg2:'#6a8a2a',savingsText:'#ffffff',pointsBg1:'#d0e0a8',pointsBg2:'#a8c870',pointsText:'#ffffff',emoji:'🍵'},
-  {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',savingsBg1:'#c8a878',savingsBg2:'#9a7040',savingsText:'#ffffff',pointsBg1:'#e0cbb0',pointsBg2:'#c8a878',pointsText:'#ffffff',emoji:'☕'},
-  {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',savingsBg1:'#4a3a6a',savingsBg2:'#2e2245',savingsText:'#f0e8ff',pointsBg1:'#4a3a6a',pointsBg2:'#2e2245',pointsText:'#f0e8ff',emoji:'🌙'}
+  {name:'黎深·冰',primary:'#4a7cb8',bg1:'#eef4fb',bg2:'#d4e4f4',heroBg1:'#6a9fd8',heroBg2:'#3a6ba8',heroText:'#ffffff',savingsBg1:'#6a9fd8',savingsBg2:'#3a6ba8',savingsText:'#ffffff',pointsBg1:'#6a9fd8',pointsBg2:'#3a6ba8',pointsText:'#ffffff',livingBg1:'#a8d4e8',livingBg2:'#6ab0d8',livingText:'#ffffff',emoji:'❄️'},
+  {name:'樱花粉',primary:'#ff5c9c',bg1:'#fff0f6',bg2:'#ffd1e4',heroBg1:'#ffd1e4',heroBg2:'#ffafce',heroText:'#ffffff',savingsBg1:'#ffb3d1',savingsBg2:'#ff85b3',savingsText:'#ffffff',pointsBg1:'#ffd1e4',pointsBg2:'#ffa6c9',pointsText:'#ffffff',livingBg1:'#ffd9a8',livingBg2:'#ffb36b',livingText:'#ffffff',emoji:'🌸'},
+  {name:'薰衣草紫',primary:'#9b6dff',bg1:'#f5f0ff',bg2:'#e0d4ff',heroBg1:'#d9c8ff',heroBg2:'#b89aff',heroText:'#ffffff',savingsBg1:'#c8b0ff',savingsBg2:'#9a7aff',savingsText:'#ffffff',pointsBg1:'#d9c8ff',pointsBg2:'#b89aff',pointsText:'#ffffff',livingBg1:'#d9c8ff',livingBg2:'#b89aff',livingText:'#ffffff',emoji:'💜'},
+  {name:'薄荷绿',primary:'#3cb371',bg1:'#f0fff5',bg2:'#d4f5e0',heroBg1:'#b5ecc8',heroBg2:'#7ed99a',heroText:'#ffffff',savingsBg1:'#7ed99a',savingsBg2:'#4a9d6e',savingsText:'#ffffff',pointsBg1:'#b5ecc8',pointsBg2:'#7ed99a',pointsText:'#ffffff',livingBg1:'#b5ecc8',livingBg2:'#7ed99a',livingText:'#ffffff',emoji:'🌿'},
+  {name:'天空蓝',primary:'#4a9eff',bg1:'#f0f8ff',bg2:'#d4ecff',heroBg1:'#a8d4ff',heroBg2:'#6ab8ff',heroText:'#ffffff',savingsBg1:'#7eb8ff',savingsBg2:'#4a90e8',savingsText:'#ffffff',pointsBg1:'#a8d4ff',pointsBg2:'#6ab8ff',pointsText:'#ffffff',livingBg1:'#a8d4ff',livingBg2:'#6ab8ff',livingText:'#ffffff',emoji:'💙'},
+  {name:'蜜桃橙',primary:'#ff8c5a',bg1:'#fff5f0',bg2:'#ffe0d0',heroBg1:'#ffc4a8',heroBg2:'#ff9a70',heroText:'#ffffff',savingsBg1:'#ffaa80',savingsBg2:'#ff7744',savingsText:'#ffffff',pointsBg1:'#ffc4a8',pointsBg2:'#ff9a70',pointsText:'#ffffff',livingBg1:'#ffc4a8',livingBg2:'#ff9a70',livingText:'#ffffff',emoji:'🍑'},
+  {name:'柠檬黄',primary:'#e6a800',bg1:'#fffdf0',bg2:'#fff5cc',heroBg1:'#fff0a8',heroBg2:'#ffe070',heroText:'#5a4500',savingsBg1:'#ffe880',savingsBg2:'#e6c000',savingsText:'#5a4500',pointsBg1:'#fff0a8',pointsBg2:'#ffe070',pointsText:'#5a4500',livingBg1:'#fff0a8',livingBg2:'#ffe070',livingText:'#5a4500',emoji:'🍋'},
+  {name:'玫瑰红',primary:'#e63946',bg1:'#fff0f1',bg2:'#ffd6da',heroBg1:'#ffb3bc',heroBg2:'#ff8a99',heroText:'#ffffff',savingsBg1:'#ff8a99',savingsBg2:'#e05060',savingsText:'#ffffff',pointsBg1:'#ffb3bc',pointsBg2:'#ff8a99',pointsText:'#ffffff',livingBg1:'#ffb3bc',livingBg2:'#ff8a99',livingText:'#ffffff',emoji:'🌹'},
+  {name:'抹茶绿',primary:'#7a9a3a',bg1:'#f5f8ee',bg2:'#e0ebcc',heroBg1:'#d0e0a8',heroBg2:'#a8c870',heroText:'#ffffff',savingsBg1:'#a8c870',savingsBg2:'#6a8a2a',savingsText:'#ffffff',pointsBg1:'#d0e0a8',pointsBg2:'#a8c870',pointsText:'#ffffff',livingBg1:'#d0e0a8',livingBg2:'#a8c870',livingText:'#ffffff',emoji:'🍵'},
+  {name:'奶咖色',primary:'#a67c52',bg1:'#faf6f0',bg2:'#ece0d0',heroBg1:'#e0cbb0',heroBg2:'#c8a878',heroText:'#ffffff',savingsBg1:'#c8a878',savingsBg2:'#9a7040',savingsText:'#ffffff',pointsBg1:'#e0cbb0',pointsBg2:'#c8a878',pointsText:'#ffffff',livingBg1:'#e0cbb0',livingBg2:'#c8a878',livingText:'#ffffff',emoji:'☕'},
+  {name:'暗夜紫',primary:'#b388ff',bg1:'#2a2438',bg2:'#1a1525',heroBg1:'#4a3a6a',heroBg2:'#2e2245',heroText:'#f0e8ff',savingsBg1:'#4a3a6a',savingsBg2:'#2e2245',savingsText:'#f0e8ff',pointsBg1:'#4a3a6a',pointsBg2:'#2e2245',pointsText:'#f0e8ff',livingBg1:'#4a3a6a',livingBg2:'#2e2245',livingText:'#f0e8ff',emoji:'🌙'}
 ];
 // 根据主色派生出浅色变体（用于 --pink-50/100/200/300/400）
 function shade(hex,percent){
@@ -1739,6 +1980,11 @@ function applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,sa
   if(pointsBg1)root.style.setProperty('--points-bg1',pointsBg1);
   if(pointsBg2)root.style.setProperty('--points-bg2',pointsBg2);
   if(pointsText)root.style.setProperty('--points-text',pointsText);
+  // 生活费颜色（读取 state.theme 中的 living 字段，兼容旧主题数据）
+  const lt=(state&&state.theme&&state.theme.livingBg1)?state.theme:{};
+  if(lt.livingBg1)root.style.setProperty('--living-bg1',lt.livingBg1);
+  if(lt.livingBg2)root.style.setProperty('--living-bg2',lt.livingBg2);
+  if(lt.livingText)root.style.setProperty('--living-text',lt.livingText);
 }
 function isColorDark(hex){
   hex=hex.replace('#','');
@@ -1772,18 +2018,24 @@ function renderThemeSettings(){
   document.getElementById('themePointsBg2Text').value=t.pointsBg2||t.heroBg2||'#3a6ba8';
   document.getElementById('themePointsText').value=t.pointsText||'#ffffff';
   document.getElementById('themePointsTextText').value=t.pointsText||'#ffffff';
+  document.getElementById('themeLivingBg1').value=t.livingBg1||'#ffd9a8';
+  document.getElementById('themeLivingBg1Text').value=t.livingBg1||'#ffd9a8';
+  document.getElementById('themeLivingBg2').value=t.livingBg2||'#ffb36b';
+  document.getElementById('themeLivingBg2Text').value=t.livingBg2||'#ffb36b';
+  document.getElementById('themeLivingText').value=t.livingText||'#ffffff';
+  document.getElementById('themeLivingTextText').value=t.livingText||'#ffffff';
   // 预设主题按钮
   const wrap=document.getElementById('themePresets');
-  wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}','${p.savingsBg1||p.heroBg1}','${p.savingsBg2||p.heroBg2}','${p.savingsText||p.heroText}','${p.pointsBg1||p.heroBg1}','${p.pointsBg2||p.heroBg2}','${p.pointsText||p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
+  wrap.innerHTML=THEME_PRESETS.map(p=>`<button class="btn btn-ghost btn-sm" onclick="usePreset('${p.primary}','${p.bg1}','${p.bg2}','${p.heroBg1}','${p.heroBg2}','${p.heroText}','${p.savingsBg1||p.heroBg1}','${p.savingsBg2||p.heroBg2}','${p.savingsText||p.heroText}','${p.pointsBg1||p.heroBg1}','${p.pointsBg2||p.heroBg2}','${p.pointsText||p.heroText}','${p.livingBg1||'#ffd9a8'}','${p.livingBg2||'#ffb36b'}','${p.livingText||p.heroText}')" title="${p.name}" style="padding:6px 10px;border-color:${p.primary}">${p.emoji} ${p.name}</button>`).join('');
   // 颜色选择器和文本框联动
   const link=(colorId,textId)=>{
     document.getElementById(colorId).addEventListener('input',e=>{document.getElementById(textId).value=e.target.value;});
     document.getElementById(textId).addEventListener('input',e=>{if(/^#[0-9a-fA-F]{6}$/.test(e.target.value))document.getElementById(colorId).value=e.target.value;});
   };
   // 避免重复绑定
-  if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');link('themeSavingsBg1','themeSavingsBg1Text');link('themeSavingsBg2','themeSavingsBg2Text');link('themeSavingsText','themeSavingsTextText');link('themePointsBg1','themePointsBg1Text');link('themePointsBg2','themePointsBg2Text');link('themePointsText','themePointsTextText');wrap.dataset.bound='1';}
+  if(!wrap.dataset.bound){link('themePrimary','themePrimaryText');link('themeBg1','themeBg1Text');link('themeBg2','themeBg2Text');link('themeHeroBg1','themeHeroBg1Text');link('themeHeroBg2','themeHeroBg2Text');link('themeHeroText','themeHeroTextText');link('themeSavingsBg1','themeSavingsBg1Text');link('themeSavingsBg2','themeSavingsBg2Text');link('themeSavingsText','themeSavingsTextText');link('themePointsBg1','themePointsBg1Text');link('themePointsBg2','themePointsBg2Text');link('themePointsText','themePointsTextText');link('themeLivingBg1','themeLivingBg1Text');link('themeLivingBg2','themeLivingBg2Text');link('themeLivingText','themeLivingTextText');wrap.dataset.bound='1';}
 }
-function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText){
+function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText,livingBg1,livingBg2,livingText){
   document.getElementById('themePrimary').value=primary;document.getElementById('themePrimaryText').value=primary;
   document.getElementById('themeBg1').value=bg1;document.getElementById('themeBg1Text').value=bg1;
   document.getElementById('themeBg2').value=bg2;document.getElementById('themeBg2Text').value=bg2;
@@ -1796,6 +2048,11 @@ function usePreset(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg
   document.getElementById('themePointsBg1').value=pointsBg1||heroBg1;document.getElementById('themePointsBg1Text').value=pointsBg1||heroBg1;
   document.getElementById('themePointsBg2').value=pointsBg2||heroBg2;document.getElementById('themePointsBg2Text').value=pointsBg2||heroBg2;
   document.getElementById('themePointsText').value=pointsText||heroText;document.getElementById('themePointsTextText').value=pointsText||heroText;
+  document.getElementById('themeLivingBg1').value=livingBg1||heroBg1;document.getElementById('themeLivingBg1Text').value=livingBg1||heroBg1;
+  document.getElementById('themeLivingBg2').value=livingBg2||heroBg2;document.getElementById('themeLivingBg2Text').value=livingBg2||heroBg2;
+  document.getElementById('themeLivingText').value=livingText||heroText;document.getElementById('themeLivingTextText').value=livingText||heroText;
+  // 生活费颜色写入 state.theme，供 applyThemeColors 读取
+  state.theme=state.theme||{};state.theme.livingBg1=livingBg1||heroBg1;state.theme.livingBg2=livingBg2||heroBg2;state.theme.livingText=livingText||heroText;
   // 预览：立即应用
   applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText);
 }
@@ -1812,11 +2069,14 @@ function applyTheme(){
   const pointsBg1=document.getElementById('themePointsBg1Text').value.trim();
   const pointsBg2=document.getElementById('themePointsBg2Text').value.trim();
   const pointsText=document.getElementById('themePointsTextText').value.trim();
-  const vals=[primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText];
+  const livingBg1=document.getElementById('themeLivingBg1Text').value.trim();
+  const livingBg2=document.getElementById('themeLivingBg2Text').value.trim();
+  const livingText=document.getElementById('themeLivingTextText').value.trim();
+  const vals=[primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText,livingBg1,livingBg2,livingText];
   if(vals.some(v=>!/^#[0-9a-fA-F]{6}$/.test(v))){
     toast('颜色格式不正确，请用 #RRGGBB 格式～','😢');return;
   }
-  state.theme={primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText};save();
+  state.theme={primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText,livingBg1,livingBg2,livingText};save();
   applyThemeColors(primary,bg1,bg2,heroBg1,heroBg2,heroText,savingsBg1,savingsBg2,savingsText,pointsBg1,pointsBg2,pointsText);
   toast('主题已应用并保存！🎨','🎨');
 }
@@ -1835,6 +2095,9 @@ function resetTheme(){
   document.getElementById('themePointsBg1').value=d.pointsBg1;document.getElementById('themePointsBg1Text').value=d.pointsBg1;
   document.getElementById('themePointsBg2').value=d.pointsBg2;document.getElementById('themePointsBg2Text').value=d.pointsBg2;
   document.getElementById('themePointsText').value=d.pointsText;document.getElementById('themePointsTextText').value=d.pointsText;
+  document.getElementById('themeLivingBg1').value=d.livingBg1||'#ffd9a8';document.getElementById('themeLivingBg1Text').value=d.livingBg1||'#ffd9a8';
+  document.getElementById('themeLivingBg2').value=d.livingBg2||'#ffb36b';document.getElementById('themeLivingBg2Text').value=d.livingBg2||'#ffb36b';
+  document.getElementById('themeLivingText').value=d.livingText||'#ffffff';document.getElementById('themeLivingTextText').value=d.livingText||'#ffffff';
   applyThemeColors(d.primary,d.bg1,d.bg2,d.heroBg1,d.heroBg2,d.heroText,d.savingsBg1,d.savingsBg2,d.savingsText,d.pointsBg1,d.pointsBg2,d.pointsText);
   toast('已恢复默认黎深冰蓝主题～','❄️');
 }
