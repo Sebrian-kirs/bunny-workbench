@@ -159,6 +159,19 @@
   .savings-label{font-size:14px;opacity:.95}
   .savings-actions{display:flex;gap:12px;justify-content:center;margin-top:18px}
 
+  /* ===== 存钱罐卡片 ===== */
+  .jar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:18px}
+  .jar-card{background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);padding:16px;transition:all .25s}
+  .jar-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .jar-card.active{border-color:var(--pink-400);box-shadow:var(--shadow-lg)}
+  .jar-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .jar-icon{font-size:28px}
+  .jar-info{flex:1}
+  .jar-info h4{font-size:15px;color:var(--ink)}
+  .jar-info p{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .jar-edit{display:flex;gap:6px}
+  .jar-btns{display:flex;gap:8px;margin-top:10px}
+
   /* ===== 兑换 ===== */
   .points-banner{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--points-bg1,#ffd1e4),var(--points-bg2,#ffa6c9));border-radius:20px;padding:20px 26px;color:var(--points-text,#fff);box-shadow:var(--shadow);margin-bottom:20px}
   .points-banner .big{font-size:34px;font-weight:800}
@@ -382,19 +395,21 @@
 
   <!-- ===== 4. 目前存钱数额 ===== -->
   <section class="panel" id="panel-savings">
-    <div class="page-head"><span class="ico">❄️</span><div><h1>目前存钱数额</h1><p>把零花钱存进冰晶罐，看着它慢慢凝结</p></div></div>
+    <div class="page-head"><span class="ico">❄️</span><div><h1>我的存钱罐</h1><p>把零花钱分罐存起来，看着它们慢慢凝结</p></div></div>
     <div class="savings-hero" style="position:relative">
       <!-- 黎深「雪色深流」装饰 -->
       <img src="https://patchwiki.biligame.com/images/lysk/b/b0/d5havny2ffo2k1a3rx7jf4giqxo03ez.png" class="zayne-card-decor" style="right:10px;bottom:8px;width:130px;height:130px;opacity:.25" alt="" aria-hidden="true">
-      <div class="savings-label">❄️ 我的冰晶罐余额</div>
+      <div class="savings-label">❄️ 全部存钱罐总余额</div>
       <div class="savings-amount" id="savingsAmount">¥0.00</div>
       <div class="savings-actions">
-        <button class="btn btn-ghost" onclick="openSavingModal('in')">💰 存入</button>
-        <button class="btn btn-ghost" onclick="openSavingModal('out')">💸 取出</button>
+        <button class="btn btn-ghost" onclick="openSavingModal('in','')">💰 存入</button>
+        <button class="btn btn-ghost" onclick="openSavingModal('out','')">💸 取出</button>
+        <button class="btn btn-ghost" onclick="openJarModal('')">➕ 新建存钱罐</button>
       </div>
     </div>
+    <div class="jar-grid" id="jarGrid"></div>
     <div class="card">
-      <div class="card-title">🧾 存钱流水记录</div>
+      <div class="card-title" id="flowFullTitle">🧾 全部存钱流水</div>
       <div class="flow-list" id="flowFull"></div>
     </div>
   </section>
@@ -647,7 +662,7 @@ const DEFAULTS={
   tasks:[],        // 多次打卡任务：{id,title,emoji,reward,target,desc,createdAt,claimed}
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
-  savings:[], points:0, pointHistory:[],
+  jars:[], savings:[], points:0, pointHistory:[],
   rewards:[
     {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
     {id:'r2',name:'喝一杯奶茶',cost:50,icon:'🧋'},
@@ -664,14 +679,29 @@ const DEFAULTS={
 };
 
 let state=load();
+if(state.__jarMigrated){delete state.__jarMigrated;save();}
 function load(){
   try{
     const s=JSON.parse(localStorage.getItem(KEY));
-    if(!s)return {...DEFAULTS};
+    if(!s){const st={...DEFAULTS,savings:[]};migrateSavings(st);return st;}
     const merged={...DEFAULTS,...s,theme:{...DEFAULTS.theme,...(s.theme||{})}};
+    migrateSavings(merged);
     return merged;
   }
-  catch(e){return {...DEFAULTS};}
+  catch(e){const st={...DEFAULTS,savings:[]};migrateSavings(st);return st;}
+}
+/* 存钱罐数据迁移：保证至少有一个存钱罐，并把无罐归属的流水归入默认罐 */
+function migrateSavings(st){
+  if(!Array.isArray(st.jars)||st.jars.length===0){
+    const jarId=uid();
+    st.jars=[{id:jarId,name:'默认存钱罐',icon:'❄️',target:0,createdAt:Date.now()}];
+    (Array.isArray(st.savings)?st.savings:[]).forEach(r=>{ if(!r.jarId) r.jarId=jarId; });
+    st.__jarMigrated=true;
+  }else{
+    const firstId=st.jars[0].id;
+    (st.savings||[]).forEach(r=>{ if(!r.jarId||!st.jars.some(j=>j.id===r.jarId)) r.jarId=firstId; });
+  }
+  st.savings=Array.isArray(st.savings)?st.savings:[];
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -1219,30 +1249,105 @@ function renderCheckin(){
 }
 
 /* ===== 存钱 ===== */
-function savingsBalance(){return state.savings.reduce((s,r)=>s+(r.type==='in'?r.amount:-r.amount),0);}
-function openSavingModal(type){
-  const title=type==='in'?'💰 存入金额':'💸 取出金额';
+let activeJarId=null; // null = 显示全部流水
+const JAR_ICONS=['❄️','🐷','🎒','🏠','🚗','✈️','🎓','💍','📱','🎁'];
+function jars(){return state.jars;}
+// jarId 传 null/undefined = 所有罐总余额；传具体 id = 该罐余额
+function savingsBalance(jarId){
+  return state.savings.reduce((s,r)=>(jarId&&r.jarId!==jarId)?s:s+(r.type==='in'?r.amount:-r.amount),0);
+}
+function openJarModal(jarId){ // 空 id = 新增；否则编辑
+  const j=jars().find(x=>x.id===jarId);
+  openModal(`<h3>${j?'✏️ 编辑存钱罐':'➕ 新建存钱罐'}</h3>
+    <div style="margin-bottom:14px"><label class="label">名称</label><input class="input" id="jarName" value="${j?j.name:''}" placeholder="例如：旅行基金"></div>
+    <div style="margin-bottom:14px"><label class="label">图标</label><select class="select" id="jarIcon">${JAR_ICONS.map(i=>`<option ${j&&j.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+    <div style="margin-bottom:14px"><label class="label">目标金额（选填，0 或留空 = 不设目标）</label><input class="input" id="jarTarget" type="number" min="0" step="0.01" value="${j?j.target||'':''}" placeholder="例如：1000"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveJar('${jarId||''}')">确定</button></div>`);
+}
+function saveJar(jarId){
+  const name=document.getElementById('jarName').value.trim();
+  if(!name){toast('请输入存钱罐名称～','😊');return;}
+  const icon=document.getElementById('jarIcon').value;
+  const target=parseFloat(document.getElementById('jarTarget').value)||0;
+  if(target<0){toast('目标金额不能为负～','😊');return;}
+  if(jarId){Object.assign(jars().find(j=>j.id===jarId),{name,icon,target});}
+  else{jars().push({id:uid(),name,icon,target,createdAt:Date.now()});}
+  save();renderSavings();closeModal();toast(jarId?'存钱罐已更新～':'新建存钱罐成功！','❄️');
+}
+function deleteJar(jarId){
+  const j=jars().find(x=>x.id===jarId);
+  if(!j)return;
+  if(jars().length<=1){toast('至少保留一个存钱罐哦～','🥺');return;}
+  const flowCount=state.savings.filter(r=>r.jarId===jarId).length;
+  openModal(`<h3 style="color:#e85d5d">🗑️ 删除「${j.icon} ${j.name}」？</h3>
+    <p>该罐当前余额 ¥${savingsBalance(jarId).toFixed(2)}${flowCount?`，且包含 <b>${flowCount}</b> 条流水记录，将<b>一并删除且不可恢复</b>！`:'。'}</p>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-danger" onclick="confirmDeleteJar('${jarId}')">我确定删除</button></div>`);
+}
+function confirmDeleteJar(jarId){
+  state.jars=jars().filter(j=>j.id!==jarId);
+  state.savings=state.savings.filter(r=>r.jarId!==jarId);
+  if(activeJarId===jarId)activeJarId=null;
+  save();closeModal();renderSavings();toast('存钱罐已删除','🗑️');
+}
+function openSavingModal(type,jarId){
+  const j=jars().find(x=>x.id===jarId);
+  const title=`${type==='in'?'💰 存入':'💸 取出'}${j?' · '+j.icon+' '+j.name:''}`;
   openModal(`<h3>${title}</h3>
     <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="savAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
+    ${j?'':`<div style="margin-bottom:14px"><label class="label">存钱罐</label><select class="select" id="savJar">${jars().map(x=>`<option value="${x.id}">${x.icon} ${x.name}（余额 ¥${savingsBalance(x.id).toFixed(2)}）</option>`).join('')}</select></div>`}
     <div style="margin-bottom:14px"><label class="label">备注</label><input class="input" id="savNote" placeholder="选填，例如：本月零花钱"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
-    <button class="btn btn-pink" onclick="addSaving('${type}')">确定</button></div>`);
+    <button class="btn btn-pink" onclick="addSaving('${type}','${jarId||''}')">确定</button></div>`);
 }
-function addSaving(type){
+function addSaving(type,jarId){
   const amt=parseFloat(document.getElementById('savAmt').value);
   if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
+  const realJarId=jarId||document.getElementById('savJar').value;
+  if(type==='out'&&savingsBalance(realJarId)<amt){toast('该罐余额不足～','😢');return;}
   const note=document.getElementById('savNote').value.trim();
-  state.savings.push({id:uid(),type,amount:amt,note:note||(type==='in'?'存入':'取出'),date:Date.now()});
-  save();renderSavings();closeModal();
+  state.savings.push({id:uid(),jarId:realJarId,type,amount:amt,note:note||(type==='in'?'存入':'取出'),date:Date.now()});
+  save();renderSavings();renderHome();closeModal();checkAchievements();
   toast(type==='in'?`存入 ¥${amt} 成功！🐷`:`取出 ¥${amt} 成功`,'💰');
 }
+function selectJar(jarId){activeJarId=(activeJarId===jarId)?null:jarId;renderSavings();}
 function renderSavings(){
   document.getElementById('savingsAmount').textContent='¥'+savingsBalance().toFixed(2);
-  // 渲染完整流水（原存钱流水界面内容已合并到这里）
+  // 罐卡片网格
+  const grid=document.getElementById('jarGrid');
+  grid.innerHTML=jars().map(j=>{
+    const bal=savingsBalance(j.id), pct=j.target>0?Math.min(100,bal/j.target*100):0;
+    const prog=j.target>0
+      ? `<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+         <div class="progress-text"><span>¥${bal.toFixed(2)} / ¥${j.target}</span><span>${bal>=j.target?'已达成 🎉':'还差 ¥'+(j.target-bal).toFixed(2)}</span></div></div>`
+      : `<div class="progress-text" style="margin-top:8px"><span>¥${bal.toFixed(2)}</span><span>未设目标</span></div>`;
+    return `<div class="jar-card ${activeJarId===j.id?'active':''}">
+      <div class="jar-head" onclick="selectJar('${j.id}')">
+        <span class="jar-icon">${j.icon}</span>
+        <div class="jar-info"><h4>${j.name}</h4><p>余额 ¥${bal.toFixed(2)}</p></div>
+        <div class="jar-edit">
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openJarModal('${j.id}')">✏️</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();deleteJar('${j.id}')">🗑️</button>
+        </div>
+      </div>
+      ${prog}
+      <div class="jar-btns">
+        <button class="btn btn-ghost btn-sm" onclick="openSavingModal('in','${j.id}')">💰 存入</button>
+        <button class="btn btn-ghost btn-sm" onclick="openSavingModal('out','${j.id}')">💸 取出</button>
+      </div>
+    </div>`;
+  }).join('');
+  // 分罐流水
+  const jarOf=id=>{const j=jars().find(x=>x.id===id);return j?`${j.icon} ${j.name}`:'❄️ 默认存钱罐';};
+  document.getElementById('flowFullTitle').textContent=activeJarId?`🧾 ${jarOf(activeJarId)}的流水记录`:'🧾 全部存钱流水';
   const el=document.getElementById('flowFull');
-  const list=state.savings.slice().reverse();
-  if(list.length===0){el.innerHTML='<div class="empty-state"><span class="emoji">🧾</span>还没有存钱记录，点上方按钮存第一笔吧～</div>';return;}
-  el.innerHTML=list.map(r=>flowItemHTML(r.type==='in'?'💰':'💸',r.note,r.date,r.type==='in'?`+¥${r.amount}`:`-¥${r.amount}`,r.type==='in'?'in':'out')).join('');
+  const list=state.savings.filter(r=>!activeJarId||r.jarId===activeJarId).slice().reverse();
+  el.innerHTML=list.length
+    ?list.map(r=>flowItemHTML(r.type==='in'?'💰':'💸',
+        (activeJarId?'':`[${jarOf(r.jarId)}] `)+r.note,
+        r.date,r.type==='in'?`+¥${r.amount}`:`-¥${r.amount}`,r.type==='in'?'in':'out')).join('')
+    :'<div class="empty-state"><span class="emoji">🧾</span>该罐还没有存钱记录，点上方按钮存第一笔吧～</div>';
 }
 function flowItemHTML(icon,note,date,amount,cls){
   const d=new Date(date);
@@ -1743,6 +1848,7 @@ function importData(e){
     try{
       const data=JSON.parse(ev.target.result);
       state={...DEFAULTS,...data};
+      migrateSavings(state);
       save();toast('数据导入成功！','📥');
       renderPanel(document.querySelector('.nav-item.active').dataset.panel);
     }catch(err){toast('导入失败，文件格式错误','😢');}
@@ -1769,7 +1875,7 @@ function resetAll(){
     <button class="btn btn-danger" onclick="confirmResetAll()">我确定，全部清空</button></div>`);
 }
 function confirmResetAll(){
-  state={...DEFAULTS,rewards:DEFAULTS.rewards.map(r=>({...r}))};save();closeModal();
+  state={...DEFAULTS,rewards:DEFAULTS.rewards.map(r=>({...r}))};migrateSavings(state);save();closeModal();
   renderPanel('home');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelector('[data-panel="home"]').classList.add('active');
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
