@@ -163,32 +163,6 @@
   .progress-bar{height:10px;background:var(--pink-50);border-radius:10px;overflow:hidden;border:1px solid var(--pink-100)}
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--pink-300),var(--pink-500));border-radius:10px;transition:width .5s}
   .progress-text{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:4px}
-  /* ===== 宿舍值日表 ===== */
-  .duty-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-  .duty-week-label{font-size:16px;font-weight:800;color:var(--pink-600)}
-  .duty-grid{display:grid;grid-template-columns:repeat(7,minmax(150px,1fr));gap:10px;overflow-x:auto;padding-bottom:4px}
-  .duty-weekly-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:10px;margin-top:16px}
-  .duty-weekly-card{background:rgba(255,255,255,.92);border:2px solid var(--line);border-radius:16px;overflow:hidden}
-  .duty-weekly-card.done{background:#f1fff3;border-color:#a9d9af}
-  .duty-weekly-card-head{padding:12px 14px;background:var(--pink-50);border-bottom:1px solid var(--pink-100);display:flex;align-items:center;justify-content:space-between;font-weight:800;color:var(--pink-600)}
-  .duty-weekly-card-body{padding:12px 14px}
-  .duty-day{background:rgba(255,255,255,.92);border:2px solid var(--line);border-radius:16px;min-width:150px;overflow:hidden}
-  .duty-day.today{border-color:var(--pink-400);box-shadow:0 0 0 3px var(--pink-50)}
-  .duty-day-head{padding:12px 10px;background:var(--pink-50);border-bottom:1px solid var(--pink-100);text-align:center}
-  .duty-day-head strong{display:block;color:var(--pink-600);font-size:14px}
-  .duty-day-head span{font-size:11px;color:var(--ink-soft)}
-  .duty-slot{padding:10px;border-bottom:1px dashed var(--pink-100)}
-  .duty-slot:last-child{border-bottom:0}
-  .duty-slot-title{display:flex;align-items:center;justify-content:space-between;gap:4px;font-size:12px;font-weight:800;color:var(--ink);margin-bottom:6px}
-  .duty-person{font-size:12px;color:var(--ink-soft);min-height:28px;line-height:1.35;word-break:break-word}
-  .duty-person.empty{color:#aab7c5}
-  .duty-actions{display:flex;gap:5px;margin-top:7px}
-  .duty-actions .btn{flex:1;padding:5px 4px;font-size:10px}
-  .duty-slot.done{background:#f1fff3}
-  .duty-slot.done .duty-person{text-decoration:line-through;color:#5fa76d}
-  .duty-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-soft)}
-  .duty-people{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .duty-person-chip{display:inline-flex;align-items:center;gap:5px;background:var(--pink-50);border:1px solid var(--pink-100);border-radius:14px;padding:5px 9px;font-size:12px;color:var(--pink-600)}
   .goal-actions{display:flex;gap:8px;margin-top:12px}
   .goal-deadline{font-size:11px;color:var(--pink-400);margin-top:4px}
 
@@ -349,12 +323,10 @@
   .ach-card h4{font-size:13px;color:var(--ink);margin:8px 0 4px}
   .ach-card p{font-size:11px;color:var(--ink-soft)}
   .ach-card .badge{position:absolute;top:8px;right:8px;font-size:16px}
-  .ach-card .ach-ops{position:absolute;top:6px;left:6px;display:flex;gap:4px;opacity:0;transition:opacity .2s}
-  .ach-card:hover .ach-ops{opacity:1}
+  .ach-card .ach-ops{position:absolute;top:6px;left:6px;display:flex;gap:4px;opacity:0;pointer-events:none;transition:opacity .2s}
+  .ach-card:hover .ach-ops,.ach-card.show-ops .ach-ops{opacity:1;pointer-events:auto}
   .ach-op{background:rgba(255,255,255,.9);border:1px solid var(--pink-200);border-radius:8px;font-size:13px;width:26px;height:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
   .ach-op:hover{background:var(--pink-100);transform:scale(1.1)}
-  /* 手机端常显编辑按钮（无hover） */
-  @media (hover:none){.ach-card .ach-ops{opacity:1}}
 
   /* ===== 设置 ===== */
   .setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px dashed var(--pink-100)}
@@ -476,7 +448,6 @@
   <div class="nav-item active" data-panel="home"><span class="nav-icon">🏠</span><span>桌面</span></div>
   <div class="nav-item" data-panel="goals"><span class="nav-icon">🎯</span><span>目标</span></div>
   <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡</span></div>
-  <div class="nav-item" data-panel="duty"><span class="nav-icon">🧹</span><span>值日</span></div>
   <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>存钱</span></div>
   <div class="nav-item" data-panel="living"><span class="nav-icon">💵</span><span>生活费</span></div>
   <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>兑换</span></div>
@@ -553,35 +524,6 @@
     <div class="card">
       <div class="card-title">📜 打卡历史明细</div>
       <div class="flow-list" id="checkinHistoryList"></div>
-    </div>
-  </section>
-
-  <!-- ===== 4. 宿舍值日表 ===== -->
-  <section class="panel" id="panel-duty">
-    <div class="page-head"><span class="ico">🧹</span><div><h1>宿舍值日表</h1><p>宿舍每天打扫；浴室、阳台、厕所每周各安排一次</p></div></div>
-    <div class="card">
-      <div class="duty-toolbar">
-        <div><div class="card-title" style="margin-bottom:2px">📅 本周安排</div><div class="duty-week-label" id="dutyWeekLabel">加载中…</div></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" onclick="changeDutyWeek(-1)">◀ 上周</button>
-          <button class="btn btn-ghost btn-sm" onclick="changeDutyWeek(0)">本周</button>
-          <button class="btn btn-ghost btn-sm" onclick="changeDutyWeek(1)">下周 ▶</button>
-        </div>
-      </div>
-      <div class="card-title" style="font-size:15px;margin-bottom:8px">🛏️ 每日宿舍打扫</div>
-      <div class="duty-grid" id="dutyGrid"></div>
-      <div class="card-title" style="font-size:15px;margin:20px 0 8px">🚿 本周公共区域（每周各安排一次）</div>
-      <div class="duty-weekly-grid" id="dutyWeeklyGrid"></div>
-      <div class="duty-legend"><span>🟢 已完成</span><span>⚪ 待完成</span><span>宿舍按天安排，浴室、阳台、厕所按周安排；点击“安排”可修改负责人</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">👥 宿舍成员</div>
-      <div class="section-tip" style="margin-bottom:12px">添加成员后，可以安排每日宿舍或本周公共区域负责人。多人用逗号分隔也可以。</div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <input class="input" id="dutyPersonInput" style="max-width:360px" placeholder="输入成员姓名，例如：小王">
-        <button class="btn btn-pink" onclick="addDutyPerson()">➕ 添加成员</button>
-      </div>
-      <div class="duty-people" id="dutyPeople"></div>
     </div>
   </section>
 
@@ -929,7 +871,6 @@ const DEFAULTS={
   tasks:[],        // 多次打卡任务：{id,title,emoji,reward,target,desc,createdAt,claimed}
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
-  duty:{people:[],assignments:{},completed:{}}, // 宿舍值日成员、安排和完成状态
   jars:[], savings:[], points:0, pointHistory:[],
   living:{budget:0,records:[]},
   rewards:[
@@ -1082,7 +1023,6 @@ function renderPanel(p){
   if(p==='home')renderHome();
   else if(p==='goals')renderGoals();
   else if(p==='checkin')renderCheckin();
-  else if(p==='duty')renderDuty();
   else if(p==='savings')renderSavings();
   else if(p==='living')renderLiving();
   else if(p==='redeem')renderRewards();
@@ -1510,117 +1450,6 @@ function renderCheckin(){
       }).join('');
     }
   }
-}
-
-/* ===== 宿舍值日表 ===== */
-// 宿舍按天安排；浴室、阳台、厕所按周安排，每个区域每周只出现一项任务
-const DUTY_DAILY_AREAS=[
-  {id:'room',name:'宿舍',icon:'🛏️'}
-];
-const DUTY_WEEKLY_AREAS=[
-  {id:'bathroom',name:'浴室',icon:'🚿'},
-  {id:'balcony',name:'阳台',icon:'🌤️'},
-  {id:'toilet',name:'厕所',icon:'🚽'}
-];
-const DUTY_AREAS=DUTY_DAILY_AREAS.concat(DUTY_WEEKLY_AREAS);
-let dutyWeekOffset=0;
-function dutyData(){
-  if(!state.duty||typeof state.duty!=='object')state.duty={people:[],assignments:{},completed:{}};
-  if(!Array.isArray(state.duty.people))state.duty.people=[];
-  if(!state.duty.assignments||typeof state.duty.assignments!=='object')state.duty.assignments={};
-  if(!state.duty.completed||typeof state.duty.completed!=='object')state.duty.completed={};
-  return state.duty;
-}
-function dutyDateKey(d){return todayKey(d);}
-function dutyWeekKey(){return dutyDateKey(dutyWeekStart());}
-function dutyWeekStart(){
-  const d=newDate();
-  d.setHours(0,0,0,0);
-  const day=d.getDay();
-  d.setDate(d.getDate()-day+dutyWeekOffset*7);
-  return d;
-}
-function dutyWeekDates(){
-  const start=dutyWeekStart();
-  return Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(start.getDate()+i);return d;});
-}
-function dutyAssignmentKey(ds,area){return ds+'|'+area;}
-function dutyWeeklyKey(area){return 'week|'+dutyWeekKey()+'|'+area;}
-function dutySlotHtml(ds,area){
-  const data=dutyData(),key=dutyAssignmentKey(ds,area.id),person=data.assignments[key]||'',done=!!data.completed[key];
-  return `<div class="duty-slot ${done?'done':''}">
-    <div class="duty-slot-title"><span>${area.icon} ${area.name}</span><span>${done?'✓':''}</span></div>
-    <div class="duty-person ${person?'':'empty'}">${person?esc(person):'暂未安排'}</div>
-    <div class="duty-actions"><button class="btn btn-ghost" onclick="openDutyAssign('${ds}','${area.id}')">安排</button><button class="btn ${done?'btn-done':'btn-ghost'}" onclick="toggleDutyDone('${ds}','${area.id}')">${done?'已完成':'完成'}</button></div>
-  </div>`;
-}
-function dutyWeeklyCardHtml(area){
-  const data=dutyData(),key=dutyWeeklyKey(area.id),person=data.assignments[key]||'',done=!!data.completed[key];
-  return `<div class="duty-weekly-card ${done?'done':''}">
-    <div class="duty-weekly-card-head"><span>${area.icon} ${area.name}</span><span>${done?'✓ 已完成':'本周一次'}</span></div>
-    <div class="duty-weekly-card-body"><div class="duty-person ${person?'':'empty'}">负责人：${person?esc(person):'暂未安排'}</div>
-      <div class="duty-actions"><button class="btn btn-ghost" onclick="openDutyAssign('${dutyWeekKey()}','${area.id}')">安排</button><button class="btn ${done?'btn-done':'btn-ghost'}" onclick="toggleDutyDone('${dutyWeekKey()}','${area.id}')">${done?'已完成':'完成'}</button></div>
-    </div>
-  </div>`;
-}
-function renderDuty(){
-  dutyData();
-  const dates=dutyWeekDates();
-  const start=dates[0],end=dates[6];
-  const fmt=d=>`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-  const label=document.getElementById('dutyWeekLabel');
-  if(label)label.textContent=`${fmt(start)} - ${fmt(end)}`;
-  const grid=document.getElementById('dutyGrid');
-  if(grid){
-    const weeks=['日','一','二','三','四','五','六'];
-    grid.innerHTML=dates.map((d,i)=>{
-      const ds=dutyDateKey(d),isToday=ds===today();
-      return `<div class="duty-day ${isToday?'today':''}"><div class="duty-day-head"><strong>星期${weeks[i]}</strong><span>${d.getMonth()+1}月${d.getDate()}日${isToday?' · 今天':''}</span></div>${dutySlotHtml(ds,DUTY_DAILY_AREAS[0])}</div>`;
-    }).join('');
-  }
-  const weeklyGrid=document.getElementById('dutyWeeklyGrid');
-  if(weeklyGrid)weeklyGrid.innerHTML=DUTY_WEEKLY_AREAS.map(dutyWeeklyCardHtml).join('');
-  renderDutyPeople();
-}
-function changeDutyWeek(n){
-  if(n===0)dutyWeekOffset=0;else dutyWeekOffset+=n;
-  renderDuty();
-}
-function openDutyAssign(ds,areaId){
-  const data=dutyData(),area=DUTY_AREAS.find(a=>a.id===areaId),isWeekly=DUTY_WEEKLY_AREAS.some(a=>a.id===areaId);
-  const key=isWeekly?dutyWeeklyKey(areaId):dutyAssignmentKey(ds,areaId),current=data.assignments[key]||'';
-  const options=['<option value="">暂不安排</option>'].concat(data.people.map(p=>`<option value="${esc(p)}" ${p===current?'selected':''}>${esc(p)}</option>`)).join('');
-  const d=isWeekly?dutyWeekStart():new Date(ds+'T00:00:00');
-  openModal(`<h3>${area?area.icon:'🧹'} 安排${area?area.name:'值日'}</h3><p style="font-size:12px;color:var(--ink-soft);margin-bottom:14px">${isWeekly?'本周一次 · 选择本周负责人':`${d.getMonth()+1}月${d.getDate()}日 · 选择当天负责人`}</p>
-    <div style="margin-bottom:14px"><label class="label">负责人</label><select class="select" id="dutyAssignee">${options}</select></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-pink" onclick="saveDutyAssign('${ds}','${areaId}')">保存安排</button></div>`);
-}
-function saveDutyAssign(ds,areaId){
-  const isWeekly=DUTY_WEEKLY_AREAS.some(a=>a.id===areaId),key=isWeekly?dutyWeeklyKey(areaId):dutyAssignmentKey(ds,areaId),value=document.getElementById('dutyAssignee').value;
-  if(value)dutyData().assignments[key]=value;else delete dutyData().assignments[key];
-  save();closeModal();renderDuty();toast(value?'值日安排已保存':'已取消这项安排','🧹');
-}
-function toggleDutyDone(ds,areaId){
-  const isWeekly=DUTY_WEEKLY_AREAS.some(a=>a.id===areaId),key=isWeekly?dutyWeeklyKey(areaId):dutyAssignmentKey(ds,areaId),data=dutyData();
-  data.completed[key]=!data.completed[key];
-  save();renderDuty();toast(data.completed[key]?'已标记完成，辛苦啦！':'已撤销完成标记','✅');
-}
-function addDutyPerson(){
-  const input=document.getElementById('dutyPersonInput'),name=(input.value||'').trim();
-  if(!name){toast('请先输入成员姓名～','😊');return;}
-  const data=dutyData();
-  if(data.people.includes(name)){toast('这个成员已经添加过啦～','😊');return;}
-  data.people.push(name);input.value='';save();renderDuty();toast(`已添加成员：${name}`,'👥');
-}
-function removeDutyPerson(name){
-  const data=dutyData();
-  data.people=data.people.filter(p=>p!==name);
-  save();renderDuty();toast(`已移除成员：${name}`,'🧹');
-}
-function renderDutyPeople(){
-  const el=document.getElementById('dutyPeople');if(!el)return;
-  const people=dutyData().people;
-  el.innerHTML=people.length?people.map(p=>`<span class="duty-person-chip">👤 ${esc(p)} <button type="button" aria-label="移除${esc(p)}" title="移除成员" onclick="removeDutyPerson('${esc(p).replace(/'/g,'\\&#39;')}')" style="border:0;background:none;color:var(--pink-500);cursor:pointer;font-weight:800">×</button></span>`).join(''):'<span style="font-size:12px;color:var(--ink-soft)">还没有添加宿舍成员</span>';
 }
 
 /* ===== 生活费 ===== */
@@ -2216,7 +2045,7 @@ function renderAchievements(){
   document.getElementById('achTotal').textContent=defs.length;
   document.getElementById('achGrid').innerHTML=defs.map(a=>{
     const unlocked=state.achievements.includes(a.id);
-    return `<div class="ach-card ${unlocked?'unlocked':'locked'}">
+    return `<div class="ach-card ${unlocked?'unlocked':'locked'}" onclick="toggleAchOps(event,this)">
       ${unlocked?'<div class="badge">✓</div>':''}
       <div class="ach-ops">
         <button class="ach-op" onclick="toggleAch('${a.id}')" title="${unlocked?'设为未解锁':'手动解锁'}">${unlocked?'🔒':'🔓'}</button>
@@ -2228,6 +2057,14 @@ function renderAchievements(){
     </div>`;
   }).join('');
 }
+function toggleAchOps(event,card){
+  if(event.target.closest('.ach-op'))return;
+  document.querySelectorAll('.ach-card.show-ops').forEach(el=>{if(el!==card)el.classList.remove('show-ops');});
+  card.classList.toggle('show-ops');
+}
+document.addEventListener('click',event=>{
+  if(!event.target.closest('.ach-card'))document.querySelectorAll('.ach-card.show-ops').forEach(el=>el.classList.remove('show-ops'));
+});
 /* 新增或编辑成就 */
 function openAchModal(id){
   const a=id?(state.achievementDefs||[]).find(x=>x.id===id):null;
