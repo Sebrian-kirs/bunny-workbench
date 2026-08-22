@@ -282,15 +282,6 @@
   .cal-day.today{border-color:var(--pink-400);font-weight:800;color:var(--pink-600)}
   .cal-day.checked{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;font-weight:700}
   .cal-day .dots{position:absolute;bottom:4px;font-size:9px}
-  .cal-day .day-progress{font-size:9px;line-height:1.1;margin-top:3px;white-space:nowrap;font-weight:700;color:var(--pink-500)}
-  .cal-day.checked .day-progress{color:#fff}
-  .day-progress-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--pink-50);border:1px solid var(--pink-100);border-radius:12px;margin-bottom:14px}
-  .day-progress-summary strong{font-size:18px;color:var(--pink-500)}
-  .day-progress-summary span{font-size:12px;color:var(--ink-soft)}
-  .day-goal-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--pink-100)}
-  .day-goal-row:last-child{border-bottom:0}
-  .day-goal-row .goal-state{margin-left:auto;font-size:12px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
-  .day-goal-row .goal-state.done{color:#46a46b}
 
   /* ===== 进度图表 ===== */
   .chart-bar-wrap{display:flex;align-items:flex-end;gap:14px;height:220px;padding:14px 0;border-bottom:2px solid var(--line)}
@@ -649,6 +640,7 @@
     </div>
     <div class="card">
       <div class="card-title">📜 全部打卡明细</div>
+      <div class="section-tip" style="margin-bottom:10px">点击日期可展开当天的打卡记录</div>
       <div class="flow-list" id="allCheckinDetail"></div>
     </div>
   </section>
@@ -683,6 +675,7 @@
     </div>
     <div class="card">
       <div class="card-title">📜 点数变动明细</div>
+      <div class="section-tip" style="margin-bottom:10px">点击记录可展开查看具体变动原因和时间</div>
       <div class="flow-list" id="pointslogList"></div>
     </div>
   </section>
@@ -1806,17 +1799,6 @@ document.addEventListener('click',event=>{
 
 /* ===== 日历 ===== */
 let calYear,calMonth;
-function getDayProgress(ds){
-  const endMs=new Date(ds+'T23:59:59').getTime();
-  const tasks=(state.tasks||[]).filter(t=>!t.createdAt||t.createdAt<=endMs);
-  const entries=state.checkins[ds]||[];
-  const checkedIds=new Set(entries.map(c=>c.taskId));
-  const done=tasks.filter(t=>checkedIds.has(t.id)).length;
-  return {tasks,entries,checkedIds,done,total:tasks.length,pct:tasks.length?Math.round(done/tasks.length*100):0};
-}
-function taskCountThroughDate(taskId,ds){
-  return Object.keys(state.checkins||{}).filter(key=>key<=ds).reduce((sum,key)=>sum+(state.checkins[key]||[]).filter(c=>c.taskId===taskId).length,0);
-}
 function renderCalendar(){
   if(!calYear){const d=newDate();calYear=d.getFullYear();calMonth=d.getMonth();}
   const dow=['日','一','二','三','四','五','六'];
@@ -1830,14 +1812,13 @@ function renderCalendar(){
   for(let i=0;i<startDow;i++)html+='<div class="cal-day empty"></div>';
   for(let d=1;d<=days;d++){
     const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const progress=getDayProgress(ds);
-    const checked=progress.entries.length>0;
+    const entries=state.checkins[ds]||[];
+    const checked=entries.length>0;
     const isToday=ds===todayStr;
     let cls='cal-day';
     if(checked)cls+=' checked';
     if(isToday)cls+=' today';
-    const progressLabel=progress.total?`${progress.done}/${progress.total}`:'—';
-    html+=`<button type="button" class="${cls}" onclick="showCalendarDay('${ds}')" aria-label="查看${ds}当天记录和目标进度">${d}<div class="day-progress">${progressLabel}</div><div class="dots">${checked?'·'.repeat(Math.min(progress.entries.length,3)):''}</div></button>`;
+    html+=`<button type="button" class="${cls}" onclick="showCalendarDay('${ds}')" aria-label="查看${ds}当天打卡记录">${d}<div class="dots">${checked?'·'.repeat(Math.min(entries.length,3)):''}</div></button>`;
   }
   document.getElementById('calGrid').innerHTML=html;
 }
@@ -1847,26 +1828,17 @@ function changeMonth(n){
   renderCalendar();
 }
 function showCalendarDay(ds){
-  const progress=getDayProgress(ds);
-  const entries=progress.entries;
-  const tasks=progress.tasks;
+  const entries=state.checkins[ds]||[];
   const goals=state.goals||[];
   const date=new Date(ds+'T00:00:00');
   const dateLabel=`${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
-  const progressRows=tasks.length?tasks.map(task=>{
-    const checked=progress.checkedIds.has(task.id);
-    const current=Math.min(taskCountThroughDate(task.id,ds),task.target||1);
-    const target=task.target||1;
-    const pct=Math.round(current/target*100);
-    return `<div class="day-goal-row"><span class="f-icon">${task.emoji||'✅'}</span><div class="f-info"><h5>${esc(task.title)}</h5><p>截至当天累计进度 ${current}/${target} · ${pct}%</p></div><span class="goal-state ${checked?'done':''}">${checked?'✓ 今日已完成':'今日未完成'}</span></div>`;
-  }).join(''):'<div class="empty-state" style="padding:14px"><span class="emoji">🎯</span>当天暂无可统计的打卡目标</div>';
   const rows=entries.length?entries.map(entry=>{
     const task=(state.tasks||[]).find(t=>t.id===entry.taskId);
     const time=entry.time?new Date(entry.time).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';
     return `<div class="flow-item"><span class="f-icon">${task?task.emoji:'✅'}</span><div class="f-info"><h5>${task?esc(task.title):'打卡记录'}</h5><p>${time}${entry.note?' · '+esc(entry.note):''}</p></div><div class="f-amount in">+${task?fmtPts(task.reward||0):'✓'}</div></div>`;
   }).join(''):'<div class="empty-state"><span class="emoji">📭</span>这一天还没有打卡记录</div>';
   const goalRows=goals.filter(g=>g.completedAt&&todayKey(new Date(g.completedAt))===ds).map(g=>`<div class="flow-item"><span class="f-icon">${g.emoji||'🎯'}</span><div class="f-info"><h5>完成目标：${esc(g.title)}</h5><p>一次性任务已完成</p></div><div class="f-amount in">✓</div></div>`).join('');
-  openModal(`<h3>📅 ${dateLabel}</h3><div class="day-records"><div class="day-progress-summary"><div><strong>${progress.done}/${progress.total||0}</strong><span> 当日目标完成</span></div><span>完成率 ${progress.pct}%</span></div><div class="card-title">当日目标进度</div>${progressRows}<div class="card-title" style="margin-top:14px">当天打卡</div>${rows}${goalRows?`<div class="card-title" style="margin-top:14px">当天完成目标</div>${goalRows}`:''}</div><div class="modal-actions"><button class="btn btn-pink" onclick="closeModal()">知道了</button></div>`);
+  openModal(`<h3>📅 ${dateLabel}</h3><div class="day-records"><div class="card-title">当天打卡</div>${rows}${goalRows?`<div class="card-title" style="margin-top:14px">当天完成目标</div>${goalRows}`:''}</div><div class="modal-actions"><button class="btn btn-pink" onclick="closeModal()">知道了</button></div>`);
 }
 
 /* ===== 目标进度（含打卡日历） ===== */
@@ -1899,7 +1871,7 @@ function renderProgress(){
     const allDone=allItems.filter(it=>it.current>=it.target).length;
     ringWrap.innerHTML=ringSVG(pct,'整体完成')+ringSVG(allItems.length?Math.round(allDone/allItems.length*100):0,'已达成任务');
   }
-  // 全部打卡明细（同一任务合并，显示共几次）
+  // 全部打卡明细：按日期折叠，默认收起
   const cd=document.getElementById('allCheckinDetail');
   if(cd){
     const allDates=Object.keys(state.checkins).sort().reverse();
@@ -1908,7 +1880,6 @@ function renderProgress(){
     }else{
       cd.innerHTML=allDates.map(ds=>{
         const entries=state.checkins[ds]||[];
-        // 合并同一天同一任务的打卡记录
         const merged={};
         entries.forEach(c=>{
           const key=c.taskId||'unknown';
@@ -1916,16 +1887,17 @@ function renderProgress(){
           merged[key].count++;
           if(c.time>merged[key].lastTime)merged[key].lastTime=c.time;
         });
-        return Object.values(merged).map(m=>{
+        const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
+        const rows=Object.values(merged).map(m=>{
           const task=state.tasks.find(t=>t.id===m.taskId);
           const name=task?task.title:'已删除的任务';
           const emoji=task?task.emoji:'❓';
           const t=new Date(m.lastTime);
           const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
-          const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
           const countStr=m.count>1?` · 共 ${m.count} 次`:'';
           return `<div class="flow-item"><span class="f-icon">${emoji}</span><div class="f-info"><h5>${name}${countStr}</h5><p>${dateLabel} ${ts}</p></div><div class="f-amount in">✓</div></div>`;
         }).join('');
+        return `<details class="hist-details"><summary class="hist-summary"><span class="hist-emoji">📅</span><span class="hist-name">${dateLabel}</span><span class="hist-count">${entries.length} 次打卡</span></summary><div class="hist-body">${rows}</div></details>`;
       }).join('');
     }
   }
@@ -1970,7 +1942,7 @@ function renderPointsLog(){
   if(list.length===0){
     el.innerHTML='<div class="empty-state"><span class="emoji">🌟</span>还没有点数变动记录</div>';return;
   }
-  el.innerHTML=list.map(p=>{
+  el.innerHTML=list.map((p,i)=>{
     const d=new Date(p.date);
     const ds=`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     const isEarn=p.amount>0;
@@ -1978,11 +1950,7 @@ function renderPointsLog(){
     const typeLabels={earn:'任务奖励',bonus:'连续打卡奖励',spend:'兑换消耗',redeem:'兑换消耗'};
     const icon=icons[p.type]||(isEarn?'🌟':'🎁');
     const typeLabel=typeLabels[p.type]||(isEarn?'获得':'消耗');
-    return `<div class="flow-item">
-      <span class="f-icon">${icon}</span>
-      <div class="f-info"><h5>${typeLabel}：${p.note}</h5><p>${ds}</p></div>
-      <div class="f-amount ${isEarn?'in':'out'}">${isEarn?'+':'-'}${fmtPts(Math.abs(p.amount))} 🌟</div>
-    </div>`;
+    return `<details class="hist-details"><summary class="hist-summary"><span class="hist-emoji">${icon}</span><span class="hist-name">${typeLabel}</span><span class="hist-count">${isEarn?'+':'-'}${fmtPts(Math.abs(p.amount))} 🌟</span></summary><div class="hist-body"><div class="flow-item"><span class="f-icon">${icon}</span><div class="f-info"><h5>${typeLabel}：${esc(p.note||'点数变动')}</h5><p>${ds}</p></div><div class="f-amount ${isEarn?'in':'out'}">${isEarn?'+':'-'}${fmtPts(Math.abs(p.amount))} 🌟</div></div></div></details>`;
   }).join('');
 }
 
