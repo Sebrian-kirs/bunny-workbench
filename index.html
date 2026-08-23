@@ -210,6 +210,25 @@
   .living-room-text{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-top:4px}
   .living-room-actions{display:flex;gap:8px;margin-top:12px}
   .living-room-actions .btn{flex:1;font-size:12px;padding:8px 10px}
+  /* 生活费预算模块 */
+  .budget-modules{margin-top:20px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+  .budget-modules-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .budget-modules-head h4{font-size:15px;font-weight:700;color:var(--ink)}
+  .budget-summary{font-size:12px;color:var(--ink-soft);margin-bottom:12px;line-height:1.6}
+  .budget-summary b{color:#c77b2a}
+  .module-list{display:flex;flex-direction:column;gap:12px}
+  .module-item{background:var(--pink-50);border:1px solid var(--pink-100);border-radius:14px;padding:12px 14px}
+  .module-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .module-name{font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .module-name .module-emoji{cursor:pointer}
+  .module-figures{font-size:12px;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+  .module-figures .over{color:var(--danger,#e03131);font-weight:700}
+  .module-bar{height:8px;background:#fff;border:1px solid var(--pink-100);border-radius:8px;margin:8px 0 6px;overflow:hidden}
+  .module-bar .progress-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#ff9a4d,#e85d2a);transition:width .3s}
+  .module-bar .progress-fill.over{background:linear-gradient(90deg,#ff6b6b,#e03131)}
+  .module-actions{display:flex;gap:6px;flex-wrap:wrap}
+  .module-actions .btn{font-size:11px;padding:5px 9px;flex:1}
+  .budget-empty{padding:14px;text-align:center;color:var(--ink-soft);font-size:13px}
   /* 生活费/寝室费可折叠明细 */
   .living-details{margin-top:16px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:var(--radius);overflow:hidden}
   .living-details.room-details{margin-top:16px}
@@ -528,19 +547,28 @@
         <div>
           <div class="living-label">💵 本月生活费结余</div>
           <div class="living-amount" id="livingAmount">¥0.00</div>
-          <div class="living-budget-tip" id="livingBudgetTip">未设置月度预算</div>
         </div>
-        <div class="living-badge" id="livingUsage">0%</div>
       </div>
       <div class="living-actions">
         <button class="btn btn-ghost" onclick="openLivingModal('in')">💵 记一笔收入</button>
         <button class="btn btn-ghost" onclick="openLivingModal('out')">🛒 记一笔支出</button>
-        <button class="btn btn-ghost" onclick="openLivingBudgetModal()">🎯 设置预算</button>
       </div>
       <div class="living-progress">
-        <div class="progress-bar"><div class="progress-fill" id="livingProgressFill" style="width:0%"></div></div>
-        <div class="progress-text"><span id="livingUsed">已支出 ¥0.00</span><span id="livingLeft">剩余 ¥0.00</span></div>
+        <div class="progress-text"><span id="livingUsed">已支出 ¥0.00</span></div>
       </div>
+    </div>
+
+    <!-- 总预算 / 总收入 -->
+    <div class="budget-modules">
+      <div class="budget-modules-head"><h4>🎯 本月总预算 &amp; 总收入</h4><button class="btn btn-ghost" onclick="openLivingBudgetModal()" style="font-size:12px;padding:6px 10px">✏️ 设置</button></div>
+      <div class="budget-summary" id="livingTotalSummary"></div>
+    </div>
+
+    <!-- 预算模块 -->
+    <div class="budget-modules">
+      <div class="budget-modules-head"><h4>📊 生活费预算模块</h4><button class="btn btn-ghost" onclick="openModuleModal('')" style="font-size:12px;padding:6px 10px">➕ 新增</button></div>
+      <div class="budget-summary" id="budgetSummary"></div>
+      <div class="module-list" id="moduleList"></div>
     </div>
 
     <!-- 生活费明细：可折叠 -->
@@ -553,9 +581,8 @@
 
     <!-- 寝室费：独立卡片 -->
     <div class="living-room">
-      <div class="living-room-head"><span>🛏️ 寝室费（独立预算）</span><span class="living-room-budget" id="roomBudgetInfo">未设预算</span></div>
-      <div class="living-room-bar"><div class="progress-bar"><div class="progress-fill" id="roomProgressFill" style="width:0%"></div></div></div>
-      <div class="living-room-text"><span id="roomUsed">已用 ¥0.00</span><span id="roomLeft">剩余 ¥0.00</span></div>
+      <div class="living-room-head"><span>🛏️ 寝室费</span></div>
+      <div class="living-room-text"><span id="roomUsed">当前共有 ¥0.00</span></div>
       <div class="living-room-actions">
         <button class="btn btn-ghost" onclick="openRoomModal('in')">➕ 加一笔</button>
         <button class="btn btn-ghost" onclick="openRoomModal('out')">➖ 减一笔</button>
@@ -865,7 +892,7 @@ const DEFAULTS={
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
   jars:[], savings:[], points:0, pointHistory:[],
-  living:{budget:0,records:[]},
+  living:{budget:0,modules:[],records:[]},
   rewards:[
     {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
     {id:'r2',name:'喝一杯奶茶',cost:50,icon:'🧋'},
@@ -908,10 +935,12 @@ function migrateSavings(st){
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function moneyFmt(n){const v=Math.abs(n).toFixed(2);return (n<0?'-¥':'¥')+v;}
+const MOD_EMOJIS=['🍜','🚌','🛒','☕','🏠','👕','💊','📚','🎮','🎁','✈️','🐱','💡','📱','🍱','🚕'];
 // HTML 转义，防止用户输入破坏页面结构
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-// 点数格式化：整数显示整数，小数显示一位（避免浮点误差）
-function fmtPts(n){n=Number(n)||0;return Number.isInteger(n)?String(n):n.toFixed(1);}
+// 点数格式化：整数显示整数，最多保留两位小数，去掉无意义的尾随零（避免浮点误差）
+function fmtPts(n){n=Number(n)||0;return n.toFixed(2).replace(/\.?0+$/,'');}
 function today(){const d=newDate();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function todayKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function newDate(){return new Date();}
@@ -1446,44 +1475,77 @@ function renderCheckin(){
 }
 
 /* ===== 生活费 ===== */
-function livingData(){return state.living=(state.living&&state.living.records)?state.living:{budget:0,roomBudget:0,records:[]};}
-function livingIn(){return livingData().records.filter(r=>r.type==='in').reduce((s,r)=>s+r.amount,0);}
-function livingOut(){return livingData().records.filter(r=>r.type==='out').reduce((s,r)=>s+r.amount,0);}
+function livingData(){
+  if(!state.living||!state.living.records){state.living={budget:0,modules:[],records:[]};}
+  if(!Array.isArray(state.living.modules))state.living.modules=[];
+  return state.living;
+}
+function livingModules(){return livingData().modules;}
+function moduleById(id){return livingModules().find(m=>m.id===id);}
+function livingIn(){return livingData().records.filter(r=>r.type==='in'&&r.cat!=='room').reduce((s,r)=>s+r.amount,0);}
+function livingOut(){return livingData().records.filter(r=>r.type==='out'&&r.cat!=='room').reduce((s,r)=>s+r.amount,0);}
 function livingRoomOut(){return livingData().records.filter(r=>r.type==='out'&&r.cat==='room').reduce((s,r)=>s+r.amount,0);}
 function livingRoomIn(){return livingData().records.filter(r=>r.type==='in'&&r.cat==='room').reduce((s,r)=>s+r.amount,0);}
-function livingRoomNet(){return livingRoomOut()-livingRoomIn();}
+// 某模块已支出（accounts 为该模块关联账户 id 列表）
+function moduleOut(id){return livingData().records.filter(r=>r.type==='out'&&r.module===id).reduce((s,r)=>s+r.amount,0);}
 function livingBalance(){return livingIn()-livingOut();}
-function livingBudget(){return livingData().budget||0;}
-function livingRoomBudget(){return livingData().roomBudget||0;}
+function livingRoomBalance(){return livingRoomIn()-livingRoomOut();}
+function budgetModulesTotal(){return livingModules().reduce((s,m)=>s+(m.budget||0),0);}
+function livingTotalBudget(){return livingData().totalBudget||0;}
+function livingTotalIncome(){return livingData().totalIncome||0;}
 function openLivingModal(type){
   const title=type==='in'?'💵 记一笔收入':'🛒 记一笔支出';
-  const catSel=type==='out'?`<div style="margin-bottom:14px"><label class="label">分类</label><select class="select" id="livCat">
-    <option value="normal">🍜 普通开销</option><option value="room">🛏️ 寝室费</option>
-  </select></div>`:'';
+  let catSel='';
+  if(type==='out'){
+    const mods=livingModules();
+    const opts=mods.map(m=>`<option value="${m.id}">${m.emoji||'📦'} ${m.name}</option>`).join('');
+    catSel=`<div style="margin-bottom:14px"><label class="label">分类</label><select class="select" id="livCat">
+      ${opts?`<option value="module">📊 预算模块（${mods.length}）</option>`:''}
+      <option value="normal">🍜 普通开销</option><option value="room">🛏️ 寝室费（独立）</option>
+    </select></div>
+    ${opts?`<div style="margin-bottom:14px" id="livModuleWrap"><label class="label">选择预算模块</label><select class="select" id="livModule">${opts}</select></div>`:''}`;
+  }
   openModal(`<h3>${title}</h3>
     <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="livAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
     ${catSel}
     <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="livNote" placeholder="${type==='in'?'例如：发工资':'例如：买菜'}"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
     <button class="btn btn-pink" onclick="addLiving('${type}')">确定</button></div>`);
+  if(type==='out'){
+    const sel=document.getElementById('livCat');
+    const wrap=document.getElementById('livModuleWrap');
+    if(sel&&wrap){
+      const sync=()=>{wrap.style.display=(sel.value==='module')?'block':'none';};
+      sel.addEventListener('change',sync);sync();
+    }
+  }
 }
 function addLiving(type){
   const amt=parseFloat(document.getElementById('livAmt').value);
   if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
-  if(type==='out'&&livingBalance()<amt){toast('生活费余额不足～','😢');return;}
   const note=document.getElementById('livNote').value.trim();
-  const cat=(type==='out'&&document.getElementById('livCat'))?document.getElementById('livCat').value:'normal';
-  livingData().records.push({id:uid(),type,cat,amount:amt,note:note||(type==='in'?'收入':(cat==='room'?'寝室支出':'支出')),date:Date.now()});
+  const catEl=document.getElementById('livCat');
+  let cat='normal',module=null;
+  if(type==='out'&&catEl){
+    const v=catEl.value;
+    if(v==='module'){module=document.getElementById('livModule').value;cat='module';}
+    else cat=v;
+  }
+  if(cat==='room'){
+    livingData().records.push({id:uid(),type,cat:'room',amount:amt,note:note||'寝室支出',date:Date.now()});
+    save();renderLiving();closeModal();toast(`寝室费支出 ¥${amt} 已记录`,'🛏️');return;
+  }
+  livingData().records.push({id:uid(),type,cat,module:module||null,amount:amt,note:note||(type==='in'?'收入':(module?'预算支出':'支出')),date:Date.now()});
   save();renderLiving();closeModal();
-  toast(type==='in'?`收入 ¥${amt} 已记入生活费！`:(cat==='room'?`寝室费支出 ¥${amt} 已记录`:`支出 ¥${amt} 已记录`),'💵');
+  toast(type==='in'?`收入 ¥${amt} 已记入生活费！`:(module?`已记入预算模块 ¥${amt}`:`支出 ¥${amt} 已记录`),'💵');
 }
 function openRoomModal(type){
   const title=type==='in'?'➕ 寝室费加一笔':'➖ 寝室费减一笔';
-  const tip=type==='in'?'用于冲销/退回一笔之前记多的寝室支出（例如记错后退回）':'记录一笔寝室费支出（例如买床品、交电费）';
+  const tip=type==='in'?'往寝室费里存一笔钱（例如：学期开始存入一笔寝室费）':'记录一笔寝室费支出（例如买床品、交电费）';
   openModal(`<h3>${title}</h3>
     <div style="margin-bottom:10px;font-size:12px;color:var(--ink-soft);background:var(--pink-50);padding:8px 10px;border-radius:10px">${tip}</div>
     <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="roomAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
-    <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="roomNote" placeholder="${type==='in'?'例如：退回多记':'例如：买床垫'}"></div>
+    <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="roomNote" placeholder="${type==='in'?'例如：存入寝室费':'例如：买床垫'}"></div>
     <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
     <button class="btn btn-pink" onclick="addRoom('${type}')">确定</button></div>`);
 }
@@ -1491,48 +1553,128 @@ function addRoom(type){
   const amt=parseFloat(document.getElementById('roomAmt').value);
   if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
   const note=document.getElementById('roomNote').value.trim();
-  livingData().records.push({id:uid(),type,cat:'room',amount:amt,note:note||(type==='in'?'寝室费退回':'寝室支出'),date:Date.now()});
+  livingData().records.push({id:uid(),type,cat:'room',amount:amt,note:note||(type==='in'?'寝室费存入':'寝室支出'),date:Date.now()});
   save();renderLiving();closeModal();
-  toast(type==='in'?`寝室费退回 ¥${amt}，预算加回～`:`寝室费支出 ¥${amt} 已记录`,'🛏️');
-}
-function openLivingBudgetModal(){
-  openModal(`<h3>🎯 设置月度生活费预算</h3>
-    <div style="margin-bottom:14px"><label class="label">每月总生活费预算（元，0 = 不设）</label><input class="input" id="livBudget" type="number" min="0" step="0.01" value="${livingBudget()||''}" placeholder="例如：2000"></div>
-    <div style="margin-bottom:14px"><label class="label">🛏️ 寝室费预算（元，0 = 不设）</label><input class="input" id="livRoomBudget" type="number" min="0" step="0.01" value="${livingRoomBudget()||''}" placeholder="例如：800"></div>
-    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
-    <button class="btn btn-pink" onclick="saveLivingBudget()">确定</button></div>`);
-}
-function saveLivingBudget(){
-  const budget=parseFloat(document.getElementById('livBudget').value)||0;
-  const roomBudget=parseFloat(document.getElementById('livRoomBudget').value)||0;
-  if(budget<0||roomBudget<0){toast('预算不能为负～','😊');return;}
-  livingData().budget=budget;
-  livingData().roomBudget=roomBudget;
-  save();renderLiving();closeModal();toast('预算已保存！','🎯');
+  toast(type==='in'?`寝室费已存入 ¥${amt}～`:`寝室费支出 ¥${amt} 已记录`,'🛏️');
 }
 function renderLiving(){
   const el=document.getElementById('livingAmount');
   if(!el)return;
-  const bal=livingBalance(),budget=livingBudget(),out=livingOut();
-  const roomOut=livingRoomNet(),roomBudget=livingRoomBudget();
-  el.textContent='¥'+bal.toFixed(2);
-  document.getElementById('livingBudgetTip').textContent=budget>0?`预算 ¥${budget} · 已支出 ¥${out.toFixed(2)}`:'未设置月度预算';
-  const usage=budget>0?Math.min(100,Math.round(out/budget*100)):0;
-  document.getElementById('livingUsage').textContent=budget>0?usage+'%':'—';
-  document.getElementById('livingProgressFill').style.width=usage+'%';
+  const bal=livingBalance(),out=livingOut();
+  el.textContent=moneyFmt(bal);
   document.getElementById('livingUsed').textContent=`已支出 ¥${out.toFixed(2)}`;
-  document.getElementById('livingLeft').textContent=budget>0?`剩余 ¥${Math.max(0,budget-out).toFixed(2)}`:'（未设预算）';
+  // 预算模块汇总
+  const total=budgetModulesTotal();
+  const used=livingModules().reduce((s,m)=>s+moduleOut(m.id),0);
+  const sumEl=document.getElementById('budgetSummary');
+  if(sumEl)sumEl.innerHTML=total>0?`本月预算共 <b>¥${total.toFixed(2)}</b> · 已用 <b>¥${used.toFixed(2)}</b> · 剩余 <b>¥${Math.max(0,total-used).toFixed(2)}</b>`:'尚未设置预算模块，点「➕ 新增」添加吃饭、通行等分类吧～';
+  // 总预算/总收入
+  const tb=livingTotalBudget(),ti=livingTotalIncome();
+  const tEl=document.getElementById('livingTotalSummary');
+  if(tEl){
+    const out=livingOut();
+    const remain=tb>0?Math.max(0,tb-out):null;
+    tEl.innerHTML=`本月总预算 <b>¥${tb.toFixed(2)}</b>${tb>0?` · 已支出 <b>¥${out.toFixed(2)}</b> · 剩余 <b>¥${remain.toFixed(2)}</b>`:''}<br>本月总收入 <b>¥${ti.toFixed(2)}</b>`;
+  }
+  // 模块列表
+  const listEl=document.getElementById('moduleList');
+  if(listEl){
+    const mods=livingModules();
+    if(mods.length===0){
+      listEl.innerHTML=`<div class="budget-empty">还没有预算模块，点上方「➕ 新增」创建第一个～</div>`;
+    }else{
+      listEl.innerHTML=mods.map(m=>{
+        const used=moduleOut(m.id),bk=m.budget||0;
+        const pct=bk>0?Math.min(100,Math.round(used/bk*100)):0;
+        const over=used>bk&&bk>0;
+        return `<div class="module-item" data-id="${m.id}">
+          <div class="module-top">
+            <div class="module-name"><span class="module-emoji" onclick="openModuleModal('${m.id}')" title="点击编辑">${m.emoji||'📦'}</span>${m.name}</div>
+            <div class="module-figures">已用 ¥${used.toFixed(2)} / 预算 ¥${bk.toFixed(2)}${over?` <span class="over">超 ¥${(used-bk).toFixed(2)}</span>`:''}</div>
+          </div>
+          <div class="module-bar"><div class="progress-fill${over?' over':''}" style="width:${pct}%"></div></div>
+          <div class="module-actions">
+            <button class="btn btn-ghost" onclick="quickModuleOut('${m.id}')">🛒 记一笔</button>
+            <button class="btn btn-ghost" onclick="openModuleModal('${m.id}')">✏️ 编辑</button>
+            <button class="btn btn-ghost" onclick="deleteModule('${m.id}')">🗑️ 删除</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
   // 寝室费统计
-  const roomEl=document.getElementById('roomBudgetInfo');
+  const roomEl=document.getElementById('roomUsed');
   if(roomEl){
-    document.getElementById('roomBudgetInfo').textContent=roomBudget>0?`预算 ¥${roomBudget}`:'未设预算';
-    document.getElementById('roomProgressFill').style.width=roomBudget>0?Math.min(100,Math.round(roomOut/roomBudget*100))+'%':'0%';
-    document.getElementById('roomUsed').textContent=`已用 ¥${roomOut.toFixed(2)}`;
-    document.getElementById('roomLeft').textContent=roomBudget>0?`剩余 ¥${Math.max(0,roomBudget-roomOut).toFixed(2)}`:'（未设预算）';
+    document.getElementById('roomUsed').textContent=`当前共有 ${moneyFmt(livingRoomBalance())}`;
   }
   // 生活费明细（排除寝室费）与寝室费明细（只含寝室费）
   renderFlowInto('livingFlow','livingCount',r=>r.cat!=='room',true);
   renderFlowInto('roomFlow','roomCount',r=>r.cat==='room',false);
+}
+function quickModuleOut(id){
+  const m=moduleById(id);if(!m)return;
+  openModal(`<h3>${m.emoji||'📦'} ${m.name} · 记一笔支出</h3>
+    <div style="margin-bottom:14px"><label class="label">金额（元）</label><input class="input" id="mOutAmt" type="number" min="0.01" step="0.01" placeholder="请输入金额"></div>
+    <div style="margin-bottom:14px"><label class="label">备注（选填）</label><input class="input" id="mOutNote" placeholder="例如：午餐"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="addModuleOut('${id}')">确定</button></div>`);
+}
+function addModuleOut(id){
+  const m=moduleById(id);if(!m)return;
+  const amt=parseFloat(document.getElementById('mOutAmt').value);
+  if(!amt||amt<=0){toast('请输入有效金额～','😊');return;}
+  const note=document.getElementById('mOutNote').value.trim();
+  livingData().records.push({id:uid(),type:'out',cat:'module',module:id,amount:amt,note:note||(m.name+'支出'),date:Date.now()});
+  save();renderLiving();closeModal();toast(`已记入「${m.name}」 ¥${amt}`,'💵');
+}
+function openModuleModal(id){
+  const m=id?moduleById(id):null;
+  const emo=MOD_EMOJIS.map(e=>`<option value="${e}" ${m&&m.emoji===e?'selected':''}>${e}</option>`).join('');
+  openModal(`<h3>${m?'✏️ 编辑预算模块':'➕ 新增预算模块'}</h3>
+    <div style="margin-bottom:14px"><label class="label">模块名称</label><input class="input" id="modName" value="${m?m.name:''}" placeholder="例如：吃饭 / 通行"></div>
+    <div style="margin-bottom:14px"><label class="label">图标</label><select class="select" id="modEmoji">${emo}</select></div>
+    <div style="margin-bottom:14px"><label class="label">月度预算（元）</label><input class="input" id="modBudget" type="number" min="0" step="0.01" value="${m?(m.budget||''):''}" placeholder="例如：1500"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveModule('${id}')">确定</button></div>`);
+}
+function saveModule(id){
+  const name=document.getElementById('modName').value.trim();
+  if(!name){toast('请填写模块名称～','😊');return;}
+  const emoji=document.getElementById('modEmoji').value;
+  const budget=parseFloat(document.getElementById('modBudget').value)||0;
+  const mods=livingModules();
+  if(id){
+    const m=moduleById(id);if(m){m.name=name;m.emoji=emoji;m.budget=budget;}
+  }else{
+    mods.push({id:uid(),name,emoji,budget});
+  }
+  save();renderLiving();closeModal();toast('已保存！','📊');
+}
+function deleteModule(id){
+  const m=moduleById(id);if(!m)return;
+  if(!confirm(`确定删除「${m.name}」模块吗？\n该模块下已有的支出记录会保留为普通开销，不会被删除。`))return;
+  const mods=livingModules();
+  const idx=mods.findIndex(x=>x.id===id);
+  if(idx>-1)mods.splice(idx,1);
+  // 解除记录归属，转为普通开销
+  livingData().records.forEach(r=>{if(r.module===id){r.module=null;r.cat='normal';}});
+  save();renderLiving();toast('模块已删除','🗑️');
+}
+function openLivingBudgetModal(){
+  const tb=livingTotalBudget(),ti=livingTotalIncome();
+  openModal(`<h3>🎯 设置本月总预算 &amp; 总收入</h3>
+    <div style="margin-bottom:14px"><label class="label">本月总预算（元，0 = 不设）</label><input class="input" id="livTotalBudget" type="number" min="0" step="0.01" value="${tb||''}" placeholder="例如：5000"></div>
+    <div style="margin-bottom:14px"><label class="label">本月总收入（元，0 = 不设）</label><input class="input" id="livTotalIncome" type="number" min="0" step="0.01" value="${ti||''}" placeholder="例如：8000"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveLivingBudget()">确定</button></div>`);
+}
+function saveLivingBudget(){
+  const tb=parseFloat(document.getElementById('livTotalBudget').value)||0;
+  const ti=parseFloat(document.getElementById('livTotalIncome').value)||0;
+  if(tb<0||ti<0){toast('金额不能为负～','😊');return;}
+  const d=livingData();
+  d.totalBudget=tb;d.totalIncome=ti;
+  save();renderLiving();closeModal();toast('已保存！','🎯');
 }
 function renderFlowInto(listId,countId,filter,isLiving){
   const el=document.getElementById(listId);
@@ -1549,7 +1691,7 @@ function renderFlowInto(listId,countId,filter,isLiving){
     const ds=`${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     const cls=r.type==='in'?'in':'out';
     const sign=r.type==='in'?'+':'-';
-    const tag=r.cat==='room'?'<span class="tag" style="background:#f0e6f5;color:#9a4ab5;margin-left:6px">寝室</span>':'';
+    const tag=r.cat==='room'?'<span class="tag" style="background:#f0e6f5;color:#9a4ab5;margin-left:6px">寝室</span>':(r.module&&moduleById(r.module)?`<span class="tag" style="background:#fff0e0;color:#c77b2a;margin-left:6px">${moduleById(r.module).name}</span>`:'');
     return `<div class="flow-item"><span class="f-icon">${r.cat==='room'?'🛏️':(r.type==='in'?'💵':'🛒')}</span>
       <div class="f-info"><h5>${r.note}${tag}</h5><p>${ds}</p></div>
       <div class="f-amount ${cls}">${sign}¥${r.amount}</div></div>`;
