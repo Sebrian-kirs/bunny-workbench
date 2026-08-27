@@ -345,6 +345,22 @@
   .setting-row .s-desc{font-size:12px;color:var(--ink-soft);margin-top:2px}
 
   .empty-state{text-align:center;padding:40px 20px;color:var(--ink-soft)}
+  /* 自定义倒计时 */
+  .cd-add{margin-top:14px}
+  .cd-card{background:#fff;border:2px solid var(--pink-100);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .cd-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .cd-title{font-size:16px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:6px}
+  .cd-actions{display:flex;gap:6px;flex-shrink:0}
+  .cd-target{font-size:13px;color:var(--ink-soft);margin-top:8px}
+  .cd-remain{font-size:26px;font-weight:800;color:var(--pink-500);margin-top:6px;font-variant-numeric:tabular-nums}
+  .cd-card.cd-ended{opacity:.55;border-color:var(--line)}
+  .cd-card.cd-ended .cd-remain{color:var(--ink-soft);font-size:18px}
+  .cd-home{display:flex;flex-direction:column;gap:12px}
+  .cd-h-row{display:flex;justify-content:space-between;align-items:center}
+  .cd-h-title{font-weight:800;color:var(--ink);font-size:15px;display:flex;align-items:center;gap:6px}
+  .cd-h-remain{font-size:20px;font-weight:800;color:var(--pink-500);margin-top:6px;font-variant-numeric:tabular-nums}
+  .cd-home.cd-ended .cd-h-remain{color:var(--ink-soft)}
+  .cd-home-empty{font-size:13px;color:var(--ink-soft)}
   .empty-state .emoji{font-size:50px;display:block;margin-bottom:10px}
 
   .toast{position:fixed;top:24px;right:24px;background:#fff;border:2px solid var(--pink-300);border-radius:14px;padding:14px 20px;box-shadow:var(--shadow-lg);z-index:9999;font-size:14px;font-weight:600;color:var(--pink-600);transform:translateX(420px);transition:transform .4s;display:flex;align-items:center;gap:10px}
@@ -498,6 +514,8 @@
           <div class="quote-en" id="quoteEn">loading…</div>
           <div class="quote-foot">❄️ 你现在什么都没有，是因为你六个月前什么都没做。</div>
         </div>
+        <div class="page-head" style="margin:18px 0 12px"><span class="ico">⏳</span><div><h1 style="font-size:17px">倒计时</h1></div><button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openCountdownModal('')">➕ 新增倒计时</button></div>
+        <div class="cd-home" id="cdHome"></div>
         <div class="quick-stats">
           <div class="stat-mini"><div class="num" id="qsGoals">0</div><div class="lbl">🎯 待办任务</div></div>
           <div class="stat-mini"><div class="num" id="qsStreak">0</div><div class="lbl">🔥 连续打卡</div></div>
@@ -868,6 +886,14 @@
     </div>
   </section>
 
+  <!-- ===== 自定义倒计时 ===== -->
+  <section class="panel" id="panel-countdown">
+    <div class="page-head"><span class="ico">⏳</span><div><h1>自定义倒计时</h1><p>添加你关心的日子，实时倒数，时间到自动提醒</p></div></div>
+    <div class="section-tip">💡 支持多个倒计时，可自定义标题、图标与目标时间；到期后会自动弹窗提醒。</div>
+    <div class="countdown-list" id="countdownList"></div>
+    <div class="cd-add"><button class="btn btn-ghost" onclick="openCountdownModal('')">➕ 新增倒计时</button></div>
+  </section>
+
 </main>
 
 <!-- Hello Kitty 主题下的浮动装饰（默认隐藏，kitty主题时显示） -->
@@ -891,7 +917,7 @@ const DEFAULTS={
   tasks:[],        // 多次打卡任务：{id,title,emoji,reward,target,desc,createdAt,claimed}
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
-  jars:[], savings:[], points:0, pointHistory:[],
+  jars:[], savings:[], points:0, pointHistory:[], countdowns:[],
   living:{budget:0,modules:[],records:[]},
   rewards:[
     {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
@@ -1047,6 +1073,7 @@ function renderPanel(p){
   else if(p==='checkin')renderCheckin();
   else if(p==='savings')renderSavings();
   else if(p==='living')renderLiving();
+  else if(p==='countdown')renderCountdowns();
   else if(p==='redeem')renderRewards();
   else if(p==='progress')renderProgress();
   else if(p==='history')renderHistory();
@@ -1081,6 +1108,7 @@ function tick(){
   const wk=['日','一','二','三','四','五','六'];
   document.getElementById('clockDate').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 星期${wk[d.getDay()]}`;
   // 问候语在初始化时随机选取，tick 不再覆盖（见 randomGreet）
+  updateCountdowns();
 }
 setInterval(tick,1000);tick();
 
@@ -1138,7 +1166,6 @@ function renderHome(){
   const q=dailyQuote();
   document.getElementById('quoteZh').textContent=q.zh;
   document.getElementById('quoteEn').textContent=q.en;
-  document.getElementById('dayIndex').textContent=q.index;
   document.getElementById('heroPoints').textContent=fmtPts(state.points);
   // 待办任务 = 未领取的一次性任务 + 未领取的打卡任务
   const pendingGoals=state.goals.filter(g=>!g.claimed).length;
@@ -1148,6 +1175,7 @@ function renderHome(){
   const bal=savingsBalance();
   document.getElementById('qsSavings').textContent='¥'+bal.toFixed(0);
   document.getElementById('qsRedeemed').textContent=state.redemptions.length;
+  renderCountdownHome();
 }
 
 /* ===== 目标界面：一次性任务 ===== */
@@ -2096,6 +2124,114 @@ function renderPointsLog(){
   }).join('');
 }
 
+/* ===== 自定义倒计时 ===== */
+function fmtDateTime(ts){const d=new Date(ts);const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;}
+function fmtRemain(ms){
+  if(ms<=0)return '已结束';
+  const s=Math.floor(ms/1000);
+  const days=Math.floor(s/86400);
+  const h=Math.floor(s%86400/3600);
+  const m=Math.floor(s%3600/60);
+  const sec=s%60;
+  const parts=[];
+  if(days>0)parts.push(days+'天');
+  if(days>0||h>0)parts.push(h+'时');
+  parts.push(m+'分');
+  parts.push(sec+'秒');
+  return parts.join(' ');
+}
+function renderCountdowns(){
+  const wrap=document.getElementById('countdownList');
+  if(!wrap)return;
+  const list=state.countdowns.slice().sort((a,b)=>a.target-b.target);
+  if(list.length===0){
+    wrap.innerHTML='<div class="empty-state"><span class="emoji">⏳</span>还没有倒计时，点下方「➕ 新增倒计时」添加一个吧～</div>';
+    return;
+  }
+  wrap.innerHTML=list.map(cd=>{
+    const ended=cd.target-Date.now()<=0;
+    return `<div class="cd-card ${ended?'cd-ended':''}">
+      <div class="cd-top">
+        <div class="cd-title">${cd.emoji?esc(cd.emoji):'⏳'} ${esc(cd.title)}</div>
+        <div class="cd-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openCountdownModal('${cd.id}')">✏️ 编辑</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteCountdown('${cd.id}')">🗑️ 删除</button>
+        </div>
+      </div>
+      <div class="cd-target">📅 目标时间：${fmtDateTime(cd.target)}</div>
+      <div class="cd-remain" data-target="${cd.target}" data-id="${cd.id}">${ended?'已结束 🎉':fmtRemain(cd.target-Date.now())}</div>
+    </div>`;
+  }).join('');
+}
+function renderCountdownHome(){
+  const home=document.getElementById('cdHome');
+  if(!home)return;
+  const now=Date.now();
+  const list=state.countdowns.slice().sort((a,b)=>a.target-b.target);
+  home.className='cd-home';
+  if(list.length===0){
+    home.innerHTML='<div class="cd-home-empty">还没有倒计时，点上方「➕ 新增倒计时」添加一个吧～</div>';return;
+  }
+  home.innerHTML=list.map(cd=>{
+    const ended=cd.target-now<=0;
+    const emoji=cd.emoji?esc(cd.emoji):'⏳';
+    return `<div class="cd-card ${ended?'cd-ended':''}">
+      <div class="cd-top">
+        <div class="cd-title">${emoji} ${esc(cd.title)}</div>
+        <div class="cd-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openCountdownModal('${cd.id}')">✏️ 编辑</button>
+          <button class="btn btn-ghost btn-sm" onclick="deleteCountdown('${cd.id}')">🗑️ 删除</button>
+        </div>
+      </div>
+      <div class="cd-remain" data-target="${cd.target}" data-id="${cd.id}" style="font-size:22px;margin-top:8px">${ended?'已结束 🎉':fmtRemain(cd.target-now)}</div>
+      <div class="cd-target">📅 ${fmtDateTime(cd.target)}</div>
+    </div>`;
+  }).join('');
+}
+function openCountdownModal(id){
+  const cd=id?state.countdowns.find(c=>c.id===id):null;
+  const p=n=>String(n).padStart(2,'0');
+  const toLocal=v=>{const d=new Date(v);return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;};
+  const def=cd?toLocal(cd.target):toLocal(Date.now()+3600000);
+  openModal(`<h3>${cd?'✏️ 编辑倒计时':'➕ 新增倒计时'}</h3>
+    <div style="margin-bottom:14px"><label class="label">标题</label><input class="input" id="cdTitle" maxlength="30" value="${cd?esc(cd.title):''}" placeholder="例如：期末考试 / 生日 / 假期"></div>
+    <div style="margin-bottom:14px"><label class="label">图标（选填，一个 emoji）</label><input class="input" id="cdEmoji" maxlength="4" value="${cd?esc(cd.emoji||''):''}" placeholder="⏳"></div>
+    <div style="margin-bottom:14px"><label class="label">目标时间</label><input class="input" id="cdTarget" type="datetime-local" value="${def}"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <button class="btn btn-pink" onclick="saveCountdown('${id||''}')">确定</button></div>`);
+}
+function saveCountdown(id){
+  const title=document.getElementById('cdTitle').value.trim();
+  if(!title){toast('请填写标题～','😊');return;}
+  const emoji=document.getElementById('cdEmoji').value.trim();
+  const tval=document.getElementById('cdTarget').value;
+  if(!tval){toast('请选择目标时间～','😊');return;}
+  const target=new Date(tval).getTime();
+  if(isNaN(target)){toast('请选择有效时间～','😊');return;}
+  if(id){
+    const cd=state.countdowns.find(c=>c.id===id);
+    if(cd){cd.title=title;cd.emoji=emoji;cd.target=target;cd.notified=target>Date.now()?false:cd.notified;}
+  }else{
+    state.countdowns.push({id:uid(),title,emoji,target,createdAt:Date.now(),notified:target>Date.now()?false:true});
+  }
+  save();renderCountdowns();renderCountdownHome();closeModal();toast('倒计时已保存！','⏳');
+}
+function deleteCountdown(id){
+  state.countdowns=state.countdowns.filter(c=>c.id!==id);
+  save();renderCountdowns();renderCountdownHome();toast('已删除','🗑️');
+}
+function updateCountdowns(){
+  const now=Date.now();
+  state.countdowns.forEach(cd=>{
+    if(cd.target-now<=0 && !cd.notified){cd.notified=true;save();toast(`⏰ ${cd.title} 时间到啦！`,'⏰');}
+  });
+  document.querySelectorAll('.cd-remain').forEach(el=>{
+    const target=Number(el.getAttribute('data-target'));
+    const remain=target-now;
+    el.textContent=remain<=0?'已结束 🎉':fmtRemain(remain);
+    const card=el.closest('.cd-card');if(card)card.classList.toggle('cd-ended',remain<=0);
+  });
+}
 /* ===== 成就 ===== */
 const ACHIEVEMENTS=[
   {id:'first_checkin',icon:'🌱',name:'初次打卡',desc:'完成第一次打卡'},
