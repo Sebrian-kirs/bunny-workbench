@@ -186,6 +186,11 @@
   /* ===== 生活费 ===== */
   .living-hero{background:linear-gradient(135deg,var(--living-bg1,#ffd9a8),var(--living-bg2,#ffb36b));border-radius:22px;padding:24px 28px;color:var(--living-text,#fff);box-shadow:var(--shadow-lg);position:relative;overflow:hidden;margin-bottom:20px}
   .living-hero::before{content:"💵";position:absolute;font-size:110px;opacity:.15;right:6px;bottom:-16px;pointer-events:none}
+  .living-month-bar{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:18px;background:#fff;border-radius:var(--radius);padding:10px 16px;box-shadow:var(--shadow);border:2px solid var(--pink-100)}
+  .living-month-label{font-size:17px;font-weight:800;color:var(--pink-600);cursor:pointer;min-width:130px;text-align:center;user-select:none}
+  .living-month-label:hover{text-decoration:underline}
+  .living-month-label.cur{background:linear-gradient(135deg,var(--pink-500),var(--pink-600));color:#fff;padding:4px 14px;border-radius:16px}
+  .living-month-label.cur:hover{text-decoration:none}
   .living-head{display:flex;justify-content:space-between;align-items:flex-start}
   .living-label{font-size:14px;opacity:.95}
   .living-amount{font-size:40px;font-weight:800;margin:6px 0;text-shadow:0 2px 8px rgba(0,0,0,.1)}
@@ -560,10 +565,16 @@
     <img src="https://patchwiki.biligame.com/images/lysk/d/dc/oymwlepe1pst1dgmoz6qjttbp87gl56.png" class="zayne-panel-decor" style="opacity:.14" alt="" aria-hidden="true">
     <div class="page-head"><span class="ico">💵</span><div><h1>我的生活费</h1><p>管理每月开销，把生活过得井井有条</p></div></div>
 
+    <div class="living-month-bar">
+      <button class="btn btn-ghost btn-sm" onclick="livingStepMonth(-1)">‹ 上月</button>
+      <div class="living-month-label" id="livingMonthLabel" title="点击返回本月" onclick="livingGoCurrent()">本月</div>
+      <button class="btn btn-ghost btn-sm" onclick="livingStepMonth(1)">下月 ›</button>
+    </div>
+
     <div class="living-hero" style="position:relative">
       <div class="living-head">
         <div>
-          <div class="living-label">💵 本月生活费结余</div>
+          <div class="living-label" id="livingLabel">💵 本月生活费结余</div>
           <div class="living-amount" id="livingAmount">¥0.00</div>
         </div>
       </div>
@@ -1521,6 +1532,19 @@ function livingRoomBalance(){return livingRoomIn()-livingRoomOut();}
 function budgetModulesTotal(){return livingModules().reduce((s,m)=>s+(m.budget||0),0);}
 function livingTotalBudget(){return livingData().totalBudget||0;}
 function livingTotalIncome(){return livingData().totalIncome||0;}
+/* ---- 生活费逐月查看 ---- */
+let livingViewYM=null; // null = 当前月；否则 'YYYY-MM'
+function livingYMKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function livingViewDate(){if(livingViewYM){const p=livingViewYM.split('-');return new Date(+p[0],+p[1]-1,1);}const n=new Date();return new Date(n.getFullYear(),n.getMonth(),1);}
+function livingMonthName(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月';}
+function livingStepMonth(delta){const d=livingViewDate();d.setMonth(d.getMonth()+delta);livingViewYM=livingYMKey(d);renderLiving();}
+function livingGoCurrent(){livingViewYM=null;renderLiving();}
+function recMonthKey(ts){const d=new Date(ts);return livingYMKey(d);}
+function recsInMonth(ym,includeRoom){return livingData().records.filter(r=>{if(!includeRoom&&r.cat==='room')return false;return recMonthKey(r.date)===ym;});}
+function monthIncome(ym){return recsInMonth(ym,false).filter(r=>r.type==='in').reduce((s,r)=>s+r.amount,0);}
+function monthExpense(ym){return recsInMonth(ym,false).filter(r=>r.type==='out').reduce((s,r)=>s+r.amount,0);}
+function monthNet(ym){return monthIncome(ym)-monthExpense(ym);}
+function monthModuleOut(id,ym){return recsInMonth(ym,false).filter(r=>r.type==='out'&&r.module===id).reduce((s,r)=>s+r.amount,0);}
 function openLivingModal(type){
   const title=type==='in'?'💵 记一笔收入':'🛒 记一笔支出';
   let catSel='';
@@ -1588,21 +1612,29 @@ function addRoom(type){
 function renderLiving(){
   const el=document.getElementById('livingAmount');
   if(!el)return;
-  const bal=livingBalance(),out=livingOut();
+  const ym=livingViewYM||livingYMKey(new Date());
+  const isCur=!livingViewYM;
+  const vd=livingViewDate();
+  // 月份标签
+  const labelEl=document.getElementById('livingLabel');
+  if(labelEl)labelEl.textContent=isCur?'💵 本月生活费结余':`💵 ${livingMonthName(vd)} 生活费结余`;
+  const mEl=document.getElementById('livingMonthLabel');
+  if(mEl){mEl.textContent=isCur?'本月':livingMonthName(vd);mEl.className='living-month-label'+(isCur?' cur':'');}
+  // 选中月份的收支
+  const bal=monthNet(ym),out=monthExpense(ym),inc=monthIncome(ym);
   el.textContent=moneyFmt(bal);
   document.getElementById('livingUsed').textContent=`已支出 ¥${out.toFixed(2)}`;
   // 预算模块汇总
   const total=budgetModulesTotal();
-  const used=livingModules().reduce((s,m)=>s+moduleOut(m.id),0);
+  const used=livingModules().reduce((s,m)=>s+monthModuleOut(m.id,ym),0);
   const sumEl=document.getElementById('budgetSummary');
-  if(sumEl)sumEl.innerHTML=total>0?`本月预算共 <b>¥${total.toFixed(2)}</b> · 已用 <b>¥${used.toFixed(2)}</b> · 剩余 <b>¥${Math.max(0,total-used).toFixed(2)}</b>`:'尚未设置预算模块，点「➕ 新增」添加吃饭、通行等分类吧～';
+  if(sumEl)sumEl.innerHTML=total>0?`本月预算共 <b>¥${total.toFixed(2)}</b> · 该月已用 <b>¥${used.toFixed(2)}</b> · 剩余 <b>¥${Math.max(0,total-used).toFixed(2)}</b>`:'尚未设置预算模块，点「➕ 新增」添加吃饭、通行等分类吧～';
   // 总预算/总收入
   const tb=livingTotalBudget(),ti=livingTotalIncome();
   const tEl=document.getElementById('livingTotalSummary');
   if(tEl){
-    const out=livingOut();
     const remain=tb>0?Math.max(0,tb-out):null;
-    tEl.innerHTML=`本月总预算 <b>¥${tb.toFixed(2)}</b>${tb>0?` · 已支出 <b>¥${out.toFixed(2)}</b> · 剩余 <b>¥${remain.toFixed(2)}</b>`:''}<br>本月总收入 <b>¥${ti.toFixed(2)}</b>`;
+    tEl.innerHTML=`本月总预算 <b>¥${tb.toFixed(2)}</b>${tb>0?` · 该月已支出 <b>¥${out.toFixed(2)}</b> · 剩余 <b>¥${remain.toFixed(2)}</b>`:''}<br>该月收入 <b>¥${inc.toFixed(2)}</b>${isCur&&ti>0?` · 计划收入 <b>¥${ti.toFixed(2)}</b>`:''}`;
   }
   // 模块列表
   const listEl=document.getElementById('moduleList');
@@ -1612,13 +1644,13 @@ function renderLiving(){
       listEl.innerHTML=`<div class="budget-empty">还没有预算模块，点上方「➕ 新增」创建第一个～</div>`;
     }else{
       listEl.innerHTML=mods.map(m=>{
-        const used=moduleOut(m.id),bk=m.budget||0;
+        const used=monthModuleOut(m.id,ym),bk=m.budget||0;
         const pct=bk>0?Math.min(100,Math.round(used/bk*100)):0;
         const over=used>bk&&bk>0;
         return `<div class="module-item" data-id="${m.id}">
           <div class="module-top">
             <div class="module-name"><span class="module-emoji" onclick="openModuleModal('${m.id}')" title="点击编辑">${m.emoji||'📦'}</span>${m.name}</div>
-            <div class="module-figures">已用 ¥${used.toFixed(2)} / 预算 ¥${bk.toFixed(2)}${over?` <span class="over">超 ¥${(used-bk).toFixed(2)}</span>`:''}</div>
+            <div class="module-figures">该月已用 ¥${used.toFixed(2)} / 预算 ¥${bk.toFixed(2)}${over?` <span class="over">超 ¥${(used-bk).toFixed(2)}</span>`:''}</div>
           </div>
           <div class="module-bar"><div class="progress-fill${over?' over':''}" style="width:${pct}%"></div></div>
           <div class="module-actions">
@@ -1630,13 +1662,13 @@ function renderLiving(){
       }).join('');
     }
   }
-  // 寝室费统计
+  // 寝室费统计（独立，不受月份切换影响）
   const roomEl=document.getElementById('roomUsed');
   if(roomEl){
     document.getElementById('roomUsed').textContent=`当前共有 ${moneyFmt(livingRoomBalance())}`;
   }
-  // 生活费明细（排除寝室费）与寝室费明细（只含寝室费）
-  renderFlowInto('livingFlow','livingCount',r=>r.cat!=='room',true);
+  // 生活费明细（排除寝室费）：按选中月份过滤
+  renderFlowInto('livingFlow','livingCount',r=>r.cat!=='room',true,r=>recMonthKey(r.date)===ym);
   renderFlowInto('roomFlow','roomCount',r=>r.cat==='room',false);
 }
 function quickModuleOut(id){
@@ -1704,10 +1736,11 @@ function saveLivingBudget(){
   d.totalBudget=tb;d.totalIncome=ti;
   save();renderLiving();closeModal();toast('已保存！','🎯');
 }
-function renderFlowInto(listId,countId,filter,isLiving){
+function renderFlowInto(listId,countId,filter,isLiving,extraFilter){
   const el=document.getElementById(listId);
   if(!el)return;
-  const recs=livingData().records.filter(filter).slice().reverse();
+  const ef=extraFilter||(()=>true);
+  const recs=livingData().records.filter(r=>filter(r)&&ef(r)).slice().reverse();
   const cEl=document.getElementById(countId);
   if(cEl)cEl.textContent=recs.length+' 条';
   if(recs.length===0){
