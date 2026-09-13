@@ -306,6 +306,26 @@
   .cal-day.today{border-color:var(--pink-400);font-weight:800;color:var(--pink-600)}
   .cal-day.checked{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;font-weight:700}
   .cal-day .dots{position:absolute;bottom:4px;font-size:9px}
+  /* ===== 喝冰/凉 记录日历 ===== */
+  .cal-day .ice-emoji{font-size:17px;line-height:1;margin-top:3px}
+  .cal-day.ice-ice{background:linear-gradient(135deg,#cdeafe,#8fd0ff);color:#0b4f7a;border-color:#8fd0ff;font-weight:800}
+  .cal-day.ice-cold{background:linear-gradient(135deg,#d2f0e0,#9be3c6);color:#1c6b4d;border-color:#9be3c6;font-weight:800}
+  .cal-day.ice-tea{background:linear-gradient(135deg,#ffe2c4,#ffb877);color:#9a4d12;border-color:#ffb877;font-weight:800}
+  .ice-stat-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .ice-stat{flex:1;min-width:120px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:center}
+  .ice-stat .num{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+  .ice-stat.ice .num{color:#2d7fb5}
+  .ice-stat.cold .num{color:#1f8a5f}
+  .ice-stat.total .num{color:var(--pink-500)}
+  .ice-stat.tea .num{color:#c9772a}
+  .ice-stat .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
+  .ice-legend{display:flex;gap:18px;font-size:12px;color:var(--ink-soft);margin-top:12px;align-items:center;flex-wrap:wrap}
+  .ice-legend .sw{display:inline-block;width:14px;height:14px;border-radius:5px;margin-right:6px;vertical-align:-2px}
+  .ice-pick{display:flex;gap:12px}
+  .ice-opt{flex:1;border:2px solid var(--pink-100);background:var(--pink-50);border-radius:14px;padding:16px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:800;color:var(--ink);font-family:inherit;transition:all .2s}
+  .ice-opt .big{font-size:34px;line-height:1}
+  .ice-opt:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .ice-opt.sel{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;border-color:var(--pink-400)}
 
   /* ===== 进度图表 ===== */
   .chart-bar-wrap{display:flex;align-items:flex-end;gap:14px;height:220px;padding:14px 0;border-bottom:2px solid var(--line)}
@@ -481,6 +501,7 @@
   <div class="nav-item" data-panel="checkin"><span class="nav-icon">✅</span><span>打卡</span></div>
   <div class="nav-item" data-panel="savings"><span class="nav-icon">❄️</span><span>存钱</span></div>
   <div class="nav-item" data-panel="living"><span class="nav-icon">💵</span><span>生活费</span></div>
+  <div class="nav-item" data-panel="ice"><span class="nav-icon">🧊</span><span>冰の记录</span></div>
   <div class="nav-item" data-panel="redeem"><span class="nav-icon">🎁</span><span>兑换</span></div>
 
   <div class="nav-group-divider"></div>
@@ -649,6 +670,34 @@
   </section>
 
   <!-- ===== 5. 点数兑换奖励 ===== -->
+  <!-- ===== 喝冰/凉 记录 ===== -->
+  <section class="panel" id="panel-ice">
+    <div class="page-head"><span class="ico">🧊</span><div><h1>冰の记录</h1><p>哪天喝了冰的、凉的，或喝了红糖姜茶，点点日历记下来</p></div></div>
+
+    <div class="ice-stat-bar">
+      <div class="ice-stat ice"><div class="num" id="iceStatIce">0</div><div class="lbl">🧊 冰的天数</div></div>
+      <div class="ice-stat cold"><div class="num" id="iceStatCold">0</div><div class="lbl">🥤 凉的天数</div></div>
+      <div class="ice-stat total"><div class="num" id="iceStatTotal">0</div><div class="lbl">📅 本月共记录</div></div>
+      <div class="ice-stat tea"><div class="num" id="iceStatTea">0</div><div class="lbl">🍵 姜茶天数</div></div>
+    </div>
+
+    <div class="card">
+      <div class="living-month-bar">
+        <button class="btn btn-ghost btn-sm" onclick="iceStepMonth(-1)">‹ 上月</button>
+        <span class="living-month-label cur" id="iceMonthLabel" onclick="iceStepMonth(0)">—</span>
+        <button class="btn btn-ghost btn-sm" onclick="iceStepMonth(1)">下月 ›</button>
+      </div>
+      <div class="cal-grid" id="iceDow" style="margin-top:14px"></div>
+      <div class="cal-grid" id="iceGrid"></div>
+      <div class="ice-legend">
+        <span><span class="sw" style="background:linear-gradient(135deg,#cdeafe,#8fd0ff)"></span>冰的</span>
+        <span><span class="sw" style="background:linear-gradient(135deg,#d2f0e0,#9be3c6)"></span>凉的</span>
+        <span><span class="sw" style="background:linear-gradient(135deg,#ffe2c4,#ffb877)"></span>红糖姜茶</span>
+        <span>点击任意日期可记录 / 修改</span>
+      </div>
+    </div>
+  </section>
+
   <section class="panel" id="panel-redeem">
     <!-- 黎深「一往而深」装饰 -->
     <img src="https://patchwiki.biligame.com/images/lysk/d/d4/jfao9bo188ymd52qg726eexaom3zkrf.png" class="zayne-panel-decor" style="opacity:.15" alt="" aria-hidden="true">
@@ -928,7 +977,7 @@ const DEFAULTS={
   tasks:[],        // 多次打卡任务：{id,title,emoji,reward,target,desc,createdAt,claimed}
   checkins:{},     // { "YYYY-MM-DD": [{taskId,time}] } 按日期记录打卡
   taskCounts:{},   // { taskId: 累计打卡次数 }
-  jars:[], savings:[], points:0, pointHistory:[], countdowns:[],
+  jars:[], savings:[], points:0, pointHistory:[], countdowns:[], iceLog:{},
   living:{budget:0,modules:[],records:[]},
   rewards:[
     {id:'r1',name:'看一集喜欢的剧',cost:30,icon:'📺'},
@@ -1084,6 +1133,7 @@ function renderPanel(p){
   else if(p==='checkin')renderCheckin();
   else if(p==='savings')renderSavings();
   else if(p==='living')renderLiving();
+  else if(p==='ice')renderIce();
   else if(p==='countdown')renderCountdowns();
   else if(p==='redeem')renderRewards();
   else if(p==='progress')renderProgress();
@@ -2042,6 +2092,87 @@ function showCalendarDay(ds){
   }).join(''):'<div class="empty-state"><span class="emoji">📭</span>这一天还没有打卡记录</div>';
   const goalRows=goals.filter(g=>g.completedAt&&todayKey(new Date(g.completedAt))===ds).map(g=>`<div class="flow-item"><span class="f-icon">${g.emoji||'🎯'}</span><div class="f-info"><h5>完成目标：${esc(g.title)}</h5><p>一次性任务已完成</p></div><div class="f-amount in">✓</div></div>`).join('');
   openModal(`<h3>📅 ${dateLabel}</h3><div class="day-records"><div class="card-title">当天打卡</div>${rows}${goalRows?`<div class="card-title" style="margin-top:14px">当天完成目标</div>${goalRows}`:''}</div><div class="modal-actions"><button class="btn btn-pink" onclick="closeModal()">知道了</button></div>`);
+}
+
+/* ===== 喝冰 / 凉 记录日历 ===== */
+let iceViewYM=null;
+function iceView(){ if(!iceViewYM){const d=new Date();iceViewYM={y:d.getFullYear(),m:d.getMonth()};} return iceViewYM; }
+function iceStepMonth(n){
+  if(n===0){const d=new Date();iceViewYM={y:d.getFullYear(),m:d.getMonth()};}
+  else{ const v=iceView(); let m=v.m+n,y=v.y; while(m<0){m+=12;y--;} while(m>11){m-=12;y++;} iceViewYM={y,m}; }
+  renderIce();
+}
+function renderIce(){
+  const v=iceView();
+  document.getElementById('iceMonthLabel').textContent=`${v.y}年${v.m+1}月`;
+  const dow=['日','一','二','三','四','五','六'];
+  document.getElementById('iceDow').innerHTML=dow.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  const first=new Date(v.y,v.m,1);
+  const days=new Date(v.y,v.m+1,0).getDate();
+  const startDow=first.getDay();
+  const todayStr=today();
+  const log=state.iceLog||{};
+  let iceCnt=0,coldCnt=0,teaCnt=0;
+  let html='';
+  for(let i=0;i<startDow;i++)html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=days;d++){
+    const ds=`${v.y}-${String(v.m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const rec=log[ds];
+    const isToday=ds===todayStr;
+    let cls='cal-day',emoji='';
+    if(rec){
+      if(rec.type==='ice'){cls+=' ice-ice';emoji='🧊';iceCnt++;}
+      else if(rec.type==='tea'){cls+=' ice-tea';emoji='🍵';teaCnt++;}
+      else{cls+=' ice-cold';emoji='🥤';coldCnt++;}
+    }
+    if(isToday)cls+=' today';
+    html+=`<button type="button" class="${cls}" onclick="openIceDay('${ds}')">${d}<div class="ice-emoji">${emoji}</div></button>`;
+  }
+  document.getElementById('iceGrid').innerHTML=html;
+  document.getElementById('iceStatIce').textContent=iceCnt;
+  document.getElementById('iceStatCold').textContent=coldCnt;
+  document.getElementById('iceStatTea').textContent=teaCnt;
+  document.getElementById('iceStatTotal').textContent=iceCnt+coldCnt+teaCnt;
+}
+function openIceDay(ds){
+  const log=state.iceLog||{};
+  const rec=log[ds]||null;
+  const date=new Date(ds+'T00:00:00');
+  const label=`${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+  const cur=rec?rec.type:'';
+  openModal(`<h3>🧊 ${label}</h3>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0 0 14px">记录这天的喝饮（冰的 / 凉的 / 红糖姜茶）</p>
+    <div class="ice-pick">
+      <button type="button" class="ice-opt ${cur==='ice'?'sel':''}" onclick="setIce('${ds}','ice')"><span class="big">🧊</span><span>冰的</span></button>
+      <button type="button" class="ice-opt ${cur==='cold'?'sel':''}" onclick="setIce('${ds}','cold')"><span class="big">🥤</span><span>凉的</span></button>
+      <button type="button" class="ice-opt ${cur==='tea'?'sel':''}" onclick="setIce('${ds}','tea')"><span class="big">🍵</span><span>红糖姜茶</span></button>
+    </div>
+    <div class="label" style="margin-top:16px">备注（可选）</div>
+    <input class="input" id="iceNoteInput" placeholder="例如：冰美式 / 凉白开" value="${esc(rec&&rec.note?rec.note:'')}">
+    <div class="modal-actions" style="margin-top:18px">
+      ${rec?'<button class="btn btn-danger" onclick="clearIce(\''+ds+'\')">清除</button>':''}
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-pink" onclick="saveIceNote('${ds}')">保存备注</button>
+    </div>`);
+}
+function setIce(ds,type){
+  const note=((document.getElementById('iceNoteInput')||{}).value||'').trim();
+  if(!state.iceLog)state.iceLog={};
+  state.iceLog[ds]={type,note};
+  save();renderIce();closeModal();
+  toast(type==='ice'?'已记录：冰的 🧊':type==='tea'?'已记录：红糖姜茶 🍵':'已记录：凉的 🥤','🧊');
+}
+function saveIceNote(ds){
+  if(!state.iceLog||!state.iceLog[ds]){toast('请先选择一项','⚠️');return;}
+  const note=((document.getElementById('iceNoteInput')||{}).value||'').trim();
+  state.iceLog[ds].note=note;
+  save();renderIce();closeModal();
+  toast(note?'备注已保存':'已保存（无备注）','📝');
+}
+function clearIce(ds){
+  if(state.iceLog)delete state.iceLog[ds];
+  save();renderIce();closeModal();
+  toast('已清除该天记录','🧹');
 }
 
 /* ===== 目标进度（含打卡日历） ===== */
