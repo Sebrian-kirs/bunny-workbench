@@ -307,10 +307,11 @@
   .cal-day.checked{background:linear-gradient(135deg,var(--pink-300),var(--pink-400));color:#fff;font-weight:700}
   .cal-day .dots{position:absolute;bottom:4px;font-size:9px}
   /* ===== 喝冰/凉 记录日历 ===== */
-  .cal-day .ice-emoji{font-size:17px;line-height:1;margin-top:3px}
+  .cal-day .ice-emoji{font-size:16px;line-height:1;margin-top:3px;display:flex;gap:2px;flex-wrap:wrap;justify-content:center}
   .cal-day.ice-ice{background:linear-gradient(135deg,#cdeafe,#8fd0ff);color:#0b4f7a;border-color:#8fd0ff;font-weight:800}
   .cal-day.ice-cold{background:linear-gradient(135deg,#d2f0e0,#9be3c6);color:#1c6b4d;border-color:#9be3c6;font-weight:800}
   .cal-day.ice-tea{background:linear-gradient(135deg,#ffe2c4,#ffb877);color:#9a4d12;border-color:#ffb877;font-weight:800}
+  .cal-day.has{background:linear-gradient(135deg,#fde7f4,#ecd9ff);color:var(--pink-600);border-color:#e3c4ff;font-weight:800}
   .ice-stat-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
   .ice-stat{flex:1;min-width:120px;background:rgba(255,255,255,.9);border:2px solid var(--line);border-radius:16px;padding:14px 16px;text-align:center}
   .ice-stat .num{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -318,10 +319,11 @@
   .ice-stat.cold .num{color:#1f8a5f}
   .ice-stat.total .num{color:var(--pink-500)}
   .ice-stat.tea .num{color:#c9772a}
+  .ice-stat.late .num{color:#7b5cd6}
   .ice-stat .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px}
   .ice-legend{display:flex;gap:18px;font-size:12px;color:var(--ink-soft);margin-top:12px;align-items:center;flex-wrap:wrap}
   .ice-legend .sw{display:inline-block;width:14px;height:14px;border-radius:5px;margin-right:6px;vertical-align:-2px}
-  .ice-pick{display:flex;gap:12px}
+  .ice-pick{display:flex;gap:12px;flex-wrap:wrap}
   .ice-opt{flex:1;border:2px solid var(--pink-100);background:var(--pink-50);border-radius:14px;padding:16px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:800;color:var(--ink);font-family:inherit;transition:all .2s}
   .ice-opt .big{font-size:34px;line-height:1}
   .ice-opt:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
@@ -672,13 +674,14 @@
   <!-- ===== 5. 点数兑换奖励 ===== -->
   <!-- ===== 喝冰/凉 记录 ===== -->
   <section class="panel" id="panel-ice">
-    <div class="page-head"><span class="ico">🧊</span><div><h1>冰の记录</h1><p>哪天喝了冰的、凉的，或喝了红糖姜茶，点点日历记下来</p></div></div>
+    <div class="page-head"><span class="ico">🧊</span><div><h1>冰の记录</h1><p>哪天喝了冰的 / 凉的 / 红糖姜茶，或者熬夜了，点点日历记下来（一天可记多项）</p></div></div>
 
     <div class="ice-stat-bar">
       <div class="ice-stat ice"><div class="num" id="iceStatIce">0</div><div class="lbl">🧊 冰的天数</div></div>
       <div class="ice-stat cold"><div class="num" id="iceStatCold">0</div><div class="lbl">🥤 凉的天数</div></div>
-      <div class="ice-stat total"><div class="num" id="iceStatTotal">0</div><div class="lbl">📅 本月共记录</div></div>
       <div class="ice-stat tea"><div class="num" id="iceStatTea">0</div><div class="lbl">🍵 姜茶天数</div></div>
+      <div class="ice-stat late"><div class="num" id="iceStatLate">0</div><div class="lbl">🌙 熬夜天数</div></div>
+      <div class="ice-stat total"><div class="num" id="iceStatTotal">0</div><div class="lbl">📅 有记录天数</div></div>
     </div>
 
     <div class="card">
@@ -693,7 +696,8 @@
         <span><span class="sw" style="background:linear-gradient(135deg,#cdeafe,#8fd0ff)"></span>冰的</span>
         <span><span class="sw" style="background:linear-gradient(135deg,#d2f0e0,#9be3c6)"></span>凉的</span>
         <span><span class="sw" style="background:linear-gradient(135deg,#ffe2c4,#ffb877)"></span>红糖姜茶</span>
-        <span>点击任意日期可记录 / 修改</span>
+        <span><span class="sw" style="background:linear-gradient(135deg,#ead7ff,#c9a8ff)"></span>熬夜</span>
+        <span>点日期可勾选多项，一格显示多个</span>
       </div>
     </div>
   </section>
@@ -2102,6 +2106,15 @@ function iceStepMonth(n){
   else{ const v=iceView(); let m=v.m+n,y=v.y; while(m<0){m+=12;y--;} while(m>11){m-=12;y++;} iceViewYM={y,m}; }
   renderIce();
 }
+const ICE_META={ice:['🧊','冰的'],cold:['🥤','凉的'],tea:['🍵','红糖姜茶'],late:['🌙','熬夜']};
+function normalizeIce(ds){
+  const e=(state.iceLog||{})[ds];
+  if(!e)return{types:[],note:''};
+  if(Array.isArray(e))return{types:e.slice(),note:''};
+  if(e.types)return{types:e.types.slice(),note:e.note||''};
+  if(e.type)return{types:[e.type],note:e.note||''};
+  return{types:[],note:''};
+}
 function renderIce(){
   const v=iceView();
   document.getElementById('iceMonthLabel').textContent=`${v.y}年${v.m+1}月`;
@@ -2111,61 +2124,72 @@ function renderIce(){
   const days=new Date(v.y,v.m+1,0).getDate();
   const startDow=first.getDay();
   const todayStr=today();
-  const log=state.iceLog||{};
-  let iceCnt=0,coldCnt=0,teaCnt=0;
+  let iceCnt=0,coldCnt=0,teaCnt=0,lateCnt=0,dayCnt=0;
   let html='';
   for(let i=0;i<startDow;i++)html+='<div class="cal-day empty"></div>';
   for(let d=1;d<=days;d++){
     const ds=`${v.y}-${String(v.m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const rec=log[ds];
+    const rec=normalizeIce(ds);
+    const types=rec.types;
     const isToday=ds===todayStr;
-    let cls='cal-day',emoji='';
-    if(rec){
-      if(rec.type==='ice'){cls+=' ice-ice';emoji='🧊';iceCnt++;}
-      else if(rec.type==='tea'){cls+=' ice-tea';emoji='🍵';teaCnt++;}
-      else{cls+=' ice-cold';emoji='🥤';coldCnt++;}
-    }
+    let cls='cal-day',badges='';
+    if(types.length){cls+=' has';dayCnt++;badges=types.map(t=>ICE_META[t]?ICE_META[t][0]:'').join('');}
+    if(types.includes('ice'))iceCnt++;
+    if(types.includes('cold'))coldCnt++;
+    if(types.includes('tea'))teaCnt++;
+    if(types.includes('late'))lateCnt++;
     if(isToday)cls+=' today';
-    html+=`<button type="button" class="${cls}" onclick="openIceDay('${ds}')">${d}<div class="ice-emoji">${emoji}</div></button>`;
+    html+=`<button type="button" class="${cls}" onclick="openIceDay('${ds}')">${d}<div class="ice-emoji">${badges}</div></button>`;
   }
   document.getElementById('iceGrid').innerHTML=html;
   document.getElementById('iceStatIce').textContent=iceCnt;
   document.getElementById('iceStatCold').textContent=coldCnt;
   document.getElementById('iceStatTea').textContent=teaCnt;
-  document.getElementById('iceStatTotal').textContent=iceCnt+coldCnt+teaCnt;
+  document.getElementById('iceStatLate').textContent=lateCnt;
+  document.getElementById('iceStatTotal').textContent=dayCnt;
 }
 function openIceDay(ds){
-  const log=state.iceLog||{};
-  const rec=log[ds]||null;
+  const rec=normalizeIce(ds);
   const date=new Date(ds+'T00:00:00');
   const label=`${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
-  const cur=rec?rec.type:'';
+  const note=rec.note||'';
+  const sel=t=>rec.types.includes(t)?'sel':'';
   openModal(`<h3>🧊 ${label}</h3>
-    <p style="font-size:13px;color:var(--ink-soft);margin:0 0 14px">记录这天的喝饮（冰的 / 凉的 / 红糖姜茶）</p>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0 0 14px">可多选：冰的 / 凉的 / 红糖姜茶 / 熬夜（同一天可记多项）</p>
     <div class="ice-pick">
-      <button type="button" class="ice-opt ${cur==='ice'?'sel':''}" onclick="setIce('${ds}','ice')"><span class="big">🧊</span><span>冰的</span></button>
-      <button type="button" class="ice-opt ${cur==='cold'?'sel':''}" onclick="setIce('${ds}','cold')"><span class="big">🥤</span><span>凉的</span></button>
-      <button type="button" class="ice-opt ${cur==='tea'?'sel':''}" onclick="setIce('${ds}','tea')"><span class="big">🍵</span><span>红糖姜茶</span></button>
+      <button type="button" class="ice-opt ${sel('ice')}" onclick="toggleIce(this,'${ds}','ice')"><span class="big">🧊</span><span>冰的</span></button>
+      <button type="button" class="ice-opt ${sel('cold')}" onclick="toggleIce(this,'${ds}','cold')"><span class="big">🥤</span><span>凉的</span></button>
+      <button type="button" class="ice-opt ${sel('tea')}" onclick="toggleIce(this,'${ds}','tea')"><span class="big">🍵</span><span>红糖姜茶</span></button>
+      <button type="button" class="ice-opt ${sel('late')}" onclick="toggleIce(this,'${ds}','late')"><span class="big">🌙</span><span>熬夜</span></button>
     </div>
     <div class="label" style="margin-top:16px">备注（可选）</div>
-    <input class="input" id="iceNoteInput" placeholder="例如：冰美式 / 凉白开" value="${esc(rec&&rec.note?rec.note:'')}">
+    <input class="input" id="iceNoteInput" placeholder="例如：冰美式 / 熬到凌晨2点" value="${esc(note)}">
     <div class="modal-actions" style="margin-top:18px">
-      ${rec?'<button class="btn btn-danger" onclick="clearIce(\''+ds+'\')">清除</button>':''}
+      ${rec.types.length?'<button class="btn btn-danger" onclick="clearIce(\''+ds+'\')">清除当天</button>':''}
       <button class="btn btn-ghost" onclick="closeModal()">取消</button>
       <button class="btn btn-pink" onclick="saveIceNote('${ds}')">保存备注</button>
     </div>`);
 }
-function setIce(ds,type){
+function toggleIce(btn,ds,type){
   const note=((document.getElementById('iceNoteInput')||{}).value||'').trim();
+  const rec=normalizeIce(ds);
+  rec.note=note;
+  const i=rec.types.indexOf(type);
+  if(i>=0)rec.types.splice(i,1);else rec.types.push(type);
   if(!state.iceLog)state.iceLog={};
-  state.iceLog[ds]={type,note};
-  save();renderIce();closeModal();
-  toast(type==='ice'?'已记录：冰的 🧊':type==='tea'?'已记录：红糖姜茶 🍵':'已记录：凉的 🥤','🧊');
+  if(rec.types.length)state.iceLog[ds]={types:rec.types.slice(),note:rec.note};
+  else delete state.iceLog[ds];
+  save();
+  btn.classList.toggle('sel',rec.types.includes(type));
+  renderIce();
+  toast((rec.types.includes(type)?'已记':'已取消')+'：'+(ICE_META[type]?ICE_META[type][1]:type),ICE_META[type]?ICE_META[type][0]:'✅');
 }
 function saveIceNote(ds){
-  if(!state.iceLog||!state.iceLog[ds]){toast('请先选择一项','⚠️');return;}
+  const rec=normalizeIce(ds);
+  if(!rec.types.length){toast('请先勾选至少一项','⚠️');return;}
   const note=((document.getElementById('iceNoteInput')||{}).value||'').trim();
-  state.iceLog[ds].note=note;
+  if(!state.iceLog)state.iceLog={};
+  state.iceLog[ds]={types:rec.types.slice(),note};
   save();renderIce();closeModal();
   toast(note?'备注已保存':'已保存（无备注）','📝');
 }
