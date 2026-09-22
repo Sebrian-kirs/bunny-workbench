@@ -543,7 +543,7 @@
           <div class="quote-en" id="quoteEn">loading…</div>
           <div class="quote-foot">❄️ 你现在什么都没有，是因为你六个月前什么都没做。</div>
         </div>
-        <div class="page-head" style="margin:18px 0 12px"><span class="ico">⏳</span><div><h1 style="font-size:17px">倒计时</h1></div><button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="openCountdownModal('')">➕ 新增倒计时</button></div>
+        <div class="page-head" style="margin:18px 0 12px"><span class="ico">⏳</span><div><h1 style="font-size:17px">倒计时</h1></div><button class="btn btn-ghost btn-sm" id="cdEndedBtn" style="margin-left:auto" onclick="openEndedCountdowns()">🎉 已结束 (0)</button><button class="btn btn-ghost btn-sm" onclick="openCountdownModal('')">➕ 新增倒计时</button></div>
         <div class="cd-home" id="cdHome"></div>
         <div class="quick-stats">
           <div class="stat-mini"><div class="num" id="qsGoals">0</div><div class="lbl">🎯 待办任务</div></div>
@@ -1435,7 +1435,7 @@ function doCheckin(taskId){
   const td=today();
   if(!state.checkins[td])state.checkins[td]=[];
   if(state.checkins[td].some(c=>c.taskId===taskId)){toast('今天这个任务已经打过卡啦～','😊');return;}
-  state.checkins[td].push({taskId,time:Date.now()});
+  state.checkins[td].push({taskId,time:Date.now(),title:t.title,emoji:t.emoji});
   // 累计该任务打卡次数
   state.taskCounts[taskId]=(state.taskCounts[taskId]||0)+1;
   const count=state.taskCounts[taskId];
@@ -1507,7 +1507,15 @@ function delTask(id){
     <button class="btn btn-danger" onclick="confirmDelTask('${id}')">确定删除</button></div>`);
 }
 function confirmDelTask(id){
-  state.tasks=state.tasks.filter(t=>t.id!==id);
+  const t=state.tasks.find(x=>x.id===id);
+  if(t){
+    Object.keys(state.checkins).forEach(ds=>{
+      (state.checkins[ds]||[]).forEach(c=>{
+        if(c.taskId===id){ if(c.title===undefined)c.title=t.title; if(c.emoji===undefined)c.emoji=t.emoji; }
+      });
+    });
+  }
+  state.tasks=state.tasks.filter(x=>x.id!==id);
   delete state.taskCounts[id];
   save();renderCheckin();closeModal();toast('已删除','🗑️');
 }
@@ -1558,7 +1566,7 @@ function renderCheckin(){
       (state.checkins[ds]||[]).forEach(c=>{
         const key=c.taskId||'unknown';
         if(!taskGroups[key])taskGroups[key]=[];
-        taskGroups[key].push({taskId:c.taskId,ds,time:c.time});
+        taskGroups[key].push({taskId:c.taskId,ds,time:c.time,title:c.title,emoji:c.emoji});
       });
     });
     const groups=Object.values(taskGroups);
@@ -1568,8 +1576,8 @@ function renderCheckin(){
       histEl.innerHTML=groups.map(recs=>{
         recs.sort((a,b)=>b.ds.localeCompare(a.ds)); // 日期倒序
         const task=state.tasks.find(t=>t.id===recs[0].taskId);
-        const name=task?task.title:'已删除的任务';
-        const emoji=task?task.emoji:'❓';
+        const name=task?task.title:(recs[0].title||'已删除的任务');
+        const emoji=task?task.emoji:(recs[0].emoji||'❓');
         const rows=recs.map(r=>{
           const t=new Date(r.time);
           const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
@@ -2107,7 +2115,10 @@ function showCalendarDay(ds){
   const rows=entries.length?entries.map(entry=>{
     const task=(state.tasks||[]).find(t=>t.id===entry.taskId);
     const time=entry.time?new Date(entry.time).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'';
-    return `<div class="flow-item"><span class="f-icon">${task?task.emoji:'✅'}</span><div class="f-info"><h5>${task?esc(task.title):'打卡记录'}</h5><p>${time}${entry.note?' · '+esc(entry.note):''}</p></div><div class="f-amount in">+${task?fmtPts(task.reward||0):'✓'}</div></div>`;
+    const em=task?task.emoji:(entry.emoji||'✅');
+    const nm=task?esc(task.title):(entry.title?esc(entry.title):'打卡记录');
+    const rw=task?fmtPts(task.reward||0):'✓';
+    return `<div class="flow-item"><span class="f-icon">${em}</span><div class="f-info"><h5>${nm}</h5><p>${time}${entry.note?' · '+esc(entry.note):''}</p></div><div class="f-amount in">+${rw}</div></div>`;
   }).join(''):'<div class="empty-state"><span class="emoji">📭</span>这一天还没有打卡记录</div>';
   const goalRows=goals.filter(g=>g.completedAt&&todayKey(new Date(g.completedAt))===ds).map(g=>`<div class="flow-item"><span class="f-icon">${g.emoji||'🎯'}</span><div class="f-info"><h5>完成目标：${esc(g.title)}</h5><p>一次性任务已完成</p></div><div class="f-amount in">✓</div></div>`).join('');
   openModal(`<h3>📅 ${dateLabel}</h3><div class="day-records"><div class="card-title">当天打卡</div>${rows}${goalRows?`<div class="card-title" style="margin-top:14px">当天完成目标</div>${goalRows}`:''}</div><div class="modal-actions"><button class="btn btn-pink" onclick="closeModal()">知道了</button></div>`);
@@ -2256,15 +2267,17 @@ function renderProgress(){
         const merged={};
         entries.forEach(c=>{
           const key=c.taskId||'unknown';
-          if(!merged[key])merged[key]={taskId:c.taskId,count:0,lastTime:c.time};
+          if(!merged[key])merged[key]={taskId:c.taskId,count:0,lastTime:c.time,title:c.title,emoji:c.emoji};
           merged[key].count++;
           if(c.time>merged[key].lastTime)merged[key].lastTime=c.time;
+          if(merged[key].title===undefined&&c.title!==undefined)merged[key].title=c.title;
+          if(merged[key].emoji===undefined&&c.emoji!==undefined)merged[key].emoji=c.emoji;
         });
         const dateLabel=ds.replace(/^\d{4}-/,'').replace(/-/,'月')+'日';
         const rows=Object.values(merged).map(m=>{
           const task=state.tasks.find(t=>t.id===m.taskId);
-          const name=task?task.title:'已删除的任务';
-          const emoji=task?task.emoji:'❓';
+          const name=task?task.title:(m.title||'已删除的任务');
+          const emoji=task?task.emoji:(m.emoji||'❓');
           const t=new Date(m.lastTime);
           const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
           const countStr=m.count>1?` · 共 ${m.count} 次`:'';
@@ -2369,16 +2382,16 @@ function renderCountdowns(){
 function renderCountdownHome(){
   const home=document.getElementById('cdHome');
   if(!home)return;
+  updateEndedBtn();
   const now=Date.now();
-  const list=state.countdowns.slice().sort((a,b)=>a.target-b.target);
+  const list=state.countdowns.filter(c=>c.target-now>0).sort((a,b)=>a.target-b.target);
   home.className='cd-home';
   if(list.length===0){
-    home.innerHTML='<div class="cd-home-empty">还没有倒计时，点上方「➕ 新增倒计时」添加一个吧～</div>';return;
+    home.innerHTML='<div class="cd-home-empty">没有进行中的倒计时，点上方「➕ 新增倒计时」添加一个吧～</div>';return;
   }
   home.innerHTML=list.map(cd=>{
-    const ended=cd.target-now<=0;
     const emoji=cd.emoji?esc(cd.emoji):'⏳';
-    return `<div class="cd-card ${ended?'cd-ended':''}">
+    return `<div class="cd-card">
       <div class="cd-top">
         <div class="cd-title">${emoji} ${esc(cd.title)}</div>
         <div class="cd-actions">
@@ -2386,10 +2399,38 @@ function renderCountdownHome(){
           <button class="btn btn-ghost btn-sm" onclick="deleteCountdown('${cd.id}')">🗑️ 删除</button>
         </div>
       </div>
-      <div class="cd-remain" data-target="${cd.target}" data-id="${cd.id}" style="font-size:22px;margin-top:8px">${ended?'已结束 🎉':fmtRemain(cd.target-now)}</div>
+      <div class="cd-remain" data-target="${cd.target}" data-id="${cd.id}" style="font-size:22px;margin-top:8px">${fmtRemain(cd.target-now)}</div>
       <div class="cd-target">📅 ${fmtDateTime(cd.target)}</div>
     </div>`;
   }).join('');
+}
+function updateEndedBtn(){
+  const b=document.getElementById('cdEndedBtn');
+  if(!b)return;
+  const n=state.countdowns.filter(c=>c.target-Date.now()<=0).length;
+  b.textContent=`🎉 已结束 (${n})`;
+}
+function openEndedCountdowns(){
+  const now=Date.now();
+  const list=state.countdowns.filter(c=>c.target-now<=0).sort((a,b)=>b.target-a.target);
+  const body=list.length===0?'<div class="empty-state"><span class="emoji">🎉</span>还没有已结束的倒计时～</div>':
+    list.map(cd=>{
+      const emoji=cd.emoji?esc(cd.emoji):'⏳';
+      return `<div class="cd-card cd-ended">
+        <div class="cd-top">
+          <div class="cd-title">${emoji} ${esc(cd.title)}</div>
+          <div class="cd-actions">
+            <button class="btn btn-ghost btn-sm" onclick="openCountdownModal('${cd.id}')">✏️ 编辑</button>
+            <button class="btn btn-ghost btn-sm" onclick="deleteCountdown('${cd.id}')">🗑️ 删除</button>
+          </div>
+        </div>
+        <div class="cd-remain" style="font-size:18px;margin-top:8px">已结束 🎉</div>
+        <div class="cd-target">📅 结束于：${fmtDateTime(cd.target)}</div>
+      </div>`;
+    }).join('');
+  openModal(`<h3>🎉 已结束的倒计时（${list.length}）</h3>
+    <div class="cd-home" style="margin-top:14px">${body}</div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal()">关闭</button></div>`);
 }
 function openCountdownModal(id){
   const cd=id?state.countdowns.find(c=>c.id===id):null;
@@ -2426,7 +2467,7 @@ function deleteCountdown(id){
 function updateCountdowns(){
   const now=Date.now();
   state.countdowns.forEach(cd=>{
-    if(cd.target-now<=0 && !cd.notified){cd.notified=true;save();toast(`⏰ ${cd.title} 时间到啦！`,'⏰');}
+    if(cd.target-now<=0 && !cd.notified){cd.notified=true;save();toast(`⏰ ${cd.title} 时间到啦！`,'⏰');renderCountdownHome();}
   });
   document.querySelectorAll('.cd-remain').forEach(el=>{
     const target=Number(el.getAttribute('data-target'));
